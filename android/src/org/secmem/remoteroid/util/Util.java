@@ -1,12 +1,22 @@
 package org.secmem.remoteroid.util;
 
+import java.util.List;
+
+import org.secmem.remoteroid.service.RemoteroidService;
+
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import android.provider.Settings.Secure;
 import android.provider.Settings.SettingNotFoundException;
+import android.util.Log;
 
 public class Util {
+	private static final boolean D = true;
+	private static final String TAG = "RemoteroidUtil";
+	
 	/**
 	 * Class name for Remoteroid NotificationReceiverService.
 	 * @see org.secmem.remoteroid.service.NotificationReceiverService NotificationReceiverService
@@ -40,4 +50,36 @@ public class Util {
 		context.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
 	}
 	
+	/**
+	 * Check RemoteroidService is running or not.
+	 * @param context Application/Activity's context
+	 * @return <code>true</code> if RemoteroidService is running, <code>false</code> otherwise.
+	 */
+	public static boolean isServiceAlive(Context context){
+		String serviceCls = RemoteroidService.class.getName();
+		ActivityManager manager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+		List<RunningServiceInfo> serviceList = manager.getRunningServices(Integer.MAX_VALUE);
+		int count = serviceList.size();
+		for(int i=0; i<count; i++){
+			RunningServiceInfo obj = serviceList.get(i);
+			if(obj.service.getClassName().equals(serviceCls)){
+				return true;
+			}
+		}
+		if(D) Log.d(TAG, "RemoteroidService not available.");
+		return false;
+	}
+	
+	/**
+	 * Starts RemoteroidService.
+	 * @param context Application/Activity's context
+	 * @see org.secmem.remoteroid.service.RemoteroidService RemoteroidService
+	 */
+	public static void startRemoteroidService(Context context){
+		if(!isServiceAlive(context)){
+			if(D) Log.d(TAG, "Starting RemoteroidService..");
+			Intent intent = new Intent(context, RemoteroidService.class);
+			context.startService(intent);
+		}
+	}
 }
