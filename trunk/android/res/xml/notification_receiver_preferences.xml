@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:title="@string/preferences"
+>
+
+	<PreferenceCategory android:title="@string/package_filter">
+		<CheckBoxPreference android:summaryOff="@string/filter_disabled" android:summaryOn="@string/filter_enabled" android:key="filter_enabled" android:title="@string/filter" android:summary="@string/enable_disable_notify_filters" android:disableDependentsState="false" />
+		
+		<PreferenceScreen
+			android:title="@string/select_package"
+			android:summary="@string/select_package_to_filter" android:dependency="filter_enabled">
+			<intent android:action="org.secmem.remoteroid.activity.PackageSelector" />
+		</PreferenceScreen>
+
+	</PreferenceCategory>
+<!--  
+	<PreferenceCategory android:title="@string/backup_restore">
+		<PreferenceScreen
+			android:title="@string/backup_database"
+			android:summary="@string/backup_database_summary"
+			android:enabled="false"
+		>
+			<intent android:action="com.androidhuman.MyDirections.action.backup" />
+		</PreferenceScreen>
+
+		<PreferenceScreen
+			android:title="@string/restore_database"
+			android:summary="@string/restore_database_summary"
+			android:enabled="false"
+		>
+			<intent android:action="com.androidhuman.MyDirections.action.restore" />
+		</PreferenceScreen>
+	</PreferenceCategory>-->
+
+
+</PreferenceScreen>
