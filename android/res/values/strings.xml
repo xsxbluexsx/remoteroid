@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="preferences">Preferences</string>
+    <string name="app_name">Remoteroid</string>
+    <string name="notify_options">Notify options</string>
+    <string name="filter">Filter</string>
+    <string name="filter_enabled">Filter enabled</string>
+    <string name="filter_disabled">Filter disabled</string>
+    <string name="enable_disable_notify_filters">Enable/Disable notify filter</string>
+    <string name="select_package">Select package</string>
+    <string name="select_package_to_filter">Select package to filter</string>
+    <string name="package_filter">Package filter</string>
+
+</resources>
