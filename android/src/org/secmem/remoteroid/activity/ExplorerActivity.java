@@ -1,12 +1,14 @@
 package org.secmem.remoteroid.activity;
 
 import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.adapter.DataList;
 import org.secmem.remoteroid.adapter.ExplorerAdapter;
 import org.secmem.remoteroid.expinterface.OnFileSelectedListener;
 import org.secmem.remoteroid.expinterface.OnPathChangedListener;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AbsListView;
@@ -25,6 +27,8 @@ public class ExplorerActivity extends Activity implements OnScrollListener {
 	GridView gridview;
 	ExplorerAdapter adapter;
 	
+	DataList dataList;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -37,6 +41,20 @@ public class ExplorerActivity extends Activity implements OnScrollListener {
 		
 		gridview = (GridView)findViewById(R.id.explorer_view_grid);
 		gridview.setOnScrollListener(this);
+		
+		dataList = new DataList(this);
+		dataList.setOnPathChangedListener(onPathChanged);
+		dataList.setOnFileSelected(onFileSelected);
+		
+		dataList.setPath("/mnt/sdcard");
+		
+		Log.i("qq","actSize = "+dataList.getExpList().size());
+		
+//		for (int i = 0 ; i < dataList.getExpList().size() ; i++){
+//			Log.i("qq",i + " = "+dataList.getExpList().get(i).getType());
+//		}
+		adapter = new ExplorerAdapter(this, R.layout.grid_explorer_row, dataList);
+		gridview.setAdapter(adapter);
 	}
 
 	@Override
@@ -90,13 +108,13 @@ public class ExplorerActivity extends Activity implements OnScrollListener {
 		}
 	}
 	
-	private OnPathChangedListener _OnPathChanged = new OnPathChangedListener() {
+	private OnPathChangedListener onPathChanged = new OnPathChangedListener() {
 		public void onChanged(String path) {
 			pathTv.setText(path);
 		}
 	};
     
-    private OnFileSelectedListener _OnFileSelected = new OnFileSelectedListener() {
+    private OnFileSelectedListener onFileSelected = new OnFileSelectedListener() {
 		public void onSelected(String path, String fileName) {
 			// TODO
 		}
