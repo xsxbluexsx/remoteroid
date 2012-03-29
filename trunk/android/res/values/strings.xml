@@ -22,5 +22,6 @@
         <item >n</item>
         <item >t</item>
     </string-array>
+        <string name="notification_type_summary">Select notification type to be notified</string>
 
 </resources>

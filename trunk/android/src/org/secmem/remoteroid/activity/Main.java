@@ -5,9 +5,13 @@ import org.secmem.remoteroid.util.Util;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 
 public class Main extends SherlockActivity {
 
@@ -41,4 +45,23 @@ public class Main extends SherlockActivity {
 				}).setCancelable(false).show();
         }
 	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = new MenuInflater(this);
+		inflater.inflate(R.menu.main, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()){
+		case R.id.menu_main_preferences:
+			startActivity(new Intent(this, NotificationReceiverSettings.class));
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+	
 }
