@@ -23,6 +23,7 @@ public class Main extends SherlockActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
+       
     }
 
 	@Override

@@ -38,6 +38,9 @@
         <activity android:name=".activity.NotificationReceiverSettings"></activity>
         <activity android:name=".activity.PackageSelector"></activity>
         <service android:name=".service.RemoteroidService"></service>
+        <activity android:name=".activity.MainActivity"></activity>
+        <activity android:name=".activity.ExplorerActivity"></activity>
+        <activity android:name=".activity.SetIPActivity"></activity>
         <receiver android:name=".receiver.SmsReceiver">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
@@ -57,6 +60,7 @@
 		        <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
 		    </intent-filter>
         </receiver>
+        
     </application>
 
 </manifest>
