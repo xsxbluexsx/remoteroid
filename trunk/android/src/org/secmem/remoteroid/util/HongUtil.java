@@ -2,8 +2,11 @@ package org.secmem.remoteroid.util;
 
 import java.io.File;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import org.secmem.remoteroid.data.ExplorerType;
 
 import android.content.Context;
 import android.util.Log;
@@ -11,11 +14,30 @@ import android.widget.Toast;
 
 public class HongUtil {
 	
+	public static NomalComparator com = new NomalComparator();
 	
 	public static void makeToast(Context c, String str){
 		Toast.makeText(c, str, Toast.LENGTH_LONG).show();
 	}
+	
+	public static Comparator<ExplorerType> nameComparator = new Comparator<ExplorerType>() {
 
+		public int compare(ExplorerType lhs, ExplorerType rhs) {
+			// TODO Auto-generated method stub
+			return com.compare(lhs.getName(), rhs.getName());
+		}
+	};
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	//세팅시킬 Calendar 만들어줌
 	public static Calendar setCal(long date){

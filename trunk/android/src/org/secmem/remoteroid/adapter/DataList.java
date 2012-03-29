@@ -4,57 +4,45 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.secmem.remoteroid.data.ExplorerType;
+import org.secmem.remoteroid.data.FileList;
+import org.secmem.remoteroid.data.FolderList;
 import org.secmem.remoteroid.expinterface.OnFileSelectedListener;
 import org.secmem.remoteroid.expinterface.OnPathChangedListener;
+import org.secmem.remoteroid.util.HongUtil;
 
 import android.content.Context;
-import android.util.AttributeSet;
-import android.view.View;
-import android.widget.AdapterView;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class DataList extends ListView {
-
-	public DataList(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		
-		init(context);
-	}
-
-	public DataList(Context context, AttributeSet attrs) {
-		super(context, attrs);
-
-		init(context);
-	}
-
-	public DataList(Context context) {
-		super(context);
-
-		init(context);
-	}
 	
-	private void init(Context context) {
-		_Context = context;
-        setOnItemClickListener(_OnItemClick);
-	}
+	private ArrayList<ExplorerType> expList = new ArrayList<ExplorerType>();
+	private ArrayList<FolderList> folderList = new ArrayList<FolderList>();
 	
-	private Context _Context = null;
-	private ArrayList<String> _List = new ArrayList<String>();
-    private ArrayList<String> _FolderList = new ArrayList<String>();
-    private ArrayList<String> _FileList = new ArrayList<String>();
+
+	private ArrayList<FileList> fileList = new ArrayList<FileList>();
+	
+//    private ArrayList<String> folderList = new ArrayList<String>();
+//    private ArrayList<String> fileList = new ArrayList<String>();
 	private ArrayAdapter<String> _Adapter = null; 
 	
 	// Property 
 	private String _Path = "";
 	
 	// Event
-	private OnPathChangedListener _OnPathChangedListener = null;
-	private OnFileSelectedListener _OnFileSelectedListener = null;
+	private OnPathChangedListener onPathChangedListener = null;
+	private OnFileSelectedListener onFileSelectedListener = null;
+
+
+	public DataList(Context context) {
+		super(context);
+	}
 	
 	private boolean openPath(String path) {
-		_FolderList.clear();
-		_FileList.clear();
+		folderList.clear();
+		fileList.clear();
 		
         File file = new File(path);
         File[] files = file.listFiles();
@@ -62,27 +50,27 @@ public class DataList extends ListView {
         
         for (int i=0; i<files.length; i++) {
         	if (files[i].isDirectory()) {
-        		_FolderList.add("<" + files[i].getName() + ">");
+        		Log.i("qq","folder");
+        		folderList.add(new FolderList(files[i].getName(), ExplorerType.TYPE_FOLDER));
         	} else {
-        		_FileList.add(files[i].getName());
+        		Log.i("qq","file");
+        		fileList.add(new FileList(files[i].getName(), ExplorerType.TYPE_FILE));
         	}
         }
         
-        Collections.sort(_FolderList);
-        Collections.sort(_FileList);
+        Collections.sort(folderList, HongUtil.nameComparator);
+        Collections.sort(fileList, HongUtil.nameComparator);
         
-        _FolderList.add(0, "<..>");
+        folderList.add(0, new FolderList("<..>", ExplorerType.TYPE_FOLDER));
         
         return true;
 	}
 	
-	private void updateAdapter() {
-		_List.clear();
-        _List.addAll(_FolderList);
-        _List.addAll(_FileList);
+	private void setList() {
+		expList.clear();
+		expList.addAll(folderList);
+		expList.addAll(fileList);
         
-		_Adapter = new ArrayAdapter<String>(_Context, android.R.layout.simple_list_item_1, _List);
-        setAdapter(_Adapter);
 	}
 
 	public void setPath(String value) {
@@ -95,31 +83,11 @@ public class DataList extends ListView {
 		
 		if (openPath(value)) {
 			_Path = value;
-			updateAdapter();	        
-			if (_OnPathChangedListener != null) _OnPathChangedListener.onChanged(value);
+			setList();	        
+			if (onPathChangedListener != null) onPathChangedListener.onChanged(value);
 		}
 	}
 
-	public String getPath() {
-		return _Path;
-	}
-	
-	public void setOnPathChangedListener(OnPathChangedListener value) {
-		_OnPathChangedListener = value;
-	}
-
-	public OnPathChangedListener getOnPathChangedListener() {
-		return _OnPathChangedListener;
-	}
-
-	public void setOnFileSelected(OnFileSelectedListener value) {
-		_OnFileSelectedListener = value;
-	}
-
-	public OnFileSelectedListener getOnFileSelected() {
-		return _OnFileSelectedListener;
-	}
-	
 	public String DelteRight(String value, String border) {
 		String list[] = value.split(border);
 
@@ -144,26 +112,66 @@ public class DataList extends ListView {
 		return result;
 	}
 	
-	private String getRealPathName(String newPath) {
-		String path = newPath.substring(1, newPath.length()-1);
+	public String getRealPathName(String newPath) {
 		
-		if (path.matches("..")) {
+		if (newPath.equals("<..>")) {
 			return delteLastFolder(_Path);
 		} else {
-			return _Path + path + "/";
+			return _Path + newPath + "/";
 		}
 	}
+	
+	
+	public String getPath() {
+		return _Path;
+	}
+	
+	public void setOnPathChangedListener(OnPathChangedListener value) {
+		onPathChangedListener = value;
+	}
 
-	private AdapterView.OnItemClickListener _OnItemClick = new AdapterView.OnItemClickListener() {
-		public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-				long id) {
-			String fileName = getItemAtPosition(position).toString();
-			if (fileName.matches("<.*>")) {
-				setPath(getRealPathName(fileName));
-			} else {
-				if (_OnFileSelectedListener != null) _OnFileSelectedListener.onSelected(_Path, fileName);
-			}
-		}
-	};
+	public OnPathChangedListener getOnPathChangedListener() {
+		return onPathChangedListener;
+	}
+
+	public void setOnFileSelected(OnFileSelectedListener value) {
+		onFileSelectedListener = value;
+	}
+
+	public OnFileSelectedListener getOnFileSelected() {
+		return onFileSelectedListener;
+	}
+	
+	public String get_Path() {
+		return _Path;
+	}
+
+	public void set_Path(String _Path) {
+		this._Path = _Path;
+	}
+	
+	public ArrayList<ExplorerType> getExpList() {
+		return expList;
+	}
+
+	public void setExpList(ArrayList<ExplorerType> expList) {
+		this.expList = expList;
+	}
+
+	public ArrayList<FolderList> getFolderList() {
+		return folderList;
+	}
+
+	public void setFolderList(ArrayList<FolderList> folderList) {
+		this.folderList = folderList;
+	}
+
+	public ArrayList<FileList> getFileList() {
+		return fileList;
+	}
+
+	public void setFileList(ArrayList<FileList> fileList) {
+		this.fileList = fileList;
+	}
 
 }
