@@ -2,6 +2,8 @@ package org.secmem.remoteroid.activity;
 
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.adapter.ExplorerAdapter;
+import org.secmem.remoteroid.expinterface.OnFileSelectedListener;
+import org.secmem.remoteroid.expinterface.OnPathChangedListener;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -87,4 +89,16 @@ public class ExplorerActivity extends Activity implements OnScrollListener {
 			break;		
 		}
 	}
+	
+	private OnPathChangedListener _OnPathChanged = new OnPathChangedListener() {
+		public void onChanged(String path) {
+			pathTv.setText(path);
+		}
+	};
+    
+    private OnFileSelectedListener _OnFileSelected = new OnFileSelectedListener() {
+		public void onSelected(String path, String fileName) {
+			// TODO
+		}
+	};
 }
