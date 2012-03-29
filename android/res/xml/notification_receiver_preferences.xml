@@ -32,6 +32,9 @@
 			<intent android:action="com.androidhuman.MyDirections.action.restore" />
 		</PreferenceScreen>
 	</PreferenceCategory>-->
+	<PreferenceCategory android:title="@string/notification_type">
+		<ListPreference android:entries="@array/notificaton_types" android:entryValues="@array/notification_types_val" android:key="nt"/>
+	</PreferenceCategory>
 
 
 </PreferenceScreen>

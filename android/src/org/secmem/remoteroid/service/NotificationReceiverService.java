@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 public class NotificationReceiverService extends AccessibilityService {
@@ -22,11 +23,13 @@ public class NotificationReceiverService extends AccessibilityService {
 
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
+			if(D) Log.d(TAG, "Connected to Remoteroid service.");
 			mRemoteroidSvc = IRemoteroid.Stub.asInterface(service);
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
+			if(D) Log.d(TAG, "Disconnected from Remoteroid service.");
 			mRemoteroidSvc = null;
 		}
 		
@@ -64,12 +67,16 @@ public class NotificationReceiverService extends AccessibilityService {
 			unbindService(mRemoteroidSvcConn);
 	}
 
-	public String listToString(List<CharSequence> list){
+	/**
+	 * Converts notification or toast string lists into single String.
+	 * @param list events's text, returned by <code>AccessibilityEvent.getText()</code>.
+	 * @return
+	 */
+	private String listToString(List<CharSequence> list){
 		StringBuilder builder = new StringBuilder();
 		for(CharSequence str : list)
 			builder.append(str);
 		return builder.toString();
 	}
-	
 
 }
