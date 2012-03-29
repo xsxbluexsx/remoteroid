@@ -33,7 +33,7 @@
 		</PreferenceScreen>
 	</PreferenceCategory>-->
 	<PreferenceCategory android:title="@string/notification_type">
-		<ListPreference android:entries="@array/notificaton_types" android:entryValues="@array/notification_types_val" android:key="nt"/>
+		<ListPreference android:entries="@array/notificaton_types" android:entryValues="@array/notification_types_val" android:key="nt" android:summary="@string/notification_type_summary" android:title="@string/notification_type" android:defaultValue="a"/>
 	</PreferenceCategory>
 
 
