@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.SEND_SMS"/>
     <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.BIND_DEVICE_ADMIN"/>
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -46,6 +47,15 @@
             <intent-filter>
                 <action android:name="org.secmem.remoteroid.intent.action.SMS_SENT"/>
             </intent-filter>
+        </receiver>
+        <receiver android:name=".receiver.RemoteroidDeviceAdminReceiver"
+                android:description="@string/app_name"
+        		android:permission="android.permission.BIND_DEVICE_ADMIN">
+		    <meta-data android:name="android.app.device_admin"
+		            android:resource="@xml/remoteroid_device_admin" />
+		    <intent-filter>
+		        <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+		    </intent-filter>
         </receiver>
     </application>
 

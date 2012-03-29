@@ -13,6 +13,7 @@ public class NotificationReceiverSettings extends SherlockPreferenceActivity{
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+	    getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
 	    this.addPreferencesFromResource(R.xml.notification_receiver_preferences);
 	}
 
