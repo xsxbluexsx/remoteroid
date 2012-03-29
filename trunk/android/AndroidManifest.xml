@@ -5,6 +5,12 @@
     android:versionName="1.0" >
 
     <uses-sdk android:minSdkVersion="9" />
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -31,6 +37,16 @@
         <activity android:name=".activity.NotificationReceiverSettings"></activity>
         <activity android:name=".activity.PackageSelector"></activity>
         <service android:name=".service.RemoteroidService"></service>
+        <receiver android:name=".receiver.SmsReceiver">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receiver.SmsSentResultReceiver">
+            <intent-filter>
+                <action android:name="org.secmem.remoteroid.intent.action.SMS_SENT"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

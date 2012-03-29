@@ -11,5 +11,16 @@
     <string name="select_package">Select package</string>
     <string name="select_package_to_filter">Select package to filter</string>
     <string name="package_filter">Package filter</string>
+    <string name="notification_type">Notification type</string>
+    <string-array name="notificaton_types">
+        <item >All</item>
+        <item >Status bar notification</item>
+        <item >Toast</item>
+    </string-array>
+    <string-array name="notification_types_val">
+        <item >a</item>
+        <item >n</item>
+        <item >t</item>
+    </string-array>
 
 </resources>
