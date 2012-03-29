@@ -4,24 +4,39 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/main_btn_ip"
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="IP입력" />
+        android:orientation="horizontal" >
 
-    <Button
-        android:id="@+id/main_btn_explorer"
+        <Button
+            android:id="@+id/explorer_btn_category"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="카테고리" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="내부탐색기" />
+        android:orientation="horizontal" >
 
-    <TextView
-        android:id="@+id/main_btn_explorer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_gravity="center_horizontal"
-        android:text="비활성화" />
+        <TextView
+            android:id="@+id/explorer_tv_path"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="/mnt/sdcard" />
+    </LinearLayout>
+
+    <GridView
+        android:id="@+id/explorer_view_grid"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:columnWidth="90dp"
+        android:gravity="center"
+        android:horizontalSpacing="2dp"
+        android:numColumns="4"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="5dp" />
 
 </LinearLayout>
