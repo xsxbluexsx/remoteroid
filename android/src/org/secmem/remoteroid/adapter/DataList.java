@@ -20,18 +20,12 @@ public class DataList extends ListView {
 	
 	private ArrayList<ExplorerType> expList = new ArrayList<ExplorerType>();
 	private ArrayList<FolderList> folderList = new ArrayList<FolderList>();
-	
-
 	private ArrayList<FileList> fileList = new ArrayList<FileList>();
 	
-//    private ArrayList<String> folderList = new ArrayList<String>();
-//    private ArrayList<String> fileList = new ArrayList<String>();
 	private ArrayAdapter<String> _Adapter = null; 
 	
-	// Property 
 	private String _Path = "";
 	
-	// Event
 	private OnPathChangedListener onPathChangedListener = null;
 	private OnFileSelectedListener onFileSelectedListener = null;
 
@@ -50,10 +44,8 @@ public class DataList extends ListView {
         
         for (int i=0; i<files.length; i++) {
         	if (files[i].isDirectory()) {
-        		Log.i("qq","folder");
         		folderList.add(new FolderList(files[i].getName(), ExplorerType.TYPE_FOLDER));
         	} else {
-        		Log.i("qq","file");
         		fileList.add(new FileList(files[i].getName(), ExplorerType.TYPE_FILE));
         	}
         }
@@ -76,9 +68,12 @@ public class DataList extends ListView {
 	public void setPath(String value) {
 		if (value.length() == 0) {
 			value = "";
-		} else {
+		} 
+		else {
 			String lastChar = value.substring(value.length()-1, value.length());
-			if (lastChar.matches("/") == false) value = value + "/"; 
+			
+			if (lastChar.matches("/") == false) 
+				value = value + "/"; 
 		}
 		
 		if (openPath(value)) {
@@ -100,7 +95,7 @@ public class DataList extends ListView {
 		return result;
 	}
 	
-	private String delteLastFolder(String value) {
+	private String deleteLastFolder(String value) {
 		String list[] = value.split("/");
 
 		String result = "";
@@ -111,14 +106,21 @@ public class DataList extends ListView {
 		
 		return result;
 	}
+	public int getPathCount(){
+		return _Path.split("/").length;
+	}
 	
 	public String getRealPathName(String newPath) {
 		
 		if (newPath.equals("<..>")) {
-			return delteLastFolder(_Path);
+			return deleteLastFolder(_Path);
 		} else {
 			return _Path + newPath + "/";
 		}
+	}
+	
+	public String getBackPathName(){
+		return deleteLastFolder(_Path);
 	}
 	
 	

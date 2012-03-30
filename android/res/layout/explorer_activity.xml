@@ -8,10 +8,25 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
+        
+        <Button
+            android:id="@+id/explorer_btn_home"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="홈" />
+        
+        <Button
+            android:id="@+id/explorer_btn_top"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="상위" />
 
         <Button
             android:id="@+id/explorer_btn_category"
-            android:layout_width="fill_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="카테고리" />
     </LinearLayout>

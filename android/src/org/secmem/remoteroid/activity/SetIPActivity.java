@@ -7,15 +7,20 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 
-public class SetIPActivity extends Activity implements OnClickListener {
+public class SetIPActivity extends Activity implements OnClickListener, OnCheckedChangeListener {
 
 	Button okBtn;
 	Button cancelBtn;
 	
 	EditText ipEdt;
 	EditText pwdEdt;
+	
+	CheckBox autoLogin;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +35,9 @@ public class SetIPActivity extends Activity implements OnClickListener {
 		
 		ipEdt = (EditText)findViewById(R.id.setip_edt_ip);
 		pwdEdt = (EditText)findViewById(R.id.setip_edt_pwd);
+		
+		autoLogin = (CheckBox)findViewById(R.id.setip_auto_chkbox);
+		autoLogin.setOnCheckedChangeListener(this);
 
 	}
 
@@ -61,9 +69,12 @@ public class SetIPActivity extends Activity implements OnClickListener {
 			finish();
 			break;
 		}
+	}
+
+	@Override
+	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		// TODO Auto-generated method stub
 		
 	}
-	
-	
 	
 }
