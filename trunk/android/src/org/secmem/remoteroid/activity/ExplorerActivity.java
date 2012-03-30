@@ -5,6 +5,7 @@ import org.secmem.remoteroid.adapter.DataList;
 import org.secmem.remoteroid.adapter.ExplorerAdapter;
 import org.secmem.remoteroid.expinterface.OnFileSelectedListener;
 import org.secmem.remoteroid.expinterface.OnPathChangedListener;
+import org.secmem.remoteroid.util.HongUtil;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -21,13 +22,20 @@ public class ExplorerActivity extends Activity implements OnScrollListener {
 	
 	public static boolean SCROLL_STATE = false;
 	
-	Button categoryBtn;
-	TextView pathTv;
+	private Button categoryBtn;
+	private Button homeBtn;
+	private Button topBtn;
 	
-	GridView gridview;
-	ExplorerAdapter adapter;
+	private TextView pathTv;
 	
-	DataList dataList;
+	private GridView gridview;
+	private ExplorerAdapter adapter;
+	
+	private DataList dataList;
+	
+	private String currentPath="";
+	private String beforePath="";
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +43,13 @@ public class ExplorerActivity extends Activity implements OnScrollListener {
 		setContentView(R.layout.explorer_activity);	
 		
 		categoryBtn = (Button)findViewById(R.id.explorer_btn_category);
+		topBtn = (Button)findViewById(R.id.explorer_btn_top);
+		homeBtn = (Button)findViewById(R.id.explorer_btn_home);
+		
 		categoryBtn.setOnClickListener(topBtnListener);
+		topBtn.setOnClickListener(topBtnListener);
+		homeBtn.setOnClickListener(topBtnListener);
+		
 		
 		pathTv = (TextView)findViewById(R.id.explorer_tv_path);
 		
@@ -50,9 +64,6 @@ public class ExplorerActivity extends Activity implements OnScrollListener {
 		
 		Log.i("qq","actSize = "+dataList.getExpList().size());
 		
-//		for (int i = 0 ; i < dataList.getExpList().size() ; i++){
-//			Log.i("qq",i + " = "+dataList.getExpList().get(i).getType());
-//		}
 		adapter = new ExplorerAdapter(this, R.layout.grid_explorer_row, dataList);
 		gridview.setAdapter(adapter);
 	}
@@ -78,12 +89,39 @@ public class ExplorerActivity extends Activity implements OnScrollListener {
 		public void onClick(View v) {
 			switch(v.getId()){
 			
+			case R.id.explorer_btn_home : 
+				dataList.setPath("/mnt/sdcard");
+				adapter.notifyDataSetChanged();
+				break;
+			
+			case R.id.explorer_btn_top : 
+				String backPath = dataList.getBackPathName();
+				if(dataList.getPathCount()!=0){
+					dataList.setPath(backPath);
+					adapter.notifyDataSetChanged();
+				}
+				else{
+					HongUtil.makeToast(ExplorerActivity.this, "최상위입니다.^^");
+				}
+				break;
+			
 			case R.id.explorer_btn_category:
 				
 				break;
 			}
-			
 		}
+	};
+	
+	public void onBackPressed() {
+		String backPath = dataList.getBackPathName();
+		if(dataList.getPathCount()==0){
+			finish();
+		}
+		else{
+			dataList.setPath(backPath);
+			adapter.notifyDataSetChanged();
+		}
+		
 	};
 	
 	@Override

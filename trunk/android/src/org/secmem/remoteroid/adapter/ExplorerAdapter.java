@@ -70,13 +70,12 @@ public class ExplorerAdapter extends BaseAdapter{
 			public void onClick(View v) {
 				
 				String fileName = getItem(pos).getName();
-				Log.i("qq","fileName = "+fileName);
+				
 				if (dataList.getExpList().get(pos).getType()== ExplorerType.TYPE_FOLDER) {
-					Log.i("qq","folder");
 					dataList.setPath(dataList.getRealPathName(fileName));
 					notifyDataSetChanged();
-				} else {
-					Log.i("qq","file");
+				} 
+				else {
 					if (dataList.getOnFileSelected() != null) dataList.getOnFileSelected().onSelected(dataList.getPath(), fileName);
 				}
 			}
