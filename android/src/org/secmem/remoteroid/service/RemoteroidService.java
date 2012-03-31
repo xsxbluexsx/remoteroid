@@ -74,5 +74,9 @@ public class RemoteroidService extends Service {
 		
 		mng.sendTextMessage(phoneNumber, null, body, sentIntent, null);
 	}
+	
+	private void lockNow(){
+		
+	}
 
 }

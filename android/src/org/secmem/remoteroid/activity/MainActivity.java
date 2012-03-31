@@ -3,7 +3,6 @@ package org.secmem.remoteroid.activity;
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.util.HongUtil;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,7 +11,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
-public class MainActivity extends Activity implements OnClickListener {
+import com.actionbarsherlock.app.SherlockActivity;
+
+public class MainActivity extends SherlockActivity implements OnClickListener {
 	
 	
 	private Button expBtn;

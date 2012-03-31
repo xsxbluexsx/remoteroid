@@ -23,5 +23,10 @@
         <item >t</item>
     </string-array>
         <string name="notification_type_summary">Select notification type to be notified</string>
+        <string name="welcome">Welcome</string>
+        <string name="you_should_complete_following_configurations_before_use_remoteroid">You should complete following configurations before use Remoteroid.</string>
+        <string name="configurations">Configurations</string>
+        <string name="enable">Enable</string>
+        <string name="enabled">Enabled</string>
 
 </resources>
