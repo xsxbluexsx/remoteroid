@@ -7,7 +7,6 @@ import org.secmem.remoteroid.expinterface.OnFileSelectedListener;
 import org.secmem.remoteroid.expinterface.OnPathChangedListener;
 import org.secmem.remoteroid.util.HongUtil;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,7 +17,9 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 
-public class ExplorerActivity extends Activity implements OnScrollListener {
+import com.actionbarsherlock.app.SherlockActivity;
+
+public class ExplorerActivity extends SherlockActivity implements OnScrollListener {
 	
 	public static boolean SCROLL_STATE = false;
 	

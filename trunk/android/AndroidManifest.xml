@@ -22,11 +22,7 @@
             android:name=".activity.Main"
             android:label="@string/app_name" >
             
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            
             
         </activity>
         <service android:name=".service.NotificationReceiverService">
@@ -64,6 +60,13 @@
 		        <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
 		    </intent-filter>
         </receiver>
+        <activity android:name=".activity.Redirector" android:clearTaskOnLaunch="true" android:launchMode="singleInstance" android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.ConfigurationChecker"></activity>
         
     </application>
 

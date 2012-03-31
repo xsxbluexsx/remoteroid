@@ -39,14 +39,14 @@ public class HongUtil {
 	
 	
 	
-	//세팅시킬 Calendar 만들어줌
+	//�명���� Calendar 留���댁�
 	public static Calendar setCal(long date){
 		Calendar result=new GregorianCalendar();
 		result.setTimeInMillis(date);
 		
 	    Date d = result.getTime();
-	    String day = (d.getYear()+1900)+"년    "+(d.getMonth()+1)+"월"+d.getDate()+"일  "+d.getHours() +"시"+d.getMinutes()+" 분"+d.getSeconds()+"초";
-		Log.i("music","day           "+day);
+	    /*String day = (d.getYear()+1900)+"��   "+(d.getMonth()+1)+"��+d.getDate()+"�� "+d.getHours() +"��+d.getMinutes()+" 遺�+d.getSeconds()+"珥�;
+		Log.i("music","day           "+day);*/
 	    
 	    return result;
 	}
@@ -55,7 +55,7 @@ public class HongUtil {
 		String result="";
 		
 		Date d = day.getTime();
-//		result = (d.getYear()+1900)+"년 "+(d.getMonth()+1)+"월 "+d.getDate()+"일 "+d.getHours() +":"+d.getMinutes()+":"+d.getSeconds();
+//		result = (d.getYear()+1900)+"��"+(d.getMonth()+1)+"��"+d.getDate()+"��"+d.getHours() +":"+d.getMinutes()+":"+d.getSeconds();
 		result = (d.getYear()+1900)+"-"+(d.getMonth()+1)+"-"+d.getDate();
 		
 		
