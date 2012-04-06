@@ -1,7 +1,11 @@
 package org.secmem.remoteroid.service;
 
+import java.util.ArrayList;
+
 import org.secmem.remoteroid.IRemoteroid;
+import org.secmem.remoteroid.data.RDSmsMessage;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
+import org.secmem.remoteroid.receiver.SmsReceiver;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -53,6 +57,20 @@ public class RemoteroidService extends Service {
 		return mBinder;
 	}
 	
+	
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		if(intent.getExtras()!=null){
+			ArrayList<RDSmsMessage> list = intent.getParcelableArrayListExtra(SmsReceiver.EXTRA_MSGS);
+			
+			for(RDSmsMessage msg : list){
+				System.out.println(msg.toString());
+			}
+		}
+		return super.onStartCommand(intent, flags, startId);
+	}
+
+
 	/**
 	 * Place a phone call.
 	 * @param phoneNumber a Phone number

@@ -1,41 +1,23 @@
 package org.secmem.remoteroid.receiver;
 
-import org.secmem.remoteroid.IRemoteroid;
+import java.util.ArrayList;
+
+import org.secmem.remoteroid.data.RDSmsMessage;
 import org.secmem.remoteroid.service.RemoteroidService;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.RemoteException;
 import android.telephony.SmsMessage;
 
 public class SmsReceiver extends BroadcastReceiver {
-
-	private ServiceConnection mSvcConnection = new ServiceConnection(){
-
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service) {
-			mRemoteroidSvc = IRemoteroid.Stub.asInterface(service);
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			mRemoteroidSvc = null;
-		}
-		
-	};
 	
-	private IRemoteroid mRemoteroidSvc;
+	public static final String EXTRA_MSGS = "msg";
 		
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		// Bind to Remoteroid serivce
-		context.bindService(new Intent(context, RemoteroidService.class), mSvcConnection, Context.BIND_AUTO_CREATE);
-		
+
 		Bundle extras = intent.getExtras();
 		
 		if(extras != null){
@@ -46,23 +28,21 @@ public class SmsReceiver extends BroadcastReceiver {
 		    	messages[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
 		    }
 		    
-		    for(SmsMessage message : messages){
-		    	String msg = message.getMessageBody();
-		    	String from = message.getOriginatingAddress();
+		    ArrayList<RDSmsMessage> rdMsgs = new ArrayList<RDSmsMessage>();
+		    
+		    for(SmsMessage message: messages){
+		    	RDSmsMessage rdMsg = new RDSmsMessage();
 		    	
-		    	try {
-		    		// TODO find displayed name of matched phone number
-					mRemoteroidSvc.onReceiveSMS(from, from, msg, message.getTimestampMillis());
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				} catch(NullPointerException e){
-					e.printStackTrace();
-				}
+		    	rdMsg.setPhoneNumber(message.getOriginatingAddress());
+		    	rdMsg.setMessageBody(message.getMessageBody());
+		    	rdMsg.setDeliveredAt(message.getTimestampMillis());
+		    	rdMsg.setDisplayedName(context);
+		    	
+		    	rdMsgs.add(rdMsg);
 		    }
+		    context.startService(new Intent(context, RemoteroidService.class)
+		    	.putParcelableArrayListExtra(EXTRA_MSGS, rdMsgs));
 		 }
-		
-		// Unbind from service
-		context.unbindService(mSvcConnection);
 	}
 
 }
