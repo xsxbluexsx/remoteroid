@@ -10,6 +10,8 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.provider.Settings.Secure;
 import android.provider.Settings.SettingNotFoundException;
@@ -19,12 +21,17 @@ public class Util {
 	private static final boolean D = true;
 	private static final String TAG = "RemoteroidUtil";
 	
+	private static final String KEY_IP_ADDR="ip_addr";
+	private static final String KEY_PASSWORD = "password";
+	private static final String KEY_AUTO_CONNECT = "auto_connect";
+	
 	/**
 	 * Class name for Remoteroid NotificationReceiverService.
 	 * @see org.secmem.remoteroid.service.NotificationReceiverService NotificationReceiverService
 	 */
 	private static final String ACC_SERVICE_NAME = "org.secmem.remoteroid/org.secmem.remoteroid.service.NotificationReceiverService";
 	private static final ComponentName DEVICE_ADMIN_NAME = ComponentName.unflattenFromString("org.secmem.remoteroid/org.secmem.remoteroid.receiver.RemoteroidDeviceAdminReceiver");
+	
 	/**
 	 * Determine whether Notification receiver service enabled or not.
 	 * @param context Application or Activity's context
@@ -99,5 +106,38 @@ public class Util {
 			Intent intent = new Intent(context, RemoteroidService.class);
 			context.startService(intent);
 		}
+	}
+	
+	public static void saveConnectionData(Context context, String ipAddress, String password){
+		SharedPreferences.Editor editor = getPrefEditor(context);
+		editor.putString(KEY_IP_ADDR, ipAddress);
+		editor.putString(KEY_PASSWORD, password);
+		editor.commit();
+	}
+	
+	public static void setAutoConnect(Context context, boolean autoconnect){
+		SharedPreferences.Editor editor = getPrefEditor(context);
+		editor.putBoolean(KEY_AUTO_CONNECT, autoconnect);
+		editor.commit();
+	}
+	
+	public static String getIpAddress(Context context){
+		return getPref(context).getString(KEY_IP_ADDR, null);
+	}
+	
+	public static String getPassword(Context context){
+		return getPref(context).getString(KEY_PASSWORD, null);
+	}
+	
+	public static boolean isAutoConnectEnabled(Context context){
+		return getPref(context).getBoolean(KEY_AUTO_CONNECT, false);
+	}
+	
+	private static SharedPreferences getPref(Context context){
+		return PreferenceManager.getDefaultSharedPreferences(context);
+	}
+	
+	private static SharedPreferences.Editor getPrefEditor(Context context){
+		return getPref(context).edit();
 	}
 }

@@ -18,11 +18,15 @@
         android:label="@string/app_name" 
         android:theme="@style/Theme.Sherlock"
         uiOptions="splitActionBarWhenNarrow">
+        <activity android:name=".activity.Redirector" android:clearTaskOnLaunch="true" android:launchMode="singleInstance" android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activity.Main"
             android:label="@string/app_name" >
-            
-            
             
         </activity>
         <service android:name=".service.NotificationReceiverService">
@@ -34,13 +38,18 @@
                  android:resource="@xml/notification_receiver_properties"/>
         </service>
         <activity android:name=".activity.NotificationReceiverSettings"></activity>
-        <activity android:name=".activity.PackageSelector"></activity>
+        <activity android:name=".activity.PackageSelector" android:label="@string/select_package"></activity>
         <service android:name=".service.RemoteroidService"></service>
         <activity android:name=".activity.MainActivity">
             
         </activity>
-        <activity android:name=".activity.ExplorerActivity"></activity>
-        <activity android:name=".activity.SetIPActivity"></activity>
+        <activity android:name=".activity.ExplorerActivity" android:label="@string/file_explorer">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <receiver android:name=".receiver.SmsReceiver">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
@@ -60,12 +69,7 @@
 		        <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
 		    </intent-filter>
         </receiver>
-        <activity android:name=".activity.Redirector" android:clearTaskOnLaunch="true" android:launchMode="singleInstance" android:noHistory="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        
         <activity android:name=".activity.ConfigurationChecker"></activity>
         
     </application>

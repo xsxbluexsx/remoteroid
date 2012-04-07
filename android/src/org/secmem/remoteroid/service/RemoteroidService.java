@@ -50,6 +50,25 @@ public class RemoteroidService extends Service {
 			// TODO Auto-generated method stub
 			
 		}
+
+		@Override
+		public int getConnectionStatus() throws RemoteException {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public void connect(String ipAddress, String password)
+				throws RemoteException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void disconnect() throws RemoteException {
+			// TODO Auto-generated method stub
+			
+		}
 	};
 
 	@Override
