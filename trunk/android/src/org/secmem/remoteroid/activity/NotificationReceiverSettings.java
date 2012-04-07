@@ -9,12 +9,13 @@ import com.actionbarsherlock.view.MenuItem;
 
 public class NotificationReceiverSettings extends SherlockPreferenceActivity{
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	    getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
-	    this.addPreferencesFromResource(R.xml.notification_receiver_preferences);
+	    addPreferencesFromResource(R.xml.notification_receiver_preferences);
 	}
 
 

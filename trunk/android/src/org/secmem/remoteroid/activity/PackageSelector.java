@@ -1,16 +1,31 @@
 package org.secmem.remoteroid.activity;
 
-import android.app.ListActivity;
+import org.secmem.remoteroid.R;
+
+import com.actionbarsherlock.app.SherlockListActivity;
+import com.actionbarsherlock.view.MenuItem;
+
 import android.os.Bundle;
 
-public class PackageSelector extends ListActivity {
+public class PackageSelector extends SherlockListActivity {
 
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_package_selector);
+		
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
+	}
 	
-	    // TODO Auto-generated method stub
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()){
+		case android.R.id.home:
+			finish();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 }

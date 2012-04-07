@@ -22,11 +22,27 @@
         <item >n</item>
         <item >t</item>
     </string-array>
+    <string-array name="filtering_modes">
+		<item >Exclude selected</item>
+        <item >Accept selected only</item>
+    </string-array>
+    <string-array name="filtering_modes_val">
+        <item >e</item>
+        <item >s</item>
+    </string-array>
         <string name="notification_type_summary">Select notification type to be notified</string>
         <string name="welcome">Welcome</string>
         <string name="you_should_complete_following_configurations_before_use_remoteroid">You should complete following configurations before use Remoteroid.</string>
         <string name="configurations">Configurations</string>
         <string name="enable">Enable</string>
         <string name="enabled">Enabled</string>
+        <string name="file_explorer">File explorer</string>
+        <string name="ip_address">IP Address</string>
+        <string name="password">Password</string>
+        <string name="connect">Connect</string>
+        <string name="auto_connect">Auto connect</string>
+        <string name="connecting">Connecting...</string>
+        <string name="filtering_mode">Filtering mode</string>
+        <string name="filtering_mode_summary">Set filtering mode</string>
 
 </resources>
