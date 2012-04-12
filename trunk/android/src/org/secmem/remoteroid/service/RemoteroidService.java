@@ -79,7 +79,7 @@ public class RemoteroidService extends Service {
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		if(intent.getExtras()!=null){
+		if(intent.getExtras()!=null && intent.getParcelableArrayListExtra(SmsReceiver.EXTRA_MSGS)!=null){
 			ArrayList<RDSmsMessage> list = intent.getParcelableArrayListExtra(SmsReceiver.EXTRA_MSGS);
 			
 			for(RDSmsMessage msg : list){
