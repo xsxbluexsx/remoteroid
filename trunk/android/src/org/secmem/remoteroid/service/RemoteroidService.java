@@ -9,6 +9,8 @@ import org.secmem.remoteroid.receiver.SmsReceiver;
 
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.admin.DevicePolicyManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.IBinder;
@@ -28,6 +30,7 @@ public class RemoteroidService extends Service {
 		public void onNotificationCatched(String notificationText, long when)
 				throws RemoteException {
 			// TODO Notification hooked and notification data has been delivered. Now this data should be sent to PC.
+			
 		}
 
 		@Override
@@ -112,8 +115,12 @@ public class RemoteroidService extends Service {
 		mng.sendTextMessage(phoneNumber, null, body, sentIntent, null);
 	}
 	
+	/**
+	 * Lock device right now.
+	 */
 	private void lockNow(){
-		
+		DevicePolicyManager mDpm = (DevicePolicyManager)getSystemService(Context.DEVICE_POLICY_SERVICE);
+		mDpm.lockNow();
 	}
 
 }
