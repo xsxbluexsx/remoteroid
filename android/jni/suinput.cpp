@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <stdio.h>
 #include "suinput.h"
 
-char* UINPUT_FILEPATHS[] = {
+const char* UINPUT_FILEPATHS[] = {
     "/android/dev/uinput",
     "/dev/uinput",
     "/dev/input/uinput",
