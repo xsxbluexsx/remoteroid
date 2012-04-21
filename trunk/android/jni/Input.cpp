@@ -17,37 +17,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-package org.secmem.remoteroid.activity;
+#include "include/Input.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <fcntl.h>
 
-import org.secmem.remoteroid.R;
+void sendNativeEvent(const char* dev, int type, int code, int value){
 
-import android.os.Bundle;
-
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.actionbarsherlock.view.MenuItem;
-
-public class NotificationReceiverSettings extends SherlockPreferenceActivity{
-
-	@SuppressWarnings("deprecation")
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-	    super.onCreate(savedInstanceState);
-	    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-	    getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
-	    addPreferencesFromResource(R.xml.notification_receiver_preferences);
+	int fd = open(dev, O_RDWR);
+	if(fd < 0) {
+		__android_log_print(ANDROID_LOG_DEBUG, "SendNativeEvent", "Could not open device %s.", dev);
+		return;
 	}
 
+    struct input_event event;
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch(item.getItemId()){
-		case android.R.id.home:
-			finish();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    memset(&event, 0, sizeof(event));
+    event.type = type;
+    event.code = code;
+    event.value = value;
 
-	
+    __android_log_print(ANDROID_LOG_DEBUG, "SendNativeEvent", "Type=%d Code=%d Value=%d", type, code, value);
 
+    if(fd!=-1)
+    	write(fd, &event, sizeof(event));
 }
