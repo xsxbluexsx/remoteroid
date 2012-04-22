@@ -67,6 +67,9 @@ BOOL CRemotroidServerApp::InitInstance()
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
+	WSADATA wd;
+	memset(&wd,0, sizeof(wd));
+
 	CRemotroidServerDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
