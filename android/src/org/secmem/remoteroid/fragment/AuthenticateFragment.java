@@ -22,15 +22,13 @@ package org.secmem.remoteroid.fragment;
 import java.util.regex.Pattern;
 
 import org.secmem.remoteroid.R;
-import org.secmem.remoteroid.data.NativeKeyCode;
-import org.secmem.remoteroid.natives.InputHandler;
+import org.secmem.remoteroid.socket.SocketModule;
 import org.secmem.remoteroid.util.Util;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -40,6 +38,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class AuthenticateFragment extends Fragment {
 	
@@ -50,6 +49,8 @@ public class AuthenticateFragment extends Fragment {
 	
 	private boolean isIpValid=false;
 	private boolean isPwValid=false;
+	
+	private SocketModule socket;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,6 +66,8 @@ public class AuthenticateFragment extends Fragment {
 		mEdtPassword = (EditText)view.findViewById(R.id.password);
 		mCbAutoConn = (CheckBox)view.findViewById(R.id.auto_connect);
 		mBtnConnect = (Button)view.findViewById(R.id.connect);
+		
+		socket = new SocketModule();
 		
 		mEdtIpAddr.addTextChangedListener(new TextWatcher(){
 
@@ -126,13 +129,22 @@ public class AuthenticateFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				//InputHandler.keyStroke(NativeKeyCode.KEY_HOME); Testing virtual keystroke
+//				getFragmentManager().beginTransaction().replace(R.id.container, 
+//						new ConnectingFragment(mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString()))
+//						.commit();
 				
-				getFragmentManager().beginTransaction().replace(R.id.container, 
-						new ConnectingFragment(mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString()))
-						.commit();
+				String ip =mEdtIpAddr.getText().toString();
+				int port = 50000;
+				
+				try {
+					socket.SetSocket(ip, port);
+					Toast.makeText(getActivity(), "연결성공", Toast.LENGTH_LONG);
+					
+				} catch (Exception e) {
+					Toast.makeText(getActivity(), "연결실패", Toast.LENGTH_LONG);
+				}
+				//InputHandler.keyStroke(NativeKeyCode.KEY_HOME); Testing virtual keystroke
 			}
-			
 		});
 		
 		if(Util.isAutoConnectEnabled(getActivity())){
