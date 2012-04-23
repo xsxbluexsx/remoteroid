@@ -31,17 +31,21 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
+
+
 public class Main extends SherlockFragmentActivity {
 	
 	private Fragment mAuthFragment;
-
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
-       
+        
         mAuthFragment = new AuthenticateFragment();
+       
+//        mAuthFragment = new AuthenticateFragment();
         
         getSupportFragmentManager().beginTransaction().replace(R.id.container, mAuthFragment).commit();
     }

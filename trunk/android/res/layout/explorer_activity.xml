@@ -47,10 +47,10 @@
         android:id="@+id/explorer_view_grid"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:columnWidth="90dp"
+        android:columnWidth="70dp"
         android:gravity="center"
-        android:horizontalSpacing="2dp"
-        android:numColumns="4"
+        android:horizontalSpacing="5dp"
+        android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
         android:verticalSpacing="5dp" />
 

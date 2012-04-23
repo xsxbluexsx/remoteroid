@@ -19,10 +19,15 @@
 
 package org.secmem.remoteroid.adapter;
 
+import java.io.File;
+
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.data.ExplorerType;
+import org.secmem.remoteroid.util.HongUtil;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,10 +80,14 @@ public class ExplorerAdapter extends BaseAdapter{
 		ImageView img= (ImageView)viewItem.findViewById(R.id.grid_explorer_img);
 		TextView tv = (TextView)viewItem.findViewById(R.id.grid_explorer_tv);
 		
+		final String path = dataList.getPath();
+		final String fileName = dataList.getExpList().get(pos).getName();
+		
 		if(dataList.getExpList().get(pos).getType()==ExplorerType.TYPE_FOLDER){
 			img.setBackgroundResource(R.drawable.blue_folder);
 		}
 		else{
+//			HongUtil.getFileIcon(path, fileName);
 			img.setBackgroundResource(R.drawable.ic_launcher);
 		}
 		
@@ -95,7 +104,23 @@ public class ExplorerAdapter extends BaseAdapter{
 					notifyDataSetChanged();
 				} 
 				else {
-					if (dataList.getOnFileSelected() != null) dataList.getOnFileSelected().onSelected(dataList.getPath(), fileName);
+					if (dataList.getOnFileSelected() != null){ 
+						File f = new File(dataList.getPath());				// 피시로 전송될 파일
+						Log.i("qq","dataList.getPath() = "+dataList.getPath() + "       fileName = "+fileName);
+						dataList.getOnFileSelected().onSelected(dataList.getPath(), fileName);
+						String nn = HongUtil.getMimeType(path, fileName);
+						Log.i("qq","Type = "+nn);
+//						if(nn!=null){
+//							Intent intent = new Intent();
+//							intent.setAction(Intent.ACTION_VIEW);
+//							intent.setDataAndType(Uri.fromFile(new File(path+fileName)), nn);
+//							try {
+//								context.startActivity(intent);
+//							} catch (Exception e) {
+//							}
+//						}
+						
+					}
 				}
 			}
 		});

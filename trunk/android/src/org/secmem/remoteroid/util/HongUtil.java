@@ -29,9 +29,15 @@ import org.secmem.remoteroid.data.ExplorerType;
 
 import android.content.Context;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 public class HongUtil {
+	
+	private static String TYPE_PICTURE = "image";
+	private static String TYPE_VIDEO = "video";
+	private static String TYPE_MUSIC = "audio";
+	
 	
 	public static NomalComparator com = new NomalComparator();
 	
@@ -47,51 +53,70 @@ public class HongUtil {
 		}
 	};
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	//�명���� Calendar 留���댁�
-	public static Calendar setCal(long date){
-		Calendar result=new GregorianCalendar();
-		result.setTimeInMillis(date);
-		
-	    Date d = result.getTime();
-	    /*String day = (d.getYear()+1900)+"��   "+(d.getMonth()+1)+"��+d.getDate()+"�� "+d.getHours() +"��+d.getMinutes()+" 遺�+d.getSeconds()+"珥�;
-		Log.i("music","day           "+day);*/
-	    
-	    return result;
-	}
-	
-	public static String getTime(Calendar day) {
+	public static String getMimeType(String path, String fileName){				// 파일의 타입(비디오,오디오,사진 등등)을 체크
 		String result="";
-		
-		Date d = day.getTime();
-//		result = (d.getYear()+1900)+"��"+(d.getMonth()+1)+"��"+d.getDate()+"��"+d.getHours() +":"+d.getMinutes()+":"+d.getSeconds();
-		result = (d.getYear()+1900)+"-"+(d.getMonth()+1)+"-"+d.getDate();
-		
-		
-		return result;
-	}
-	
-	public static String setHashValue(String path){
-		File f = new File(path);
-		String result=String.valueOf(f.hashCode());
+		File file = new File(path+fileName);
+		if(file.exists()){
+			MimeTypeMap mtm = MimeTypeMap.getSingleton();
+			String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1 , fileName.length()).toLowerCase();
+			String mimeType = mtm.getMimeTypeFromExtension(fileExtension);
+			result = mimeType;
+		}
 		
 		return result;
 	}
 	
-	public static long setFileSize(String path){
-		File f = new File(path);
-		return f.length();
+	public static int getFileIcon(String path, String fileName){				// 파일의 타입에 대한 아이콘 추출
+		int result=0;
+		
+		return result;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//세팅시킬 Calendar 만들어줌
+		public static Calendar setCal(long date){
+			Calendar result=new GregorianCalendar();
+			result.setTimeInMillis(date);
+			
+		    Date d = result.getTime();
+		    String day = (d.getYear()+1900)+"년    "+(d.getMonth()+1)+"월"+d.getDate()+"일  "+d.getHours() +"시"+d.getMinutes()+" 분"+d.getSeconds()+"초";
+			Log.i("music","day           "+day);
+		    
+		    return result;
+		}
+		
+		public static String getTime(Calendar day) {
+			String result="";
+			
+			Date d = day.getTime();
+//			result = (d.getYear()+1900)+"년 "+(d.getMonth()+1)+"월 "+d.getDate()+"일 "+d.getHours() +":"+d.getMinutes()+":"+d.getSeconds();
+			result = (d.getYear()+1900)+"-"+(d.getMonth()+1)+"-"+d.getDate();
+			
+			
+			return result;
+		}
+		
+		public static String setHashValue(String path){
+			File f = new File(path);
+			String result=String.valueOf(f.hashCode());
+			
+			return result;
+		}
+		
+		public static long setFileSize(String path){
+			File f = new File(path);
+			return f.length();
+		}
 	
 	
 	
