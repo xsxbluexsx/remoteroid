@@ -59,7 +59,9 @@ public class DataList extends ListView {
 		
         File file = new File(path);
         File[] files = file.listFiles();
-        if (files == null) return false;
+        if (files == null) {
+        	return false;
+        }
         
         for (int i=0; i<files.length; i++) {
         	if (files[i].isDirectory()) {

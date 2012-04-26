@@ -154,6 +154,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		switch(scrollState){
 		case OnScrollListener.SCROLL_STATE_IDLE:
 			SCROLL_STATE= false;
+			adapter.notifyDataSetChanged();
 			break;
 			
 		case OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:

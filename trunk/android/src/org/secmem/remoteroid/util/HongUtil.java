@@ -34,9 +34,9 @@ import android.widget.Toast;
 
 public class HongUtil {
 	
-	private static String TYPE_PICTURE = "image";
-	private static String TYPE_VIDEO = "video";
-	private static String TYPE_MUSIC = "audio";
+	public static String TYPE_PICTURE = "image";
+	public static String TYPE_VIDEO = "video";
+	public static String TYPE_MUSIC = "audio";
 	
 	
 	public static NomalComparator com = new NomalComparator();
@@ -60,14 +60,30 @@ public class HongUtil {
 			MimeTypeMap mtm = MimeTypeMap.getSingleton();
 			String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1 , fileName.length()).toLowerCase();
 			String mimeType = mtm.getMimeTypeFromExtension(fileExtension);
-			result = mimeType;
+			result = (mimeType.split("/", 0))[0];
+//			result = mimeType;
 		}
+		
 		
 		return result;
 	}
 	
 	public static int getFileIcon(String path, String fileName){				// 파일의 타입에 대한 아이콘 추출
 		int result=0;
+		String type = getMimeType(path, fileName);
+		
+		if(type.equals(TYPE_PICTURE)){
+			
+		}
+		else if(type.equals(TYPE_VIDEO)){
+			
+		}
+		else if(type.equals(TYPE_MUSIC)){
+			
+		}
+		else{
+			
+		}
 		
 		return result;
 	}

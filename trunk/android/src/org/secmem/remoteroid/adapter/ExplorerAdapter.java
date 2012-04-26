@@ -27,6 +27,8 @@ import org.secmem.remoteroid.util.HongUtil;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -88,7 +90,13 @@ public class ExplorerAdapter extends BaseAdapter{
 		}
 		else{
 //			HongUtil.getFileIcon(path, fileName);
-			img.setBackgroundResource(R.drawable.ic_launcher);
+			if(HongUtil.getMimeType(path, fileName).equals(HongUtil.TYPE_PICTURE)){						// 타입이 사진이면 사진 썸네일 추출
+				setBitmap(path, fileName);
+			}
+			else{
+				img.setBackgroundResource(R.drawable.ic_launcher);
+			}
+			
 		}
 		
 		tv.setText(dataList.getExpList().get(pos).getName());
@@ -110,23 +118,42 @@ public class ExplorerAdapter extends BaseAdapter{
 						dataList.getOnFileSelected().onSelected(dataList.getPath(), fileName);
 						String nn = HongUtil.getMimeType(path, fileName);
 						Log.i("qq","Type = "+nn);
-//						if(nn!=null){
-//							Intent intent = new Intent();
-//							intent.setAction(Intent.ACTION_VIEW);
-//							intent.setDataAndType(Uri.fromFile(new File(path+fileName)), nn);
-//							try {
-//								context.startActivity(intent);
-//							} catch (Exception e) {
-//							}
-//						}
+						if(nn!=null){
+							Intent intent = new Intent();
+							intent.setAction(Intent.ACTION_VIEW);
+							intent.setDataAndType(Uri.fromFile(new File(path+fileName)), nn);
+							try {
+								context.startActivity(intent);
+							} catch (Exception e) {
+							}
+						}
 						
 					}
 				}
 			}
 		});
-		
-		
 		return viewItem;
+	}
+	
+	private void setBitmap(String path, String fileName) {
+		// TODO Auto-generated method stub
+//		String path = FileListManager.FilePhoto_List.get(position).getPath();
+		BitmapFactory.Options option = new BitmapFactory.Options();
+		if (new File(path).length() > 200000)
+			option.inSampleSize = 7;
+		else
+			option.inSampleSize = 4;
+		
+		
+//		FileListManager.FilePhoto_List.get(position).setLoadBitmap(BitmapFactory.decodeFile(path, option));
+//		if(Bitmap.createScaledBitmap(BitmapFactory.decodeFile(path, option), 200, 200, true)==null){
+		if(BitmapFactory.decodeFile(path, option)==null){
+//			FileListManager.FilePhoto_List.get(position).setLoadBitmap(BitmapFactory.decodeFile(path, option));
+		}
+		else{
+			Bitmap tmp = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(path, option), 250, 250, true);
+//			FileListManager.FilePhoto_List.get(position).setLoadBitmap(tmp);
+		}
 	}
 
 }
