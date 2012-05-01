@@ -21,6 +21,8 @@ package org.secmem.remoteroid.activity;
 
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.fragment.AuthenticateFragment;
+import org.secmem.remoteroid.fragment.DriverInstallationFragment;
+import org.secmem.remoteroid.util.CommandLine;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,11 +33,10 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
-
-
 public class Main extends SherlockFragmentActivity {
 	
 	private Fragment mAuthFragment;
+	private Fragment mDriverFragment;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,9 +45,8 @@ public class Main extends SherlockFragmentActivity {
         getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
         
         mAuthFragment = new AuthenticateFragment();
-       
-//        mAuthFragment = new AuthenticateFragment();
-        
+        mDriverFragment = new DriverInstallationFragment();
+
         getSupportFragmentManager().beginTransaction().replace(R.id.container, mAuthFragment).commit();
     }
 
@@ -54,6 +54,10 @@ public class Main extends SherlockFragmentActivity {
 	protected void onResume() {
 		super.onResume();
 		
+		// Check driver existance
+		if(!CommandLine.isDriverExists()){
+			getSupportFragmentManager().beginTransaction().replace(R.id.container, mDriverFragment).commit();
+		}
 	}
 
 	@Override
