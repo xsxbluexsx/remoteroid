@@ -5,14 +5,15 @@ import java.io.*;
 import android.util.*;
 
 public class FileSender implements iFileSendable{
-	private final int maxDataSize = CONS.MAXPACKETSIZE-CONS.HEADERSIZE;
-	private byte [] buffer = 
-			new byte[maxDataSize];
-	private long fileSize = 0;
-	private long sendedFileSize = 0;
-	private String fileName = null;
-	private packetmakeable packetMaker = null;
-	FileInputStream in = null;
+	
+	private final int 		maxDataSize 			= CONS.MAXPACKETSIZE-CONS.HEADERSIZE;
+	private byte [] 		buffer 					= new byte[maxDataSize];
+	private long 			fileSize 				= 0;
+	private long 			sendedFileSize 			= 0;
+	private String 			fileName 				= null;
+	private packetmakeable 	packetMaker 			= null;
+	FileInputStream 		in 						= null;
+	
 	
 	public FileSender(packetmakeable packetMaker){
 		this.packetMaker = packetMaker;
@@ -49,14 +50,14 @@ public class FileSender implements iFileSendable{
 			in.close();
 			in = null;
 		}catch(FileNotFoundException e){
-			Log.i("q", "file not exception");
+			Log.i("exception", "file not exception");
 			result = false;
 		}catch(IOException e){
-			Log.i("q", "IOException");
+			Log.i("exception", "IOException");
 			try{
-				in.close();
-				in = null;
+				in.close();				
 			}catch(IOException ioe){}
+			in = null;
 			result = false;
 		}
 		return result;

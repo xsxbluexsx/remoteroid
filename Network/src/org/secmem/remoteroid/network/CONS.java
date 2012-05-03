@@ -18,6 +18,5 @@ public class CONS {
 	
 	final static public int MAXPACKETSIZE = 4096;	
 	final static public int FILENAMESIZE = 100;
-	final static public int FILESIZESIZE = 100;
-	
+	final static public int FILESIZESIZE = 100;	
 }

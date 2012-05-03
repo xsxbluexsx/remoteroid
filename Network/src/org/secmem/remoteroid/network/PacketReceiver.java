@@ -5,14 +5,15 @@ import java.io.*;
 import android.util.*;
 
 public class PacketReceiver implements Runnable{
-	private byte [] recvBuffer = new byte[CONS.MAXPACKETSIZE * 2];
-	private byte [] header = new byte [CONS.HEADERSIZE];
-	private byte [] data = new byte[CONS.MAXPACKETSIZE-CONS.HEADERSIZE];
-	private byte [] bPacketSize = new byte[CONS.PACKETSIZE];
-	private byte [] bOPCode = new byte[CONS.OPCODESIZE];
+	private byte [] 		recvBuffer 			= new byte[CONS.MAXPACKETSIZE * 2];
+	private byte [] 		header 				= new byte[CONS.HEADERSIZE];
+	private byte [] 		data 				= new byte[CONS.MAXPACKETSIZE-CONS.HEADERSIZE];
+	private byte [] 		bPacketSize 		= new byte[CONS.PACKETSIZE];
+	private byte [] 		bOPCode 			= new byte[CONS.OPCODESIZE];
+	private FileReceiver	fileReceiver		= new FileReceiver();
 
-	private int iCurrentBufferPos = 0;
-	private InputStream in = null;
+	private int 		iCurrentBufferPos 	= 0;
+	private InputStream in 					= null;
 	
 	public PacketReceiver(InputStream in){
 		this.in = in;
@@ -28,6 +29,7 @@ public class PacketReceiver implements Runnable{
 		}
 		return result;
 	}
+	
 	/**
 	 * 패킷 헤더로부터 가변길이 패킷의 크기를 구한다
 	 * @return
@@ -44,9 +46,13 @@ public class PacketReceiver implements Runnable{
 		return ByteToInt(bOPCode);
 	}
 	
-	
+	/**
+	 * input stream에서 수신 버퍼로 최대 4096씩 read 
+	 * 연결 종료시 IOException 발생
+	 */
 	private int RecvBuffer() throws IOException{		
 		int iRecvLen = in.read(recvBuffer, iCurrentBufferPos, CONS.MAXPACKETSIZE);		
+		
 		if(iRecvLen > 0){
 			iCurrentBufferPos += iRecvLen;			
 		}
@@ -81,18 +87,25 @@ public class PacketReceiver implements Runnable{
 				int iRecvLen = RecvBuffer();
 				if(iRecvLen < 0){
 					//접속 종료
+					Log.i("exception", "<0");
 					break;
 				}
 				while(GetPacket()){
 					int iOPCode = GetOPCode(header);
 					int iPacketSize = GetPacketSize(header);	
-					Log.i("qqq", "opcode : "+iOPCode+" packet Size : "+iPacketSize);
-					for(int i=0; i<iPacketSize-6; i++){
-						Log.i("qqq", "data : " + (char)data[i]);
-					}
 					
+					switch(iOPCode){
+					case CONS.OPCODE.OP_SENDFILEINFO:
+						fileReceiver.RecvFileInfo(data);						
+						break;
+					case CONS.OPCODE.OP_SENDFILEDATA:
+						fileReceiver.RecvFileData(data, iPacketSize);
+						break;
+					}
 				}
-			} catch (IOException e) {				
+			} catch (IOException e) {	
+				Log.i("exception", "recv thread : "+e.getMessage());
+				break;
 			}
 		}
 	}	

@@ -6,15 +6,16 @@ import java.net.*;
 import android.util.*;
 
 public class NetworkModule {
-	private static NetworkModule netModInstance = null;
-	private Socket socket = null;
-	private String strIP = null;
-	private int iPortNum = CONS.HOST.PORT;
-	OutputStream out = null;
-	InputStream in = null;
-	packetmakeable packetMaker = null;
-	iFileSendable fileSender = null;
-	PacketReceiver packetReceiver = null;
+	private static NetworkModule 	netModInstance 	= null;
+	private Socket 					socket			= null;
+	private String 					strIP 			= null;
+	private int 					iPortNum 		= CONS.HOST.PORT;
+	private OutputStream 			out 			= null;
+	private InputStream 			in 				= null;
+	private packetmakeable 			packetMaker 	= null;
+	private iFileSendable 			fileSender		= null;
+	private PacketReceiver			packetReceiver 	= null;
+	
 	
 	private NetworkModule(){
 		socket = new Socket();
