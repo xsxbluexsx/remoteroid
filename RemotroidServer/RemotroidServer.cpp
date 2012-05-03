@@ -69,6 +69,7 @@ BOOL CRemotroidServerApp::InitInstance()
 
 	WSADATA wd;
 	memset(&wd,0, sizeof(wd));
+	WSAStartup(MAKEWORD(2,2), &wd);
 
 	CRemotroidServerDlg dlg;
 	m_pMainWnd = &dlg;
@@ -92,6 +93,8 @@ BOOL CRemotroidServerApp::InitInstance()
 
 	// Since the dialog has been closed, return FALSE so that we exit the
 	//  application, rather than start the application's message pump.
+	WSACleanup();
+
 	return FALSE;
 }
 

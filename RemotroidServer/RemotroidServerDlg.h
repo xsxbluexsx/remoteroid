@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "MyClient.h"
+
 
 // CRemotroidServerDlg dialog
 class CRemotroidServerDlg : public CDialogEx
@@ -29,4 +31,18 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+private:
+	SOCKET m_ServerSocket;	
+	CMyClient *m_pClient;
+
+public:
+	static UINT AcceptFunc(LPVOID pParam);	
+	static UINT RecvFunc(LPVOID pParam);	
+	void SetClientSocket(CMyClient * pClient);
+	CMyClient * GetClientSocket(void);
+	HANDLE RecvFileInfo(char *data, unsigned int *fileSize);
+	
+	afx_msg void OnDestroy();
+	afx_msg void OnBnClickedOk();
+	afx_msg void OnBnClickedCancel();
 };
