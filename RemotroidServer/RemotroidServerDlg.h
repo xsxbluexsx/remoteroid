@@ -5,6 +5,7 @@
 #pragma once
 
 #include "MyClient.h"
+#include "FileSender.h"
 
 
 // CRemotroidServerDlg dialog
@@ -34,6 +35,7 @@ protected:
 private:
 	SOCKET m_ServerSocket;	
 	CMyClient *m_pClient;
+	CFileSender fileSender;
 
 public:
 	static UINT AcceptFunc(LPVOID pParam);	
@@ -45,4 +47,6 @@ public:
 	afx_msg void OnDestroy();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
+	afx_msg void OnClickedFilesender();
+	afx_msg void OnDropFiles(HDROP hDropInfo);
 };

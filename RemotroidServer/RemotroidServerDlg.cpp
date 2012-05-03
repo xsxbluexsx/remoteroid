@@ -7,6 +7,9 @@
 #include "RemotroidServerDlg.h"
 #include "afxdialogex.h"
 
+#include "RecvFile.h"
+
+
 
 
 #ifdef _DEBUG
@@ -76,6 +79,8 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CRemotroidServerDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CRemotroidServerDlg::OnBnClickedCancel)
 //	ON_BN_CLICKED(IDC_BTN_SEND, &CRemotroidServerDlg::OnClickedBtnSend)
+ON_BN_CLICKED(IDC_FILESENDER, &CRemotroidServerDlg::OnClickedFilesender)
+ON_WM_DROPFILES()
 END_MESSAGE_MAP()
 
 
@@ -216,7 +221,7 @@ UINT CRemotroidServerDlg::AcceptFunc(LPVOID pParam)
 	return 0;
 }
 
-#include "RecvFile.h"
+
 
 UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 {	
@@ -252,7 +257,7 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 			}
 		}
 	}
-	delete pClient;
+	delete pClient;	
 	return 0;
 }
 
@@ -260,6 +265,7 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 void CRemotroidServerDlg::SetClientSocket(CMyClient * pClient)
 {
 	m_pClient = pClient;
+	fileSender.SetClient(pClient);
 }
 CMyClient * CRemotroidServerDlg::GetClientSocket(void)
 {
@@ -310,3 +316,37 @@ void CRemotroidServerDlg::OnBnClickedCancel()
 	CDialogEx::OnCancel();
 }
 
+
+
+void CRemotroidServerDlg::OnClickedFilesender()
+{
+	// TODO: Add your control notification handler code here
+	/*
+	CFileSender fileSender(m_pClient);
+	CFile file;
+	if(!file.Open(_T("1234.dcf"), CFile::modeRead | CFile::shareDenyRead | CFile::shareDenyWrite))
+	{
+		//파일이 없을경우 처리해줘야 함
+	}	
+	fileSender.SendFileInfo(&file);
+	fileSender.SendFileData(&file);
+	*/
+}
+
+
+void CRemotroidServerDlg::OnDropFiles(HDROP hDropInfo)
+{
+	// TODO: Add your message handler code here and/or call default
+	TCHAR path[MAX_PATH];
+	int count = 0;
+
+	count = DragQueryFile(hDropInfo, 0xffffffff, NULL, 0);
+	for(int i=0; i<count; i++)
+	{
+		DragQueryFile(hDropInfo, i, path, MAX_PATH);
+		fileSender.AddSendFile(new CFile(path,CFile::modeRead | 
+			CFile::shareDenyRead | CFile::shareDenyWrite));				
+	}
+	fileSender.StartSendFile();
+	CDialogEx::OnDropFiles(hDropInfo);
+}

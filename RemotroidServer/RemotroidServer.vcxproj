@@ -99,6 +99,7 @@
     <None Include="res\RemotroidServer.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FileSender.h" />
     <ClInclude Include="MyClient.h" />
     <ClInclude Include="packetdefine.h" />
     <ClInclude Include="RecvFile.h" />
@@ -110,6 +111,7 @@
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FileSender.cpp" />
     <ClCompile Include="MyClient.cpp" />
     <ClCompile Include="RecvFile.cpp" />
     <ClCompile Include="RemotroidServer.cpp" />
