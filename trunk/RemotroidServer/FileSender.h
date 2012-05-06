@@ -11,8 +11,10 @@ public:
 	CFileSender();
 	~CFileSender(void);
 
+	void DeleteFileList(void);
+
 public:	
-	void AddSendFile(CFile * pFile);
+	BOOL AddSendFile(CFile * pFile);
 	void SetClient(CMyClient *pClient);	
 	BOOL StartSendFile(void);		
 	static UINT SendFileThread(LPVOID pParam);
@@ -32,6 +34,6 @@ private:
 	int SendPacket(int iOPCode, const char * data, int iDataLen);	
 	int SendFileInfo(CFile *file);
 	int SendFileData(CFile * pFile);		
-
+	
 };
 
