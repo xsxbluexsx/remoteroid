@@ -20,6 +20,7 @@
 
 #include "include/Input.h"
 #include "include/suinput.h"
+#include <stdlib.h>
 
 /**
  * Input File descriptor
@@ -27,27 +28,49 @@
 int inputFd = -1;
 
 bool openInput(){
-	LOGD(LOGTAG, "Opening input device...");
-	struct input_id id = {
-	        BUS_VIRTUAL, /* Bus type. */
-	        1, /* Vendor id. */
-	        1, /* Product id. */
-	        1 /* Version id. */
-	};
+	system("su -c \"chmod 666 /dev/uinput\"");
+	return openInputWithoutPermission();
+}
 
-	// qwerty or qwerty2?
-	if((inputFd = suinput_open("qwerty", &id)) == -1){
-		LOGD(LOGTAG, "Cannot open device qwerty");
-		return false;
-	}
-	LOGD(LOGTAG, "Opened device qwerty.");
-	return true;
+bool openInputWithoutPermission(){
+	LOGD(LOGTAG, "Opening input device...");
+		struct input_id id = {
+		        BUS_VIRTUAL, /* Bus type. */
+		        1, /* Vendor id. */
+		        1, /* Product id. */
+		        1 /* Version id. */
+		};
+
+		if((inputFd = suinput_open("qwerty", &id)) == -1){
+			LOGD(LOGTAG, "Cannot open device - 'qwerty'");
+			return false;
+		}
+		LOGI(LOGTAG, "Opened device 'qwerty'");
+		return true;
 }
 
 void closeInput(){
 	LOGD(LOGTAG, "Closing input device...");
 	if(inputFd==-1){
-		suinput_close(inputFd);
+		if(suinput_close(inputFd)==-1){
+			LOGD(LOGTAG, "Error closing input device..");
+		}
+		LOGI(LOGTAG, "Device closed.");
+		system("su -c \"chmod 660 /dev/uinput\"");
+	}else{
+		LOGI(LOGTAG, "Nothing to close.");
+	}
+}
+
+void closeInputWithoutRevertPermission(){
+	LOGD(LOGTAG, "Closing input device...");
+	if(inputFd==-1){
+		if(suinput_close(inputFd)==-1){
+			LOGD(LOGTAG, "Error closing input device..");
+		}
+		LOGI(LOGTAG, "Device closed.");
+	}else{
+		LOGI(LOGTAG, "Nothing to close.");
 	}
 }
 

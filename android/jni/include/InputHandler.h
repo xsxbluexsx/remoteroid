@@ -9,11 +9,27 @@ extern "C" {
 #endif
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
+ * Method:    openInputDevice
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_secmem_remoteroid_natives_InputHandler_openInputDevice
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_secmem_remoteroid_natives_InputHandler
+ * Method:    closeInputDevice
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_closeInputDevice
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_secmem_remoteroid_natives_InputHandler
  * Method:    keyDown
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyDown
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
@@ -21,7 +37,7 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyDown
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyUp
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
@@ -29,7 +45,7 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyUp
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyStroke
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
@@ -37,7 +53,7 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyStroke
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchDown
-  (JNIEnv *, jclass);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
@@ -45,7 +61,7 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchDown
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchUp
-  (JNIEnv *, jclass);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
@@ -53,7 +69,7 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchUp
  * Signature: (II)V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchSetPtr
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jobject, jint, jint);
 
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
@@ -61,7 +77,7 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchSetP
  * Signature: (II)V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchOnce
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jobject, jint, jint);
 
 #ifdef __cplusplus
 }
