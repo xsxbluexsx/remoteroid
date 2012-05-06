@@ -20,13 +20,21 @@
 package org.secmem.remoteroid.activity;
 
 import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.adapter.PackageAdapter;
+import org.secmem.remoteroid.util.FilterUtil;
+
+import android.content.pm.PackageInfo;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.MenuItem;
 
-import android.os.Bundle;
-
-public class PackageSelector extends SherlockListActivity {
+public class PackageSelector extends SherlockListActivity{
+	
+	private PackageAdapter mPackageAdapter;
+	private FilterUtil mFilterUtil;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -35,6 +43,12 @@ public class PackageSelector extends SherlockListActivity {
 		
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
+		
+		mPackageAdapter = new PackageAdapter(getApplicationContext());
+		mFilterUtil = new FilterUtil(this);
+		
+		getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+		setListAdapter(mPackageAdapter);
 	}
 	
 	@Override
@@ -45,6 +59,19 @@ public class PackageSelector extends SherlockListActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		PackageInfo item = mPackageAdapter.getItem(position);
+		
+		// Add to filter
+		if(!getListView().isItemChecked(position)){
+			mFilterUtil.addToFilter(item.packageName);
+		}else{ // Remove from filter
+			mFilterUtil.removeFromFilter(item.packageName);
+		}
+		mPackageAdapter.notifyDataSetChanged();
 	}
 
 }

@@ -22,6 +22,9 @@ package org.secmem.remoteroid.service;
 import java.util.List;
 
 import org.secmem.remoteroid.IRemoteroid;
+import org.secmem.remoteroid.util.FilterUtil;
+import org.secmem.remoteroid.util.Util;
+import org.secmem.remoteroid.util.Util.Filter;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.ComponentName;
@@ -57,9 +60,28 @@ public class NotificationReceiverService extends AccessibilityService {
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
 		try{
-			// TODO Apply user's preferences(Package filtering)
-			if(mRemoteroidSvc!=null)
-				mRemoteroidSvc.onNotificationCatched(listToString(event.getText()), event.getEventTime());
+			if(mRemoteroidSvc!=null){
+				// Check filter enabled or not
+				if(Util.Filter.isFilterEnabled(getApplicationContext())){ // Filter enabled
+					FilterUtil filterUtil = new FilterUtil(this);
+					boolean filtered = false;
+					
+					// Get filtering mode
+					switch(Filter.getFilterMode(getApplicationContext())){
+					case EXCLUDE:
+						filtered = filterUtil.quickCheckExists(event.getPackageName().toString());
+						break;
+					case INCLUDE:
+						filtered = !filterUtil.quickCheckExists(event.getPackageName().toString());
+						break;
+					}
+					// If not filtered, send notification via callback.
+					if(!filtered)
+						mRemoteroidSvc.onNotificationCatched(listToString(event.getText()), event.getEventTime());
+				}else{ // User does not enabled package filter.
+					mRemoteroidSvc.onNotificationCatched(listToString(event.getText()), event.getEventTime());
+				}
+			}
 		}catch(RemoteException e){
 			e.printStackTrace();
 		}
