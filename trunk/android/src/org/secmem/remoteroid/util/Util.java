@@ -161,8 +161,10 @@ public class Util {
 	public static class Filter{
 		private static final String KEY_FILTERING_MODE = "filtering_mode";
 		private static final String KEY_FILTER_ENABLED = "filter_enabled";
+		private static final String KEY_NOTIFICATION_TYPE = "notification_type";
 		
 		public enum FilterMode{EXCLUDE, INCLUDE};
+		public enum NotificationType{ALL, STATUSBAR, TOAST};
 		
 		public static FilterMode getFilterMode(Context context){
 			String mode = getPref(context).getString(KEY_FILTERING_MODE, "e");
@@ -175,6 +177,18 @@ public class Util {
 		public static boolean isFilterEnabled(Context context){
 			return getPref(context).getBoolean(KEY_FILTER_ENABLED, false);
 		}
+		
+		public static NotificationType getNotificationType(Context context){
+			String mode = getPref(context).getString(KEY_NOTIFICATION_TYPE, "a");
+			if(mode.equals("a"))
+				return NotificationType.ALL;
+			else if(mode.equals("n"))
+				return NotificationType.STATUSBAR;
+			else
+				return NotificationType.TOAST;
+		}
+		
+		
 	}
 
 	
