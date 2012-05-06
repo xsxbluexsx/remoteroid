@@ -19,9 +19,8 @@
 
 #include "include/InputHandler.h"
 #include "include/Input.h"
-#include <unistd.h>
 
-const char* dev = "/dev/input/event0";
+extern int inputFd;
 
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
@@ -29,7 +28,8 @@ const char* dev = "/dev/input/event0";
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyDown(JNIEnv *env, jobject thiz, jint keyCode){
-	sendNativeEvent(dev, EV_KEY, keyCode, 1);
+	//sendNativeEvent(dev, EV_KEY, keyCode, 1);
+	sendNativeEvent(inputFd, EV_KEY, keyCode, 1);
 }
 
 /*
@@ -38,7 +38,8 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyDown(J
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyUp(JNIEnv *env, jobject thiz, jint keyCode){
-	sendNativeEvent(dev, EV_KEY, keyCode, 0);
+	//sendNativeEvent(dev, EV_KEY, keyCode, 0);
+	sendNativeEvent(inputFd, EV_KEY, keyCode, 0);
 }
 
 /*
@@ -57,8 +58,10 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyStroke
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchDown(JNIEnv *env, jobject thiz){
-	sendNativeEvent(dev, EV_KEY, BTN_TOUCH, 1);
-	sendNativeEvent(dev, EV_SYN, SYN_REPORT, 0);
+	//sendNativeEvent(dev, EV_KEY, BTN_TOUCH, 1);
+	//sendNativeEvent(dev, EV_SYN, SYN_REPORT, 0);
+	sendNativeEvent(inputFd, EV_KEY, BTN_TOUCH, 1);
+	sendNativeEvent(inputFd, EV_SYN, SYN_REPORT, 0);
 }
 
 /*
@@ -67,8 +70,10 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchDown
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchUp(JNIEnv *env, jobject thiz){
-	sendNativeEvent(dev, EV_KEY, BTN_TOUCH, 0);
-	sendNativeEvent(dev, EV_SYN, SYN_REPORT, 0);
+	//sendNativeEvent(dev, EV_KEY, BTN_TOUCH, 0);
+	//sendNativeEvent(dev, EV_SYN, SYN_REPORT, 0);
+	sendNativeEvent(inputFd, EV_KEY, BTN_TOUCH, 0);
+	sendNativeEvent(inputFd, EV_SYN, SYN_REPORT, 0);
 }
 
 /*
@@ -77,9 +82,12 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchUp(J
  * Signature: (II)V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchSetPtr(JNIEnv *env, jobject thiz, jint x, jint y){
-	sendNativeEvent(dev, EV_ABS, ABS_X, x);
-	sendNativeEvent(dev, EV_ABS, ABS_Y, y);
-	sendNativeEvent(dev, EV_SYN, SYN_REPORT, 0);
+	//sendNativeEvent(dev, EV_ABS, ABS_X, x);
+	//sendNativeEvent(dev, EV_ABS, ABS_Y, y);
+	//sendNativeEvent(dev, EV_SYN, SYN_REPORT, 0);
+	sendNativeEvent(inputFd, EV_ABS, ABS_X, x);
+	sendNativeEvent(inputFd, EV_ABS, ABS_Y, y);
+	sendNativeEvent(inputFd, EV_SYN, SYN_REPORT, 0);
 }
 
 /*
