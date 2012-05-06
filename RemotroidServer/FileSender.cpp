@@ -12,6 +12,7 @@ CFileSender::CFileSender()
 
 CFileSender::~CFileSender(void)
 {
+	DeleteFileList();
 }
 
 void CFileSender::SetClient(CMyClient *pClient)
@@ -58,23 +59,43 @@ int CFileSender::SendFileData(CFile * pFile)
 		pFile->Read(buffer, iCurrentSendSize);
 		result = SendPacket(OP_SENDFILEDATA, buffer, iCurrentSendSize);
 		sendedFileSize += iCurrentSendSize;
-	}
-	pFile->Close();
+	}	
 	return result;
 }
 
 
 
-void CFileSender::AddSendFile(CFile * pFile)
+BOOL CFileSender::AddSendFile(CFile * pFile)
 {
+	if(m_pClient == NULL || isSending == TRUE)
+	{
+		delete pFile;
+		return FALSE;
+	}
+
 	sendFileList.AddTail((void*)pFile);	
+	TRACE(_T("\t%s"), pFile->GetFileName());
+	return TRUE;
 }
 
 
 BOOL CFileSender::StartSendFile(void)
 {
 	if(m_pClient == NULL || isSending == TRUE)
+	{
+		DeleteFileList();
 		return FALSE;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	POSITION pos = sendFileList.GetHeadPosition();
+	while(pos)
+	{
+		CFile *pFile = (CFile *)sendFileList.GetNext(pos);		
+		pFile->GetFilePath();
+	}                                                                      
+	//////////////////////////////////////////////////////////////////////////
+
 
 	isSending = TRUE;
 	AfxBeginThread(SendFileThread, this);
@@ -87,13 +108,34 @@ UINT CFileSender::SendFileThread(LPVOID pParam)
 	CFileSender *pDlg = (CFileSender *)pParam;	
 
  	POSITION pos = pDlg->sendFileList.GetHeadPosition();
+	int result = 0;
 	while(pos)
 	{
 		CFile *pFile = (CFile *)pDlg->sendFileList.GetNext(pos);
-		pDlg->SendFileInfo(pFile);
+
+		result = pDlg->SendFileInfo(pFile);
+		if(result == SOCKET_ERROR)
+			break;
+
 		pDlg->SendFileData(pFile);
+		if(result == SOCKET_ERROR)
+			break;
 	}
+	pDlg->DeleteFileList();
 	pDlg->isSending = FALSE;
 	return 0;
 }
 
+
+
+void CFileSender::DeleteFileList(void)
+{
+	POSITION pos = sendFileList.GetHeadPosition();
+	while(pos)
+	{
+		CFile *pFile = (CFile *)sendFileList.GetNext(pos);		
+		delete pFile;		
+	}
+	sendFileList.RemoveAll();
+	return;
+}

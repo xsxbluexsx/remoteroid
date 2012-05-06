@@ -228,7 +228,7 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 	CRemotroidServerDlg *pDlg = (CRemotroidServerDlg *)pParam;
 	CMyClient *pClient = pDlg->GetClientSocket();
 
-	char bPacket[4096];
+	char bPacket[MAXSIZE];
 	CRecvFile recvFileClass;
 	
 	while (TRUE)
@@ -343,9 +343,24 @@ void CRemotroidServerDlg::OnDropFiles(HDROP hDropInfo)
 	count = DragQueryFile(hDropInfo, 0xffffffff, NULL, 0);
 	for(int i=0; i<count; i++)
 	{
+		CFile *pFile; 
 		DragQueryFile(hDropInfo, i, path, MAX_PATH);
-		fileSender.AddSendFile(new CFile(path,CFile::modeRead | 
-			CFile::shareDenyRead | CFile::shareDenyWrite));				
+		TRY 
+		{
+			pFile = new CFile(path, CFile::modeRead | CFile::shareDenyRead);
+		}
+		CATCH (CFileException, e)
+		{
+			MessageBox(_T("다른 프로그램에서 사용중입니다"));
+			break;
+		}
+		END_CATCH
+		
+		if(FALSE == fileSender.AddSendFile(pFile))
+		{
+			return;
+		}
+			
 	}
 	fileSender.StartSendFile();
 	CDialogEx::OnDropFiles(hDropInfo);
