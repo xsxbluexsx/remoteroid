@@ -24,12 +24,31 @@ extern int inputFd;
 
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
+ * Method:    openInputDevice
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_secmem_remoteroid_natives_InputHandler_openInputDevice(JNIEnv* env, jobject thiz){
+	return (jboolean)openInput();
+}
+
+/*
+ * Class:     org_secmem_remoteroid_natives_InputHandler
+ * Method:    closeInputDevice
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_closeInputDevice(JNIEnv* env, jobject thiz){
+	closeInput();
+}
+
+/*
+ * Class:     org_secmem_remoteroid_natives_InputHandler
  * Method:    keyDown
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyDown(JNIEnv *env, jobject thiz, jint keyCode){
 	//sendNativeEvent(dev, EV_KEY, keyCode, 1);
 	sendNativeEvent(inputFd, EV_KEY, keyCode, 1);
+	sendNativeEvent(inputFd, EV_SYN, SYN_REPORT, 0);
 }
 
 /*
@@ -40,6 +59,7 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyDown(J
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyUp(JNIEnv *env, jobject thiz, jint keyCode){
 	//sendNativeEvent(dev, EV_KEY, keyCode, 0);
 	sendNativeEvent(inputFd, EV_KEY, keyCode, 0);
+	sendNativeEvent(inputFd, EV_SYN, SYN_REPORT, 0);
 }
 
 /*

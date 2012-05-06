@@ -2,15 +2,9 @@ package org.secmem.remoteroid.util;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
-import org.secmem.remoteroid.R;
-
-import android.content.Context;
 import android.util.Log;
 
 /**
@@ -79,7 +73,7 @@ public class CommandLine {
 	 * @param cmd Command to be executed as ROOT
 	 * @return true if execution succeed, false otherwise
 	 */
-	private static boolean execAsRoot(String cmd){
+	public static boolean execAsRoot(String cmd){
 		if(cmd==null || cmd.equals(""))
 			throw new IllegalArgumentException();
 		  
@@ -90,8 +84,6 @@ public class CommandLine {
 		
 		    DataOutputStream os = 
 		        new DataOutputStream(suProcess.getOutputStream());
-		    
-		    DataInputStream is = new DataInputStream(suProcess.getInputStream());
 		    
 		    os.writeBytes(cmd + "\n");
 		    os.flush();
@@ -131,7 +123,7 @@ public class CommandLine {
 	 * @param cmds list of commands to be executed as ROOT
 	 * @return true execution succeed, false otherwise
 	 */
-	private static boolean execAsRoot(ArrayList<String> cmds){
+	public static boolean execAsRoot(ArrayList<String> cmds){
 		if(cmds==null || cmds.size()==0)
 			throw new IllegalArgumentException();
 		  
@@ -173,106 +165,5 @@ public class CommandLine {
 		}
 		    
 		return retval;
-	}
-	
-	public static boolean isDriverExists(Context context){
-		File file;
-		
-		try{
-			// Check Busybox
-			file = new File(context.getFilesDir().getAbsolutePath()+"/busybox");
-			if(!file.exists())
-				return false;
-			
-			// Check IDC
-			file = new File("/system/usr/idc/remoteroid.idc");
-			if(!file.exists())
-				return false;
-			
-			// Check kcm.bin
-			file = new File("/system/usr/keychars/remoteroid.kcm.bin");
-			if(!file.exists())
-				return false;
-			
-			// Check kcm
-			file = new File("/system/usr/keychars/remoteroid.kcm");
-			if(!file.exists())
-				return false;
-			
-			// Check KeyLayout
-			file = new File("/system/usr/keylayout/remoteroid.kl");
-			if(!file.exists())
-				return false;
-			
-		}catch(Exception e){
-			return false;
-		}
-		return true;
-	}
-
-	public static void copyInputDrivers(Context context) throws IOException, SecurityException{
-		
-		if(!isRootAccessAvailable())
-			throw new SecurityException();
-		
-		// Step 0. Install and configure Busybox
-		// See here : http://benno.id.au/blog/2007/11/14/android-busybox
-		
-		// Extract busybox from resources
-		copyRawResourceIntoFile(context, R.raw.busybox, context.getFilesDir().getAbsolutePath()+"/busybox");
-		
-		// Change permission
-		execAsRoot("chmod 700 /data/data/org.secmem.remoteroid/files/busybox");
-		// TODO Exec Busybox as following : #./busybox -install
-		//execAsRoot("/data/data/org.secmem.remoteroid/files/busybox -install");
-		// TODO Set path for Busybox : #export PATH=/PATH_TO_BBX:$PATH
-		//execAsRoot("export PATH=/data/data/org.secmem.remoteroid/files/busybox:$PATH");
-		
-		// Mount /system as r/w
-		execAsRoot("mount -orw,remount /system");
-		
-		// Step 1. Extract driver files from resources
-		// Copy IDC(Input Device Configuration)
-		copyRawResourceIntoFile(context, R.raw.remotdroid_idc, context.getFilesDir().getAbsolutePath()+"/remoteroid.idc");
-		// Copy kcm.bin
-		copyRawResourceIntoFile(context, R.raw.remoteroid_kb, context.getFilesDir().getAbsolutePath()+"/remoteroid.kcm.bin");
-		// Copy kcm
-		copyRawResourceIntoFile(context, R.raw.remoteroid_kcm, context.getFilesDir().getAbsolutePath()+"/remoteroid.kcm");
-		// Copy KeyLayout
-		copyRawResourceIntoFile(context, R.raw.remoteroid_kl, context.getFilesDir().getAbsolutePath()+"/remoteroid.kl");
-	
-		// Step 2. Move driver files into appropriate path
-		ArrayList<String> cmdList = new ArrayList<String>();
-		
-		// FIXME Must use cp command rather than mv command, using busybox
-		cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.idc /system/usr/idc/remoteroid.idc");
-		cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.kcm.bin /system/usr/keychars/remoteroid.kcm.bin");
-		cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.kcm /system/usr/keychars/remoteroid.kcm");
-		cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.kl /system/usr/keylayout/remoteroid.kl");
-		
-		execAsRoot(cmdList);
-		
-		// Mount /system as r/o
-		execAsRoot("mount -oro,remount /system");
-	}
-	
-	private static void copyRawResourceIntoFile(Context context, int resId, String pathOfFile) throws IOException{
-		InputStream ins = context.getResources().openRawResource(resId);
-		int size = ins.available();
-
-		byte[] buffer = new byte[size];
-		ins.read(buffer);
-		ins.close();
-
-		FileOutputStream fos = new FileOutputStream(pathOfFile);
-		fos.write(buffer);
-		fos.close();
-	}
-	
-	/**
-	 * Restart device.
-	 */
-	public static void restartDevice(){
-		execAsRoot("reboot");
 	}
 }

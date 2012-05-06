@@ -22,6 +22,8 @@ package org.secmem.remoteroid.fragment;
 import java.util.regex.Pattern;
 
 import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.data.NativeKeyCode;
+import org.secmem.remoteroid.natives.InputHandler;
 import org.secmem.remoteroid.socket.SocketModule;
 import org.secmem.remoteroid.util.Util;
 
@@ -38,7 +40,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.Toast;
 
 public class AuthenticateFragment extends Fragment {
 	
@@ -133,17 +134,16 @@ public class AuthenticateFragment extends Fragment {
 //						new ConnectingFragment(mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString()))
 //						.commit();
 				
-				String ip =mEdtIpAddr.getText().toString();
+				/*String ip =mEdtIpAddr.getText().toString();
 				int port = 50000;
 				
 				try {
 					socket.SetSocket(ip, port);
-					Toast.makeText(getActivity(), "연결성공", Toast.LENGTH_LONG);
+					Toast.makeText(getActivity(), "�곌껐�깃났", Toast.LENGTH_LONG);
 					
 				} catch (Exception e) {
-					Toast.makeText(getActivity(), "연결실패", Toast.LENGTH_LONG);
-				}
-				//InputHandler.keyStroke(NativeKeyCode.KEY_HOME); Testing virtual keystroke
+					Toast.makeText(getActivity(), "�곌껐�ㅽ�", Toast.LENGTH_LONG);
+				}*/
 			}
 		});
 		
