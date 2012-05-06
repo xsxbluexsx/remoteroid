@@ -25,6 +25,7 @@ import org.secmem.remoteroid.IRemoteroid;
 import org.secmem.remoteroid.util.FilterUtil;
 import org.secmem.remoteroid.util.Util;
 import org.secmem.remoteroid.util.Util.Filter;
+import org.secmem.remoteroid.util.Util.Filter.NotificationType;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.ComponentName;
@@ -61,6 +62,19 @@ public class NotificationReceiverService extends AccessibilityService {
 	public void onAccessibilityEvent(AccessibilityEvent event) {
 		try{
 			if(mRemoteroidSvc!=null){
+				// Check notification type
+				NotificationType notiType = Util.Filter.getNotificationType(this);
+				
+				switch(notiType){
+				case STATUSBAR:
+					if(!event.getClassName().equals("android.app.Notification"))
+						return;
+					
+				case TOAST:
+					if(!event.getClassName().equals("android.widget.Toast"))
+						return;
+				}
+				
 				// Check filter enabled or not
 				if(Util.Filter.isFilterEnabled(getApplicationContext())){ // Filter enabled
 					FilterUtil filterUtil = new FilterUtil(this);
