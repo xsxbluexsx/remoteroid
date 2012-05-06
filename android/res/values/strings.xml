@@ -41,11 +41,12 @@
         <string name="password">Password</string>
         <string name="connect">Connect</string>
         <string name="auto_connect">Auto connect</string>
-        <string name="connecting">Connecting...</string>
+        <string name="connecting">Connecting…</string>
         <string name="filtering_mode">Filtering mode</string>
-        <string name="filtering_mode_summary">Set filtering mode</string>
+        <string name="filtering_mode_summary">Exclude or include selected package</string>
         <string name="you_can_t_use_remoteroid_without_driver">You can\'t use Remoteroid without driver.</string>
         <string name="you_have_to_install_remoteroid_driver_in_order_to_use_remoteroid">You have to install Remoteroid driver in order to use Remoteroid.</string>
         <string name="driver_installation">Driver installation</string>
+        <string name="loading">Loading…</string>
 
 </resources>

@@ -53,7 +53,7 @@ public class ConfigurationChecker extends SherlockActivity {
 
 			@Override
 			public void onClick(View v) {
-				Util.launchAccessibilitySettings(ConfigurationChecker.this);
+				Util.Services.launchAccessibilitySettings(ConfigurationChecker.this);
 			}
 			
 		});
@@ -62,7 +62,7 @@ public class ConfigurationChecker extends SherlockActivity {
 
 			@Override
 			public void onClick(View v) {
-				Util.launchDeviceAdminAccessRequest(ConfigurationChecker.this);
+				Util.Services.launchDeviceAdminAccessRequest(ConfigurationChecker.this);
 			}
 			
 		});
@@ -72,8 +72,8 @@ public class ConfigurationChecker extends SherlockActivity {
 	protected void onResume() {
 		super.onResume();
 		
-		isAccEnabled = Util.isAccessibilityServiceEnabled(this);
-		isDAEnabled = Util.isDeviceAdminEnabled(this);
+		isAccEnabled = Util.Services.isAccessibilityServiceEnabled(this);
+		isDAEnabled = Util.Services.isDeviceAdminEnabled(this);
 		
 		if(isAccEnabled){
 			btnEnableAccService.setEnabled(false);
