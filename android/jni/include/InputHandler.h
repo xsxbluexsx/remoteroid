@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyDown
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
@@ -21,7 +21,7 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyDown
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyUp
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
@@ -29,7 +29,7 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyUp
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyStroke
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
@@ -37,7 +37,7 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyStroke
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchDown
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
@@ -45,7 +45,7 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchDown
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchUp
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
@@ -53,7 +53,7 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchUp
  * Signature: (II)V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchSetPtr
-  (JNIEnv *, jobject, jint, jint);
+  (JNIEnv *, jclass, jint, jint);
 
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
@@ -61,7 +61,7 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchSetP
  * Signature: (II)V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchOnce
-  (JNIEnv *, jobject, jint, jint);
+  (JNIEnv *, jclass, jint, jint);
 
 #ifdef __cplusplus
 }

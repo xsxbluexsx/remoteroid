@@ -90,10 +90,15 @@ public class CommandLine {
 		
 		    DataOutputStream os = 
 		        new DataOutputStream(suProcess.getOutputStream());
-		
+		    
+		    DataInputStream is = new DataInputStream(suProcess.getInputStream());
+		    
 		    os.writeBytes(cmd + "\n");
 		    os.flush();
-		
+		    
+		    //String out = is.readLine();
+		    //System.out.println(out);
+		    
 		    os.writeBytes("exit\n");
 		    os.flush();
 		
@@ -170,31 +175,39 @@ public class CommandLine {
 		return retval;
 	}
 	
-	public static boolean isDriverExists(){
+	public static boolean isDriverExists(Context context){
 		File file;
-		boolean fileExists = true;
 		
 		try{
+			// Check Busybox
+			file = new File(context.getFilesDir().getAbsolutePath()+"/busybox");
+			if(!file.exists())
+				return false;
+			
 			// Check IDC
 			file = new File("/system/usr/idc/remoteroid.idc");
-			fileExists &= file.exists();
+			if(!file.exists())
+				return false;
 			
 			// Check kcm.bin
 			file = new File("/system/usr/keychars/remoteroid.kcm.bin");
-			fileExists &= file.exists();
+			if(!file.exists())
+				return false;
 			
 			// Check kcm
 			file = new File("/system/usr/keychars/remoteroid.kcm");
-			fileExists &= file.exists();
+			if(!file.exists())
+				return false;
 			
 			// Check KeyLayout
 			file = new File("/system/usr/keylayout/remoteroid.kl");
-			fileExists &= file.exists();
+			if(!file.exists())
+				return false;
 			
 		}catch(Exception e){
 			return false;
 		}
-		return fileExists;
+		return true;
 	}
 
 	public static void copyInputDrivers(Context context) throws IOException, SecurityException{
@@ -204,9 +217,16 @@ public class CommandLine {
 		
 		// Step 0. Install and configure Busybox
 		// See here : http://benno.id.au/blog/2007/11/14/android-busybox
-		// TODO Extract busybox from resources
+		
+		// Extract busybox from resources
+		copyRawResourceIntoFile(context, R.raw.busybox, context.getFilesDir().getAbsolutePath()+"/busybox");
+		
+		// Change permission
+		execAsRoot("chmod 700 /data/data/org.secmem.remoteroid/files/busybox");
 		// TODO Exec Busybox as following : #./busybox -install
+		//execAsRoot("/data/data/org.secmem.remoteroid/files/busybox -install");
 		// TODO Set path for Busybox : #export PATH=/PATH_TO_BBX:$PATH
+		//execAsRoot("export PATH=/data/data/org.secmem.remoteroid/files/busybox:$PATH");
 		
 		// Mount /system as r/w
 		execAsRoot("mount -orw,remount /system");
@@ -225,10 +245,10 @@ public class CommandLine {
 		ArrayList<String> cmdList = new ArrayList<String>();
 		
 		// FIXME Must use cp command rather than mv command, using busybox
-		cmdList.add("mv /data/data/org.secmem.remoteroid/files/remoteroid.idc /system/usr/idc/remoteroid.idc");
-		cmdList.add("mv /data/data/org.secmem.remoteroid/files/remoteroid.kcm.bin /system/usr/keychars/remoteroid.kcm.bin");
-		cmdList.add("mv /data/data/org.secmem.remoteroid/files/remoteroid.kcm /system/usr/keychars/remoteroid.kcm");
-		cmdList.add("mv /data/data/org.secmem.remoteroid/files/remoteroid.kl /system/usr/keylayout/remoteroid.kl");
+		cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.idc /system/usr/idc/remoteroid.idc");
+		cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.kcm.bin /system/usr/keychars/remoteroid.kcm.bin");
+		cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.kcm /system/usr/keychars/remoteroid.kcm");
+		cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.kl /system/usr/keylayout/remoteroid.kl");
 		
 		execAsRoot(cmdList);
 		

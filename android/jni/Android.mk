@@ -5,7 +5,8 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := remoteroid
 LOCAL_SRC_FILES := InputHandler.cpp \
 				   FrameHandler.cpp \
-				   Input.cpp
+				   Input.cpp \
+				   suinput.cpp
 				   
 LOCAL_LDLIBS := -llog
 

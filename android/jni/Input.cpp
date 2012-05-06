@@ -17,29 +17,40 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+
 #include "include/Input.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <fcntl.h>
+#include "include/suinput.h"
 
-void sendNativeEvent(const char* dev, int type, int code, int value){
+/**
+ * Input File descriptor
+ */
+int inputFd = -1;
 
-	int fd = open(dev, O_RDWR);
-	if(fd < 0) {
-		__android_log_print(ANDROID_LOG_DEBUG, "SendNativeEvent", "Could not open device %s.", dev);
-		return;
+bool openInput(){
+	LOGD(LOGTAG, "Opening input device...");
+	struct input_id id = {
+	        BUS_VIRTUAL, /* Bus type. */
+	        1, /* Vendor id. */
+	        1, /* Product id. */
+	        1 /* Version id. */
+	};
+
+	// qwerty or qwerty2?
+	if((inputFd = suinput_open("qwerty", &id)) == -1){
+		LOGD(LOGTAG, "Cannot open device qwerty");
+		return false;
 	}
+	LOGD(LOGTAG, "Opened device qwerty.");
+	return true;
+}
 
-    struct input_event event;
+void closeInput(){
+	LOGD(LOGTAG, "Closing input device...");
+	if(inputFd==-1){
+		suinput_close(inputFd);
+	}
+}
 
-    memset(&event, 0, sizeof(event));
-    event.type = type;
-    event.code = code;
-    event.value = value;
-
-    __android_log_print(ANDROID_LOG_DEBUG, "SendNativeEvent", "Type=%d Code=%d Value=%d", type, code, value);
-
-    if(fd!=-1)
-    	write(fd, &event, sizeof(event));
+int sendNativeEvent(int uinput_fd, uint16_t type, uint16_t code, int32_t value){
+	return suinput_write(uinput_fd, type, code, value);
 }

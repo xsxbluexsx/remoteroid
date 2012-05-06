@@ -22,14 +22,30 @@
 
 #include <android/log.h>
 #include <linux/input.h>
+#include "include/suinput.h"
+
+#define BUS_VIRTUAL 0x06
+#define LOGTAG "RemoteroidInput"
 
 #define LOGD(tag, message) __android_log_print(ANDROID_LOG_DEBUG, tag, message);
 #define LOGW(tag, message) __android_log_print(ANDROID_LOG_WARN, tag, message);
 #define LOGI(tag, message) __android_log_print(ANDROID_LOG_INFO, tag, message);
 
-bool openDevice(const char* dev);
-void closeDevice();
+/**
+ * Open input device using suinput.
+ * @return true if open succeeds, false otherwise.
+ */
+bool openInput();
 
-void sendNativeEvent(const char* dev, int type, int code, int value);
+/**
+ * Close input device.
+ */
+void closeInput();
 
+//void sendNativeEvent(const char* dev, int type, int code, int value);
+
+/**
+ * A simple wrapper for suinput_write()
+ */
+int sendNativeEvent(int uinput_fd, uint16_t type, uint16_t code, int32_t value);
 #endif
