@@ -49,9 +49,9 @@ public class RemotroidNetworkModuleActivity extends Activity {
 				module.SendFileInfo(file);
 				module.SendFileData(file);
 			} catch (UnknownHostException e) {
-				Log.i("q", "UnknownHostException : "+e.getMessage());
+				Log.i("qqq", "UnknownHostException : "+e.getMessage());
 			} catch (IOException e) {
-				Log.i("q", "IOException : "+e.getMessage());
+				Log.i("qqq", "IOException : "+e.getMessage());
 			}
     	}
     }
