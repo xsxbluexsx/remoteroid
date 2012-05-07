@@ -17,8 +17,7 @@ public class NetworkModule {
 	private PacketReceiver			packetReceiver 	= null;
 	
 	
-	private NetworkModule(){
-		socket = new Socket();
+	private NetworkModule(){		
 	}
 	
 	
@@ -37,7 +36,8 @@ public class NetworkModule {
 	 * ip와 port번호를 넘겨주면 소켓 연결을 하고 바이트스트림을 얻는다.
 	 */
 	public void ConnectSocket(String strIP) throws IOException, UnknownHostException{
-		this.strIP = strIP;		
+		this.strIP = strIP;	
+		socket = new Socket();
 		
 		socket.connect(new InetSocketAddress(strIP, iPortNum));
 		
@@ -52,22 +52,12 @@ public class NetworkModule {
 		thread.start();
 	}	
 	
-	public void SendFileInfo(File file){
-		try {
-			fileSender.SendFileInfo(file);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			Log.i("exception", "networkmodule SendFileInfo : "+e.getMessage());
-		}
+	public void SendFileInfo(File file){		
+		fileSender.SendFileInfo(file);		
 	}
 	
-	public void SendFileData(File file){
-		try {
-			fileSender.SendFileData(file);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			Log.i("exception", "networkmodule sendfiledata : "+e.getMessage());
-		}
+	public void SendFileData(File file){		
+		fileSender.SendFileData(file);		
 	}
 	
 	
