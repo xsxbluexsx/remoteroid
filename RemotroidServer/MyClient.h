@@ -14,5 +14,6 @@ public:
 	int RecvPacket(void);
 	bool GetPacket(char * packet);
 	int SendPacket(int iOPCode, const char * data, int iDataLen);
+	void CloseSocket(void);
 };
 

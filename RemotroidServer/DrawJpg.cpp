@@ -34,6 +34,7 @@ void CDrawJpg::SetJpgInfo(char * data)
 	memset(m_bJpgSize, 0, sizeof(m_bJpgSize));
 	memcpy(m_bJpgSize, data, JPGSIZELEGNTH);
 	m_iTotalJpgSize = atoi(m_bJpgSize);
+	
 	m_iRecvJpgSize = 0;
 	memset(m_pJpgData, 0, MAXRESOLUTION);
 }
@@ -42,6 +43,7 @@ void CDrawJpg::SetJpgInfo(char * data)
 void CDrawJpg::RecvJpgData(char * data, int packetSize)
 {
 	int jpgDataSize = packetSize - HEADERSIZE;
+	
 	memcpy(m_pJpgData+m_iRecvJpgSize, data, jpgDataSize);
 	m_iRecvJpgSize += jpgDataSize;
 	if(m_iRecvJpgSize >= m_iTotalJpgSize)

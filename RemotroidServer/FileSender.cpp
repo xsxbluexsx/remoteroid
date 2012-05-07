@@ -5,13 +5,20 @@
 CFileSender::CFileSender()
 	: totalFileSize(0), m_pClient(NULL),
 	sendedFileSize(0),isSending(FALSE)	
+	, pSendFileThread(NULL)
 {
 	memset(buffer, 0, sizeof(buffer));
 }
 
 
 CFileSender::~CFileSender(void)
-{
+{	
+	if(pSendFileThread != NULL)
+	{
+		WaitForSingleObject(pSendFileThread->m_hThread, 100);
+		delete pSendFileThread;
+		pSendFileThread = NULL;
+	}
 	DeleteFileList();
 }
 
@@ -55,7 +62,8 @@ int CFileSender::SendFileData(CFile * pFile)
 	while(totalFileSize > sendedFileSize)
 	{
 		int iCurrentSendSize = (totalFileSize-sendedFileSize) > MAXDATASIZE ?
-			MAXDATASIZE : totalFileSize-sendedFileSize;
+			MAXDATASIZE : totalFileSize-sendedFileSize;		
+
 		pFile->Read(buffer, iCurrentSendSize);
 		result = SendPacket(OP_SENDFILEDATA, buffer, iCurrentSendSize);
 		sendedFileSize += iCurrentSendSize;
@@ -73,8 +81,7 @@ BOOL CFileSender::AddSendFile(CFile * pFile)
 		return FALSE;
 	}
 
-	sendFileList.AddTail((void*)pFile);	
-	TRACE(_T("\t%s"), pFile->GetFileName());
+	sendFileList.AddTail((void*)pFile);		
 	return TRUE;
 }
 
@@ -86,19 +93,10 @@ BOOL CFileSender::StartSendFile(void)
 		DeleteFileList();
 		return FALSE;
 	}
-
-	//////////////////////////////////////////////////////////////////////////
-	POSITION pos = sendFileList.GetHeadPosition();
-	while(pos)
-	{
-		CFile *pFile = (CFile *)sendFileList.GetNext(pos);		
-		pFile->GetFilePath();
-	}                                                                      
-	//////////////////////////////////////////////////////////////////////////
-
-
+		
 	isSending = TRUE;
-	AfxBeginThread(SendFileThread, this);
+	pSendFileThread = AfxBeginThread(SendFileThread, this);
+	pSendFileThread->m_bAutoDelete = FALSE;
 	return TRUE;
 }
 
@@ -117,7 +115,7 @@ UINT CFileSender::SendFileThread(LPVOID pParam)
 		if(result == SOCKET_ERROR)
 			break;
 
-		pDlg->SendFileData(pFile);
+		result = pDlg->SendFileData(pFile);
 		if(result == SOCKET_ERROR)
 			break;
 	}

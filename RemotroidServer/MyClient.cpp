@@ -12,7 +12,7 @@ CMyClient::CMyClient(SOCKET clientSocket)
 
 CMyClient::~CMyClient(void)
 {
-	closesocket(m_ClientSocket);
+	CloseSocket();
 }
 
 
@@ -71,4 +71,10 @@ int CMyClient::SendPacket(int iOPCode, const char * data, int iDataLen)
 
 	int iResult = send(m_ClientSocket, packet, iPacketSize, NULL);
 	return iResult;
+}
+
+
+void CMyClient::CloseSocket(void)
+{
+	closesocket(m_ClientSocket);
 }

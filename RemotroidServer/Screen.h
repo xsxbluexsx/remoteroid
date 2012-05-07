@@ -19,8 +19,8 @@ private:
 public:
 	void InitDrawJpg(void);
 	afx_msg void OnDestroy();
-	void SetJpgInfo(char * data);
-	void RecvJpgData(char *data, int packetSize);	
+	LRESULT OnSetJpgInfo(WPARAM wParam, LPARAM lParam);
+	LRESULT OnRecvJpgData(WPARAM wParam, LPARAM lParam);
 };
 
 
