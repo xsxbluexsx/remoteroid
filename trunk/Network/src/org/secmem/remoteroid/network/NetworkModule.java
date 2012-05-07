@@ -47,17 +47,27 @@ public class NetworkModule {
 		packetMaker = new PacketMaker(out);
 		fileSender = new FileSender(packetMaker);
 		packetReceiver = new PacketReceiver(in);
-		
+
 		Thread thread = new Thread(packetReceiver);
 		thread.start();
 	}	
 	
 	public void SendFileInfo(File file){
-		fileSender.SendFileInfo(file);
+		try {
+			fileSender.SendFileInfo(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			Log.i("exception", "networkmodule SendFileInfo : "+e.getMessage());
+		}
 	}
 	
-	public boolean SendFileData(File file){
-		return fileSender.SendFileData(file);
+	public void SendFileData(File file){
+		try {
+			fileSender.SendFileData(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			Log.i("exception", "networkmodule sendfiledata : "+e.getMessage());
+		}
 	}
 	
 	
@@ -66,6 +76,7 @@ public class NetworkModule {
 	 */
 	public void CloseSocket(){
 		try {
+			Log.i("qqq", "접속 종료");
 			out.close();
 			in.close();
 			socket.close();			

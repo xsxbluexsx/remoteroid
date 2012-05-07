@@ -20,6 +20,7 @@ public class RemotroidNetworkModuleActivity extends Activity {
         
         module = NetworkModule.getInstance();
         
+        
         Button btn = (Button)findViewById(R.id.btnConnect);
         btn.setOnClickListener(new Button.OnClickListener(){        	
 
@@ -28,9 +29,15 @@ public class RemotroidNetworkModuleActivity extends Activity {
 				ConnectThread connectThread = new ConnectThread();
 		        connectThread.start();		       
 			}        	
-        });        
-      
-	}
+        });         
+        Button btn2 = (Button)findViewById(R.id.btnTest);
+        btn2.setOnClickListener(new Button.OnClickListener(){
+        	public void onClick(View v){
+        		module.CloseSocket();
+        	}
+        });
+	}    
+
     class ConnectThread extends Thread{
     	public void run(){
 			try {

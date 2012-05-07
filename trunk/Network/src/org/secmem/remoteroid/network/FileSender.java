@@ -22,7 +22,7 @@ public class FileSender implements iFileSendable{
 	/*	  
 	 *파일의 이름과  
 	 */
-	public void SendFileInfo(File file){
+	public void SendFileInfo(File file) throws IOException{
 		fileSize = file.length();
 		fileName = file.getName();
 		
@@ -35,8 +35,7 @@ public class FileSender implements iFileSendable{
 		SendPacket(CONS.OPCODE.OP_SENDFILEINFO, data, data.length);
 	}
 	
-	public boolean SendFileData(File file){
-		boolean result = true;
+	public void SendFileData(File file) throws IOException, FileNotFoundException{		
 		try{
 			in = new FileInputStream(file);
 			
@@ -44,26 +43,23 @@ public class FileSender implements iFileSendable{
 				int iCurrentSendSize =
 						(int) ((fileSize - sendedFileSize) > maxDataSize ? maxDataSize : (fileSize - sendedFileSize));
 				in.read(buffer, 0, iCurrentSendSize);	
-				SendPacket(CONS.OPCODE.OP_SENDFILEDATA, buffer, iCurrentSendSize);
+				SendPacket(CONS.OPCODE.OP_SENDFILEDATA, buffer, iCurrentSendSize);				
 				sendedFileSize += iCurrentSendSize;
-			}
-			in.close();
-			in = null;
+			}			
 		}catch(FileNotFoundException e){
 			Log.i("exception", "file not exception");
-			result = false;
+			throw e;
 		}catch(IOException e){
-			Log.i("exception", "IOException");
-			try{
-				in.close();				
-			}catch(IOException ioe){}
-			in = null;
-			result = false;
+			Log.i("exception", "file sender IOException");
+			throw e;
 		}
-		return result;
+		finally{
+			in.close();
+			in = null;
+		}		
 	}
 	
-	public boolean SendPacket(int iOPCode, byte [] data, int length){
-		return packetMaker.SendPacket(iOPCode, data, length);
+	public void SendPacket(int iOPCode, byte [] data, int length) throws IOException{
+		packetMaker.SendPacket(iOPCode, data, length);
 	}
 }
