@@ -6,6 +6,7 @@
 
 #include "MyClient.h"
 #include "FileSender.h"
+#include "screen.h"
 
 
 // CRemotroidServerDlg dialog
@@ -36,17 +37,21 @@ private:
 	SOCKET m_ServerSocket;	
 	CMyClient *m_pClient;
 	CFileSender fileSender;
+	CScreen screen;
 
 public:
 	static UINT AcceptFunc(LPVOID pParam);	
 	static UINT RecvFunc(LPVOID pParam);	
 	void SetClientSocket(CMyClient * pClient);
 	CMyClient * GetClientSocket(void);
-	HANDLE RecvFileInfo(char *data, unsigned int *fileSize);
+	
 	
 	afx_msg void OnDestroy();
 	afx_msg void OnBnClickedOk();
-	afx_msg void OnBnClickedCancel();
-	afx_msg void OnClickedFilesender();
+	afx_msg void OnBnClickedCancel();	
 	afx_msg void OnDropFiles(HDROP hDropInfo);
+
+	
+	LRESULT OnRecvJpgInfo(WPARAM wParam, LPARAM lParam);
+	LRESULT OnRecvJpgData(WPARAM wParam, LPARAM lParam);
 };

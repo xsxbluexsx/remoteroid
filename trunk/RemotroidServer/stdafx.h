@@ -40,6 +40,8 @@
 
 #include "packetdefine.h"
 #include "Util.h"
+#include "ijl.h"
+
 
 
 #ifdef _UNICODE

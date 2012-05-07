@@ -58,17 +58,13 @@ CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
 	, m_pClient(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	//  m_OPCODE = _T("");
-	//  m_Data = _T("");
-	//  m_OPCode = _T("");
+	
 }
 
 void CRemotroidServerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	//  DDX_Text(pDX, IDC_EDIT_DATA, m_OPCODE);
-	//  DDX_Text(pDX, IDC_EDIT_DATA, m_Data);
-	//  DDX_Text(pDX, IDC_EDIT_OPCODE, m_OPCode);
+	DDX_Control(pDX, IDC_SCREEN, screen);
 }
 
 BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
@@ -77,10 +73,10 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDOK, &CRemotroidServerDlg::OnBnClickedOk)
-	ON_BN_CLICKED(IDCANCEL, &CRemotroidServerDlg::OnBnClickedCancel)
-//	ON_BN_CLICKED(IDC_BTN_SEND, &CRemotroidServerDlg::OnClickedBtnSend)
-ON_BN_CLICKED(IDC_FILESENDER, &CRemotroidServerDlg::OnClickedFilesender)
-ON_WM_DROPFILES()
+	ON_BN_CLICKED(IDCANCEL, &CRemotroidServerDlg::OnBnClickedCancel)	
+	ON_WM_DROPFILES()
+	ON_MESSAGE(WM_RECVJPGINFO, OnRecvJpgInfo)
+	ON_MESSAGE(WM_RECVJPGDATA, OnRecvJpgData)
 END_MESSAGE_MAP()
 
 
@@ -229,15 +225,14 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 	CMyClient *pClient = pDlg->GetClientSocket();
 
 	char bPacket[MAXSIZE];
-	CRecvFile recvFileClass;
+	CRecvFile recvFileClass;	
 	
 	while (TRUE)
 	{
 		memset(bPacket, 0, sizeof(bPacket));
 		int iRecvLen = pClient->RecvPacket();
 		if(iRecvLen < 0)
-		{
-			AfxMessageBox(_T("접속 종료"));
+		{			
 			break;
 		}
 		while(pClient->GetPacket(bPacket))
@@ -245,19 +240,25 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 			int iOPCode = CUtil::GetOpCode(bPacket);
 			int iPacketSize = CUtil::GetPacketSize(bPacket);
 			char *data = bPacket+HEADERSIZE;
-			
+
 			switch(iOPCode)
 			{
 			case OP_SENDFILEINFO:
 				recvFileClass.RecvFileInfo(data);
 				break;
 			case OP_SENDFILEDATA:
-				recvFileClass.RecvFileData(data, iPacketSize);
+				recvFileClass.RecvFileData(data, iPacketSize);				
+				break;
+			case OP_SENDJPGINFO:
+				pDlg->SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);				
+				break;
+			case OP_SENDJPGDATA:
+				pDlg->SendMessage(WM_RECVJPGDATA, (WPARAM)iPacketSize, (LPARAM)data);
 				break;
 			}
 		}
 	}
-	delete pClient;	
+	delete pClient;		
 	return 0;
 }
 
@@ -266,40 +267,22 @@ void CRemotroidServerDlg::SetClientSocket(CMyClient * pClient)
 {
 	m_pClient = pClient;
 	fileSender.SetClient(pClient);
+	screen.InitDrawJpg();
 }
+
 CMyClient * CRemotroidServerDlg::GetClientSocket(void)
 {
 	return m_pClient;
 }
 
 
-HANDLE CRemotroidServerDlg::RecvFileInfo(char *data, unsigned int *fileSize)
-{
-	char bFileName[FILENAMESIZE+1];
-	memset(bFileName, 0, sizeof(bFileName));
-	memcpy(bFileName, data, FILENAMESIZE);
-	//상위 100바이트에서 파일 이름 추출
-
-	char bFileSize[FILESIZESIZE+1];
-	memset(bFileSize, 0, sizeof(bFileSize));
-	memcpy(bFileSize, data+FILENAMESIZE, FILESIZESIZE);
-	//하위 100바이트에서 파일 크기 추출
-
-	*fileSize = atoi(bFileSize);
-
-	TCHAR uniFileName[100];
-	memset(uniFileName, 0, sizeof(uniFileName));
-	CUtil::UtfToUni(uniFileName, bFileName);
-	return CreateFile(uniFileName, GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS,
-		FILE_ATTRIBUTE_NORMAL, NULL);
-}
 
 
 
 void CRemotroidServerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();	
-	// TODO: Add your message handler code here		
+	// TODO: Add your message handler code here			
 }
 
 
@@ -314,23 +297,6 @@ void CRemotroidServerDlg::OnBnClickedCancel()
 {
 	// TODO: Add your control notification handler code here
 	CDialogEx::OnCancel();
-}
-
-
-
-void CRemotroidServerDlg::OnClickedFilesender()
-{
-	// TODO: Add your control notification handler code here
-	/*
-	CFileSender fileSender(m_pClient);
-	CFile file;
-	if(!file.Open(_T("1234.dcf"), CFile::modeRead | CFile::shareDenyRead | CFile::shareDenyWrite))
-	{
-		//파일이 없을경우 처리해줘야 함
-	}	
-	fileSender.SendFileInfo(&file);
-	fileSender.SendFileData(&file);
-	*/
 }
 
 
@@ -364,4 +330,21 @@ void CRemotroidServerDlg::OnDropFiles(HDROP hDropInfo)
 	}
 	fileSender.StartSendFile();
 	CDialogEx::OnDropFiles(hDropInfo);
+}
+
+
+LRESULT CRemotroidServerDlg::OnRecvJpgInfo(WPARAM wParam, LPARAM lParam)
+{
+	char *data = (char*)lParam;
+	screen.SetJpgInfo(data);
+	return LRESULT();
+}
+
+
+LRESULT CRemotroidServerDlg::OnRecvJpgData(WPARAM wParam, LPARAM lParam)
+{
+	int packetSize = wParam;
+	char *data = (char *)lParam;
+	screen.RecvJpgData(data, packetSize);
+	return LRESULT();
 }
