@@ -56,6 +56,10 @@ END_MESSAGE_MAP()
 CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CRemotroidServerDlg::IDD, pParent)	
 	, m_pClient(NULL)
+	, pRecvThread(NULL)
+	, m_isClickedEndBtn(FALSE)
+	, pAcceptThread(NULL)
+	, pUdpRecvThread(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	
@@ -77,6 +81,9 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_WM_DROPFILES()
 	ON_MESSAGE(WM_RECVJPGINFO, OnRecvJpgInfo)
 	ON_MESSAGE(WM_RECVJPGDATA, OnRecvJpgData)
+	ON_MESSAGE(WM_MYENDRECV, OnEndRecv)
+	ON_MESSAGE(WM_MYENDACCEPT, OnEndAccept)
+	ON_BN_CLICKED(IDC_FILESENDER, &CRemotroidServerDlg::OnBnClickedFilesender)
 END_MESSAGE_MAP()
 
 
@@ -112,6 +119,29 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
+	m_UDPServerSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if(m_UDPServerSocket == INVALID_SOCKET)
+	{
+		MessageBox(_T("UDP소켓 생성 실패"));
+		EndDialog(IDCANCEL);
+		return TRUE;
+	}
+
+	SOCKADDR_IN addr;
+	memset(&addr, 0, sizeof(addr));
+	addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(UDPPORT);
+
+	if(bind(m_UDPServerSocket, (sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR )
+	{
+		MessageBox(_T("udp bind error"));
+		EndDialog(IDCANCEL);
+		return TRUE;
+	}
+
+	pUdpRecvThread = AfxBeginThread(UDPRecvFunc, this);
+	//pUdpRecvThread->m_bAutoDelete = FALSE;
 
 	m_ServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if(m_ServerSocket == INVALID_SOCKET)
@@ -120,8 +150,7 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 		EndDialog(IDCANCEL);
 		return TRUE;
 	}
-
-	SOCKADDR_IN addr;
+	
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	addr.sin_family = AF_INET;
@@ -141,7 +170,8 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 		return TRUE;
 	}
 
-	AfxBeginThread(AcceptFunc, this);
+	pAcceptThread = AfxBeginThread(AcceptFunc, this);	
+	pAcceptThread->m_bAutoDelete = FALSE;
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -204,16 +234,60 @@ UINT CRemotroidServerDlg::AcceptFunc(LPVOID pParam)
 	memset(&addr, 0, sizeof(addr));
 	int iAddrLen = sizeof(addr);
 	SOCKET ClientSocket = accept(pDlg->m_ServerSocket, (sockaddr*)&addr, &iAddrLen);
+	
 	if(ClientSocket == INVALID_SOCKET)
 	{		
 		return 0;
 	}
 	CMyClient *pClient = new CMyClient(ClientSocket);
 	pDlg->SetClientSocket(pClient);
-	AfxMessageBox(_T("접속 완료"));
+	pDlg->pRecvThread = AfxBeginThread(RecvFunc, pDlg);
+	pDlg->pRecvThread->m_bAutoDelete = FALSE;
+	
+	if(pDlg->m_isClickedEndBtn == FALSE)
+	{
+		pDlg->PostMessage(WM_MYENDACCEPT, 0, 0);
+	}
+	return 0;
+}
 
-	AfxBeginThread(RecvFunc, pDlg);
 
+//화면 수신은 UDP를 통해서 한다.
+UINT CRemotroidServerDlg::UDPRecvFunc(LPVOID pParam)
+{
+	CRemotroidServerDlg *pDlg = (CRemotroidServerDlg *)pParam;
+	char packet[MAXSIZE];
+	SOCKADDR_IN addr;
+	memset(&addr, 0, sizeof(addr));
+	int iAddrLen = sizeof(addr);
+	while (TRUE)
+	{
+		memset(packet, 0, sizeof(packet));
+		int iRecvLen = recvfrom(pDlg->m_UDPServerSocket, packet, MAXSIZE, NULL, (sockaddr*)&addr, &iAddrLen);
+				
+		if(iRecvLen < 0)
+		{
+			break;
+		}
+		int iOPCode = CUtil::GetOpCode(packet);
+		int iPacketSize = CUtil::GetPacketSize(packet);
+
+		char *data = packet+HEADERSIZE;
+
+		switch(iOPCode)
+		{
+		case OP_SENDJPGINFO:
+			//pDlg->SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);				
+			//pDlg->screen.SetJpgInfo(data);
+			pDlg->screen.SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);
+			break;
+		case OP_SENDJPGDATA:
+			//pDlg->SendMessage(WM_RECVJPGDATA, (WPARAM)iPacketSize, (LPARAM)data);
+			//pDlg->screen.RecvJpgData(data, iPacketSize);
+			pDlg->screen.SendMessage(WM_RECVJPGDATA, iPacketSize, (LPARAM)data);
+			break;
+		}
+	}	
 	return 0;
 }
 
@@ -230,9 +304,10 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 	while (TRUE)
 	{
 		memset(bPacket, 0, sizeof(bPacket));
-		int iRecvLen = pClient->RecvPacket();
-		if(iRecvLen < 0)
-		{			
+		int iRecvLen = pClient->RecvPacket();		
+		if(iRecvLen <= 0)
+		{
+			TRACE("recvlen <= 0 \n");
 			break;
 		}
 		while(pClient->GetPacket(bPacket))
@@ -248,17 +323,27 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 				break;
 			case OP_SENDFILEDATA:
 				recvFileClass.RecvFileData(data, iPacketSize);				
-				break;
+				break;		
 			case OP_SENDJPGINFO:
-				pDlg->SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);				
+				//pDlg->SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);				
+				//pDlg->screen.SetJpgInfo(data);
+				pDlg->screen.SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);
 				break;
 			case OP_SENDJPGDATA:
-				pDlg->SendMessage(WM_RECVJPGDATA, (WPARAM)iPacketSize, (LPARAM)data);
+				//pDlg->SendMessage(WM_RECVJPGDATA, (WPARAM)iPacketSize, (LPARAM)data);
+				//pDlg->screen.RecvJpgData(data, iPacketSize);
+				pDlg->screen.SendMessage(WM_RECVJPGDATA, iPacketSize, (LPARAM)data);
 				break;
 			}
 		}
 	}
-	delete pClient;		
+	delete pClient;	
+
+	//종료 버튼을 통한 종료가 아닌 클라이언트 접속종료
+	if(pDlg->m_isClickedEndBtn == FALSE)
+	{
+		pDlg->PostMessage(WM_MYENDRECV, 0, 0);
+	}
 	return 0;
 }
 
@@ -282,7 +367,10 @@ CMyClient * CRemotroidServerDlg::GetClientSocket(void)
 void CRemotroidServerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();	
-	// TODO: Add your message handler code here			
+	// TODO: Add your message handler code here	
+	m_isClickedEndBtn = TRUE;
+	EndAccept();
+	EndConnect();
 }
 
 
@@ -325,8 +413,7 @@ void CRemotroidServerDlg::OnDropFiles(HDROP hDropInfo)
 		if(FALSE == fileSender.AddSendFile(pFile))
 		{
 			return;
-		}
-			
+		}			
 	}
 	fileSender.StartSendFile();
 	CDialogEx::OnDropFiles(hDropInfo);
@@ -335,16 +422,76 @@ void CRemotroidServerDlg::OnDropFiles(HDROP hDropInfo)
 
 LRESULT CRemotroidServerDlg::OnRecvJpgInfo(WPARAM wParam, LPARAM lParam)
 {
-	char *data = (char*)lParam;
-	screen.SetJpgInfo(data);
+// 	char *data = (char*)lParam;
+// 	screen.SetJpgInfo(data);
 	return LRESULT();
 }
 
 
 LRESULT CRemotroidServerDlg::OnRecvJpgData(WPARAM wParam, LPARAM lParam)
 {
-	int packetSize = wParam;
-	char *data = (char *)lParam;
-	screen.RecvJpgData(data, packetSize);
+// 	int packetSize = wParam;
+// 	char *data = (char *)lParam;
+// 	screen.RecvJpgData(data, packetSize);
 	return LRESULT();
 }
+
+//////////////////////////////////////////////////////////////////
+////쓰레드 정상 종료를 위한 함수들
+void CRemotroidServerDlg::EndAccept(void)
+{
+	if(pAcceptThread == NULL)
+	{
+		return;
+	}
+
+	closesocket(m_ServerSocket);
+	WaitForSingleObject(pAcceptThread->m_hThread, 100);
+	delete pAcceptThread;
+	pAcceptThread = NULL;
+}
+
+void CRemotroidServerDlg::EndConnect(void)
+{
+	if(pRecvThread == NULL)
+		return;
+
+	m_pClient->CloseSocket();
+	WaitForSingleObject(pRecvThread->m_hThread, 100);
+	delete pRecvThread;
+	pRecvThread = NULL;
+}
+
+
+//클라이언트 접속 종료로 인한 recv 쓰레드 종료시 호출
+LRESULT CRemotroidServerDlg::OnEndRecv(WPARAM wParam, LPARAM lParam)
+{
+	WaitForSingleObject(pRecvThread->m_hThread, 100);	
+	delete pRecvThread;
+	pRecvThread = NULL;
+
+	pAcceptThread = AfxBeginThread(AcceptFunc, this);
+	pAcceptThread->m_bAutoDelete = FALSE;
+	return LRESULT();
+}
+
+LRESULT CRemotroidServerDlg::OnEndAccept(WPARAM wParam, LPARAM lParam)
+{
+	WaitForSingleObject(pAcceptThread->m_hThread, 100);
+	delete pAcceptThread;
+	pAcceptThread = NULL;
+	return LRESULT();
+}
+
+////쓰레드 정상 종료를 위한 함수들
+//////////////////////////////////////////////////////////////////
+
+
+
+void CRemotroidServerDlg::OnBnClickedFilesender()
+{
+	// TODO: Add your control notification handler code here
+	closesocket(m_ServerSocket);
+}
+
+

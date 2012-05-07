@@ -1,6 +1,7 @@
 #pragma once
 
 #define PORT				50000
+#define UDPPORT				50001
 #define MAXSIZE				4096
 #define HEADERSIZE			6
 #define OPCODESIZE			2
@@ -19,3 +20,5 @@
 
 #define WM_RECVJPGINFO	WM_USER+100
 #define WM_RECVJPGDATA	WM_USER+101
+#define WM_MYENDRECV	WM_USER+102
+#define WM_MYENDACCEPT	WM_USER+103

@@ -35,5 +35,6 @@ private:
 	int SendFileInfo(CFile *file);
 	int SendFileData(CFile * pFile);		
 	
+	CWinThread *pSendFileThread;
 };
 

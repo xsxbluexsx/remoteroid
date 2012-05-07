@@ -49,10 +49,6 @@ void CRecvFile::RecvFileInfo(char * data)
 void CRecvFile::RecvFileData(char * data, int packetSize)
 {
 	int iCurrentRecvLen = packetSize - HEADERSIZE;
-	TCHAR temp[20];
-
-	wsprintf(temp, _T("recv data : %d\n"), iCurrentRecvLen);
-	TRACE(temp);
 
 	DWORD dwWrite;
 	WriteFile(m_hRecvFile, data, iCurrentRecvLen, &dwWrite, NULL);

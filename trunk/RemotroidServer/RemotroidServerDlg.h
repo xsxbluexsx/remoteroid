@@ -54,4 +54,21 @@ public:
 	
 	LRESULT OnRecvJpgInfo(WPARAM wParam, LPARAM lParam);
 	LRESULT OnRecvJpgData(WPARAM wParam, LPARAM lParam);
+private:
+	CWinThread *pRecvThread;
+	void EndConnect(void);
+	BOOL m_isClickedEndBtn;
+public:
+	LRESULT OnEndRecv(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnBnClickedFilesender();
+private:
+	CWinThread *pAcceptThread;
+public:
+	LRESULT OnEndAccept(WPARAM wParam, LPARAM lParam);
+private:
+	void EndAccept(void);
+	SOCKET m_UDPServerSocket;
+	CWinThread *pUdpRecvThread;
+public:
+	static UINT UDPRecvFunc(LPVOID pParam);
 };
