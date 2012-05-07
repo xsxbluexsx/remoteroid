@@ -105,6 +105,8 @@ public class PacketReceiver implements Runnable{
 				}
 			} catch (IOException e) {	
 				Log.i("exception", "recv thread : "+e.getMessage());
+				NetworkModule module = NetworkModule.getInstance();
+				module.CloseSocket();
 				break;
 			}
 		}

@@ -64,7 +64,7 @@ public class FileReceiver {
 			if(totalFileSize <= recvFileSize){
 				out.close();
 				out = null;
-				Log.i("qq", "recf file complete");
+				Log.i("qq", "recv file complete");
 				//Toast.makeText(null, "파일 수신 완료", Toast.LENGTH_LONG);
 			}
 		}catch(IOException e){

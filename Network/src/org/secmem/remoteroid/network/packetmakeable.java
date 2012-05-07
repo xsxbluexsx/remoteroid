@@ -3,10 +3,10 @@ package org.secmem.remoteroid.network;
 import java.io.*;
 
 interface packetmakeable{
-	public boolean SendPacket(int iOPCode, byte [] data, int length);
+	public void SendPacket(int iOPCode, byte [] data, int length) throws IOException;
 }
 
 interface iFileSendable{
-	public void SendFileInfo(File file);
-	public boolean SendFileData(File file);
+	public void SendFileInfo(File file) throws IOException;
+	public void SendFileData(File file) throws IOException;
 	}
