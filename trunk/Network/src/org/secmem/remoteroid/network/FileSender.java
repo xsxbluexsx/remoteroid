@@ -22,7 +22,7 @@ public class FileSender implements iFileSendable{
 	/*	  
 	 *파일의 이름과  
 	 */
-	public void SendFileInfo(File file){
+	public void SendFileInfo(File file) throws IOException{
 		fileSize = file.length();
 		fileName = file.getName();
 		
@@ -32,12 +32,11 @@ public class FileSender implements iFileSendable{
 		System.arraycopy(bFileName, 0, data, 0, bFileName.length);
 		System.arraycopy(bFileSize, 0, data, CONS.FILENAMESIZE, bFileSize.length);
 		// sendfileinfo를 위한 프로토콜 조립
-		try{
-			SendPacket(CONS.OPCODE.OP_SENDFILEINFO, data, data.length);
-		}catch(IOException e){}	
+		
+		SendPacket(CONS.OPCODE.OP_SENDFILEINFO, data, data.length);			
 	}
 	
-	public void SendFileData(File file){		
+	public void SendFileData(File file) throws IOException{		
 		try{
 			in = new FileInputStream(file);
 			
@@ -50,10 +49,7 @@ public class FileSender implements iFileSendable{
 			}			
 		}catch(FileNotFoundException e){
 			Log.i("exception", "file not exception");			
-		}catch(IOException e){
-			Log.i("exception", "file sender IOException");			
-		}
-		finally{
+		}finally{
 			try{
 				in.close();
 				in = null;

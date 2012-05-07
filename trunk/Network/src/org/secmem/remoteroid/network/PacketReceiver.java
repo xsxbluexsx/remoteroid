@@ -82,7 +82,7 @@ public class PacketReceiver implements Runnable{
 	}
 	
 	public void run(){
-		while (true) {
+		while(true){
 			try {
 				int iRecvLen = RecvBuffer();
 				if(iRecvLen < 0){
