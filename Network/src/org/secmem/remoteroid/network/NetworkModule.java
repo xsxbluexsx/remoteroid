@@ -53,11 +53,22 @@ public class NetworkModule {
 	}	
 	
 	public void SendFileInfo(File file){		
-		fileSender.SendFileInfo(file);		
+		try {
+			fileSender.SendFileInfo(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			Log.i("exception", "SendFileInfo : "+e.getMessage());
+		}		
 	}
 	
 	public void SendFileData(File file){		
-		fileSender.SendFileData(file);		
+		try {
+			fileSender.SendFileData(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.i("exception", "SendFileData : "+e.getMessage());
+		}		
 	}
 	
 	

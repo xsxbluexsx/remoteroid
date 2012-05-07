@@ -7,6 +7,6 @@ interface packetmakeable{
 }
 
 interface iFileSendable{
-	public void SendFileInfo(File file);
-	public void SendFileData(File file);
+	public void SendFileInfo(File file) throws IOException;
+	public void SendFileData(File file) throws IOException;
 	}
