@@ -19,9 +19,62 @@
 
 package org.secmem.remoteroid.data;
 
+import java.io.File;
+
+import org.secmem.remoteroid.util.HongUtil;
+
+import android.graphics.Bitmap;
+
 public class FileList extends ExplorerType{
+	
+	private String mimeType="";
+	private Bitmap bitmap=null;
+	private boolean bitmapChecked=false;
+	private boolean fileSelected = false;
+	private File file;
 
 	public FileList(String name, int type){
 		super(name, type);
 	}
+	
+	public String getMimeType() {
+		return mimeType;
+	}
+
+	public void setMimeType(String mimeType) {
+		this.mimeType = HongUtil.getMimeType(new File(mimeType));
+	}
+	
+	public Bitmap getBitmap() {
+		return bitmap;
+	}
+
+	public void setBitmap(Bitmap bitmap) {
+		this.bitmap = bitmap;
+	}
+	
+	public boolean isBitmapChecked() {
+		return bitmapChecked;
+	}
+
+	public void setBitmapChecked(boolean bitmapChecked) {
+		this.bitmapChecked = bitmapChecked;
+	}
+	
+	public boolean isFileSelected() {
+		return fileSelected;
+	}
+
+	public void setFileSelected(boolean fileSelected) {
+		this.fileSelected = fileSelected;
+	}
+	
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+	
 }

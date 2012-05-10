@@ -10,6 +10,10 @@
         android:id="@+id/grid_explorer_img"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minHeight="40dp"
+        android:minWidth="40dp"
+        android:maxWidth="72dp"
+        android:maxHeight="72dp"
         android:background="@drawable/ic_launcher"
         />
     <TextView 
@@ -19,6 +23,5 @@
         android:gravity="center_horizontal"
         android:text="TITLE"
         android:lines="2"/>
-
-<!--  android:singleLine="true" -->
 </LinearLayout>
+

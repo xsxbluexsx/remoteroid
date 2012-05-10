@@ -20,16 +20,19 @@
 package org.secmem.remoteroid.adapter;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.activity.ExplorerActivity;
 import org.secmem.remoteroid.data.ExplorerType;
+import org.secmem.remoteroid.data.FileList;
 import org.secmem.remoteroid.util.HongUtil;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.graphics.Color;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,9 +44,13 @@ import android.widget.TextView;
 
 public class ExplorerAdapter extends BaseAdapter{
 	
-	Context context;
-	int layout;
-	DataList dataList;
+	private Context context;
+	private int layout;
+	private DataList dataList;
+	private static int threadCount=0;
+	
+	private ArrayList<File> fileInfo = new ArrayList<File>();
+	
 	
 	public ExplorerAdapter(Context context, int layout, DataList dataList) {
 		this.context = context;
@@ -75,31 +82,88 @@ public class ExplorerAdapter extends BaseAdapter{
 		View viewItem=convertView;
 		final int pos = position;
 		
+		final ImageViewHolder holder;
+		
 		if (viewItem == null) {
+			holder = new ImageViewHolder();
             LayoutInflater vi = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             viewItem = vi.inflate(layout, null);
+            holder.imgHolder = (ImageView)viewItem.findViewById(R.id.grid_explorer_img);
+            holder.titleHolder = (TextView)viewItem.findViewById(R.id.grid_explorer_tv);
+            viewItem.setTag(holder);
+            
         }
-		ImageView img= (ImageView)viewItem.findViewById(R.id.grid_explorer_img);
-		TextView tv = (TextView)viewItem.findViewById(R.id.grid_explorer_tv);
+		else{
+			holder = (ImageViewHolder)viewItem.getTag();
+		}
 		
 		final String path = dataList.getPath();
 		final String fileName = dataList.getExpList().get(pos).getName();
 		
-		if(dataList.getExpList().get(pos).getType()==ExplorerType.TYPE_FOLDER){
-			img.setBackgroundResource(R.drawable.blue_folder);
+		holder.titleHolder.setTextColor(Color.WHITE);
+		if(dataList.getExpList().get(pos).getType()==ExplorerType.TYPE_FOLDER){					// 폴더일 때
+			holder.imgHolder.setImageBitmap(null);
+			holder.imgHolder.setBackgroundResource(R.drawable.blue_folder);
 		}
-		else{
+		else{																													// 파일 일 때
 //			HongUtil.getFileIcon(path, fileName);
-			if(HongUtil.getMimeType(path, fileName).equals(HongUtil.TYPE_PICTURE)){						// 타입이 사진이면 사진 썸네일 추출
-				setBitmap(path, fileName);
+			FileList f = (FileList)dataList.getExpList().get(pos);
+			holder.imgHolder.setImageBitmap(f.getBitmap());
+			File file = new File(path+fileName);
+			
+			String type = HongUtil.getMimeType(file);
+			if(type.equals(HongUtil.TYPE_PICTURE)){						// 타입이 사진이면 사진 썸네일 추출
+				if(!(ExplorerActivity.SCROLL_STATE)){
+					
+					if(f.isBitmapChecked()){
+						holder.imgHolder.setBackgroundResource(0x00000000);
+						holder.imgHolder.setImageBitmap(f.getBitmap());
+					}
+					else{
+						holder.imgHolder.setBackgroundResource(R.drawable.rocket_photo_blank);
+//						holder.imgHolder.setBackgroundResource(0x0000);
+						if(threadCount<15){
+							f.setBitmapChecked(true);
+							threadCount++;
+							new ThumbAsync().execute(path,fileName, String.valueOf(pos));
+						}
+					}
+				}
+				else{
+					holder.imgHolder.setBackgroundResource(R.drawable.rocket_photo_blank);
+				}
+				
 			}
-			else{
-				img.setBackgroundResource(R.drawable.ic_launcher);
+			else if(file.getPath().endsWith(".apk")){															// 타입이 .APK 일 때 APK 썸네일 추출
+				
+				if(!(ExplorerActivity.SCROLL_STATE)){
+					
+					if(f.isBitmapChecked()){
+						holder.imgHolder.setBackgroundResource(0x00000000);
+						holder.imgHolder.setImageBitmap(f.getBitmap());
+					}
+					else{
+						holder.imgHolder.setBackgroundResource(R.drawable.androidapk);
+						f.setBitmapChecked(true);
+						new ApkBitmapAsync().execute(path,fileName, String.valueOf(pos));
+					}
+				}
+				else{
+					holder.imgHolder.setBackgroundResource(R.drawable.androidapk);
+				}
+				
 			}
 			
+			else{
+				holder.imgHolder.setBackgroundResource(R.drawable.ic_launcher);
+			}
+			
+			if(f.isFileSelected()){
+				holder.titleHolder.setTextColor(Color.GREEN);
+			}
 		}
+		holder.titleHolder.setText(dataList.getExpList().get(pos).getName());
 		
-		tv.setText(dataList.getExpList().get(pos).getName());
 		
 		viewItem.setOnClickListener(new OnClickListener() {
 			@Override
@@ -109,51 +173,151 @@ public class ExplorerAdapter extends BaseAdapter{
 				
 				if (dataList.getExpList().get(pos).getType()== ExplorerType.TYPE_FOLDER) {
 					dataList.setPath(dataList.getRealPathName(fileName));
+					fileInfo.clear();
 					notifyDataSetChanged();
 				} 
 				else {
 					if (dataList.getOnFileSelected() != null){ 
-						File f = new File(dataList.getPath());				// 피시로 전송될 파일
-						Log.i("qq","dataList.getPath() = "+dataList.getPath() + "       fileName = "+fileName);
-						dataList.getOnFileSelected().onSelected(dataList.getPath(), fileName);
-						String nn = HongUtil.getMimeType(path, fileName);
-						Log.i("qq","Type = "+nn);
-						if(nn!=null){
-							Intent intent = new Intent();
-							intent.setAction(Intent.ACTION_VIEW);
-							intent.setDataAndType(Uri.fromFile(new File(path+fileName)), nn);
-							try {
-								context.startActivity(intent);
-							} catch (Exception e) {
-							}
+						FileList fl = (FileList)dataList.getExpList().get(pos);
+						File f = new File(dataList.getPath()+fileName);
+						Log.i("qq","getPath = " + f.getPath() + "          getAb = "+f.getAbsolutePath());
+						if(fl.isFileSelected()){
+							fl.setFileSelected(false);
+							fileInfo.remove(getFilePos(f));
+							holder.titleHolder.setTextColor(Color.WHITE);
 						}
 						
+						else{
+							fl.setFileSelected(true);
+							fileInfo.add(f);
+							holder.titleHolder.setTextColor(Color.GREEN);
+						}
 					}
 				}
+				
+				printFileInfo();
 			}
+			
 		});
 		return viewItem;
 	}
 	
-	private void setBitmap(String path, String fileName) {
+	private void printFileInfo() {
+		for (int i = 0; i < fileInfo.size(); i++) {
+			Log.i("fileinfo",i + "= "+fileInfo.get(i).getAbsolutePath());
+		}
+	}
+	
+	private class ThumbAsync extends AsyncTask<String, Void, Integer>{
+
+		@Override
+		protected Integer doInBackground(String... params) {
+			
+			int result=setBitmap(params[0],params[1],params[2]);
+			return result;
+		}
+
+		@Override
+		protected void onPostExecute(Integer result) {
+			super.onPostExecute(result);
+			if(result==1){
+				notifyDataSetChanged();
+			}
+			threadCount--;
+		}
+		
+	}
+	
+	private int setBitmap(String path, String file, String position) {
 		// TODO Auto-generated method stub
 //		String path = FileListManager.FilePhoto_List.get(position).getPath();
+		
+		int result=1;
+		
 		BitmapFactory.Options option = new BitmapFactory.Options();
-		if (new File(path).length() > 200000)
+		int pos = Integer.parseInt(position);
+		if (new File(path+file).length() > 200000)
 			option.inSampleSize = 7;
 		else
 			option.inSampleSize = 4;
 		
-		
-//		FileListManager.FilePhoto_List.get(position).setLoadBitmap(BitmapFactory.decodeFile(path, option));
-//		if(Bitmap.createScaledBitmap(BitmapFactory.decodeFile(path, option), 200, 200, true)==null){
-		if(BitmapFactory.decodeFile(path, option)==null){
-//			FileListManager.FilePhoto_List.get(position).setLoadBitmap(BitmapFactory.decodeFile(path, option));
+		Log.i("path","bitmap Path = "+path + "        real Path = "+dataList.get_Path());
+		if(path.equals(dataList.get_Path())){
+			if(BitmapFactory.decodeFile(path+file, option)==null){
+				Bitmap bitmap = BitmapFactory.decodeFile(path+file, option);
+				if(path.equals(dataList.get_Path())){
+					((FileList)dataList.getExpList().get(pos)).setBitmap(bitmap);
+				}
+				else{
+					result=0;
+				}
+			}
+			else{
+				Bitmap tmp = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(path+file, option), 72, 72, true);
+				if(path.equals(dataList.get_Path())){
+					((FileList)dataList.getExpList().get(pos)).setBitmap(tmp);
+				}
+				else{
+					result=0;
+				}
+			}
 		}
 		else{
-			Bitmap tmp = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(path, option), 250, 250, true);
-//			FileListManager.FilePhoto_List.get(position).setLoadBitmap(tmp);
+			result=0;
 		}
+		
+		return result;
+	}
+	
+	private class ApkBitmapAsync extends AsyncTask<String, Void, Integer>{
+
+		@Override
+		protected Integer doInBackground(String... params) {
+			
+			int result=1;
+			
+			Bitmap b = HongUtil.getApkBitmap(new File(params[0]+params[1]),context);
+			if(params[0].equals(dataList.get_Path())){
+				((FileList)dataList.getExpList().get(Integer.parseInt(params[2]))).setBitmap(b);
+			}
+			else{
+				result = 0;							// 경로가 바뀌었을 경우 체크
+			}
+			
+			return result;
+		}
+
+		@Override
+		protected void onPostExecute(Integer result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			if(result==1)
+				notifyDataSetChanged();
+		}
+	}
+	
+	public ArrayList<File> getFileInfo() {
+		return fileInfo;
+	}
+
+	public void setFileInfo(ArrayList<File> fileInfo) {
+		this.fileInfo = fileInfo;
+	}
+	
+	private int getFilePos(File f){
+		int result=0;
+		for(int i = 0 ; i < fileInfo.size() ; i++){
+			if(fileInfo.get(i).getAbsolutePath().equals(f.getAbsolutePath())){
+				return i;
+			}
+		}
+		return result;
+	}
+	
+	
+	static class ImageViewHolder{
+		ImageView imgHolder;
+		TextView titleHolder;
 	}
 
 }

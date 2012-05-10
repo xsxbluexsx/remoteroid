@@ -71,6 +71,7 @@ public class RDSmsMessage implements Parcelable{
 			this.displayedName = this.phoneNumber;
 		}else{
 			// Get display name of the first result
+			c.moveToFirst();
 			this.displayedName = c.getString(c.getColumnIndex(PhoneLookup.DISPLAY_NAME));
 		}
 		c.close();

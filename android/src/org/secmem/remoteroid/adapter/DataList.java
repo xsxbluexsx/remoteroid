@@ -67,6 +67,8 @@ public class DataList extends ListView {
         	if (files[i].isDirectory()) {
         		folderList.add(new FolderList(files[i].getName(), ExplorerType.TYPE_FOLDER));
         	} else {
+        		FileList f = new FileList(files[i].getName(), ExplorerType.TYPE_FILE);
+        		f.setMimeType(getPath()+files[i].getName());
         		fileList.add(new FileList(files[i].getName(), ExplorerType.TYPE_FILE));
         	}
         }

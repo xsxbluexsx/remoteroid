@@ -75,14 +75,12 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		
 		gridview = (GridView)findViewById(R.id.explorer_view_grid);
 		gridview.setOnScrollListener(this);
-		
+
 		dataList = new DataList(this);
 		dataList.setOnPathChangedListener(onPathChanged);
 		dataList.setOnFileSelected(onFileSelected);
 		
 		dataList.setPath("/mnt/sdcard");
-		
-		Log.i("qq","actSize = "+dataList.getExpList().size());
 		
 		adapter = new ExplorerAdapter(this, R.layout.grid_explorer_row, dataList);
 		gridview.setAdapter(adapter);
