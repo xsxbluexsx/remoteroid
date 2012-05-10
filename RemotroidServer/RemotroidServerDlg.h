@@ -7,10 +7,10 @@
 #include "MyClient.h"
 #include "FileSender.h"
 #include "screen.h"
-
+#include "ImageDlg.h"
 
 // CRemotroidServerDlg dialog
-class CRemotroidServerDlg : public CDialogEx
+class CRemotroidServerDlg : public CImageDlg
 {
 // Construction
 public:
@@ -71,4 +71,6 @@ private:
 	CWinThread *pUdpRecvThread;
 public:
 	static UINT UDPRecvFunc(LPVOID pParam);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

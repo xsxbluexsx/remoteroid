@@ -20,7 +20,8 @@ public:
 	void InitDrawJpg(void);
 	afx_msg void OnDestroy();
 	LRESULT OnSetJpgInfo(WPARAM wParam, LPARAM lParam);
-	LRESULT OnRecvJpgData(WPARAM wParam, LPARAM lParam);
+	LRESULT OnRecvJpgData(WPARAM wParam, LPARAM lParam);	
+	
 };
 
 

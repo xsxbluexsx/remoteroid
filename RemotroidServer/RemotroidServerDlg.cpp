@@ -54,7 +54,7 @@ END_MESSAGE_MAP()
 
 
 CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CRemotroidServerDlg::IDD, pParent)	
+	: CImageDlg(CRemotroidServerDlg::IDD, pParent)	
 	, m_pClient(NULL)
 	, pRecvThread(NULL)
 	, m_isClickedEndBtn(FALSE)
@@ -68,7 +68,7 @@ CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
 void CRemotroidServerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_SCREEN, screen);
+	//DDX_Control(pDX, IDC_SCREEN, screen);
 }
 
 BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
@@ -84,6 +84,8 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_MESSAGE(WM_MYENDRECV, OnEndRecv)
 	ON_MESSAGE(WM_MYENDACCEPT, OnEndAccept)
 	ON_BN_CLICKED(IDC_FILESENDER, &CRemotroidServerDlg::OnBnClickedFilesender)
+	ON_WM_MOUSEMOVE()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -91,7 +93,7 @@ END_MESSAGE_MAP()
 
 BOOL CRemotroidServerDlg::OnInitDialog()
 {
-	CDialogEx::OnInitDialog();
+	CImageDlg::OnInitDialog();
 
 	// Add "About..." menu item to system menu.
 
@@ -119,6 +121,11 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
+	screen.Create(NULL, WS_CHILD|WS_VISIBLE|WS_BORDER, CRect(40,90,318,515), this, 1234);
+
+
+
+
 	m_UDPServerSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if(m_UDPServerSocket == INVALID_SOCKET)
 	{
@@ -213,8 +220,8 @@ void CRemotroidServerDlg::OnPaint()
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
-	{
-		CDialogEx::OnPaint();
+	{		
+		CImageDlg::OnPaint();
 	}
 }
 
@@ -491,7 +498,44 @@ LRESULT CRemotroidServerDlg::OnEndAccept(WPARAM wParam, LPARAM lParam)
 void CRemotroidServerDlg::OnBnClickedFilesender()
 {
 	// TODO: Add your control notification handler code here
-	closesocket(m_ServerSocket);
+	//closesocket(m_ServerSocket);
+	m_pClient->SendPacket(3,"",0);
 }
 
 
+
+//다이얼로그 이동을 위한..
+void CRemotroidServerDlg::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	CRect moveableRect;
+	GetClientRect(&moveableRect);
+	moveableRect.left = max(1, moveableRect.right - 10);
+	moveableRect.top  = max(1, moveableRect.bottom - 10);
+	if( PtInRect(&moveableRect, point))
+	{
+		SetCursor(LoadCursor(0,IDC_SIZEALL));
+
+		if( nFlags&MK_LBUTTON )
+			SendMessage(WM_NCLBUTTONDOWN, HTBOTTOMRIGHT, 0);
+	}else   // 다이얼로그 위치 이동
+		PostMessage( WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM( point.x, point.y));
+
+
+	CImageDlg::OnMouseMove(nFlags, point);
+}
+
+
+HBRUSH CRemotroidServerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CImageDlg::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	// TODO:  Change any attributes of the DC here
+	if(pWnd->GetDlgCtrlID() == 1234)
+	{
+		pDC->SetBkMode(TRANSPARENT);
+		return (HBRUSH)GetStockObject(BLACK_BRUSH);
+	}
+	// TODO:  Return a different brush if the default is not desired
+	return hbr;
+}
