@@ -34,6 +34,10 @@ private:
 	BOOL SetIJLInfo(void);
 	void SetBitmapInfo(void);
 	HWND screenHandle;
+// 	HDC hdc;
+// 	HDC memDC;
+// 	HBITMAP bitmap;
+// 	HBITMAP oldBitmap;
 	
 public:
 	void InitDrawJpg(HWND screenHandle, int XSize, int YSize);

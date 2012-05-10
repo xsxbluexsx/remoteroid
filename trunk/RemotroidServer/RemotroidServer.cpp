@@ -33,7 +33,7 @@ CRemotroidServerApp::CRemotroidServerApp()
 // The one and only CRemotroidServerApp object
 
 CRemotroidServerApp theApp;
-
+ULONG_PTR gdiplusToken;
 
 // CRemotroidServerApp initialization
 
@@ -67,6 +67,15 @@ BOOL CRemotroidServerApp::InitInstance()
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
+
+	//gdi+
+	GdiplusStartupInput gdiplusStartupInput;
+	if(::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL) != Ok)
+	{
+		AfxMessageBox(_T("gdi+ error"));
+		return FALSE;
+	}
+
 	WSADATA wd;
 	memset(&wd,0, sizeof(wd));
 	WSAStartup(MAKEWORD(2,2), &wd);
@@ -94,6 +103,7 @@ BOOL CRemotroidServerApp::InitInstance()
 	// Since the dialog has been closed, return FALSE so that we exit the
 	//  application, rather than start the application's message pump.
 	WSACleanup();
+	::GdiplusShutdown(gdiplusToken);
 
 	return FALSE;
 }

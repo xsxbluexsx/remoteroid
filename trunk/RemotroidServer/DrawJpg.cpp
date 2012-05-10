@@ -18,6 +18,7 @@ CDrawJpg::CDrawJpg()
 
 CDrawJpg::~CDrawJpg(void)
 {
+	
 	delete [] m_pBitmapData;
 	delete [] m_pJpgData;
 
@@ -141,10 +142,26 @@ void CDrawJpg::SetBitmapInfo(void)
 	//픽셀당 비트수.. 컬러수*8비트
 	bih.biBitCount = image.DIBChannels*8;
 	
-	HDC hdc = ::GetDC(screenHandle);
-	::StretchDIBits(hdc, 0, 0, image.DIBWidth, image.DIBHeight, 0, 0,
+ 	HDC hdc = ::GetDC(this->screenHandle);
+// 	memDC = ::CreateCompatibleDC(hdc);
+// 	bitmap = ::CreateCompatibleBitmap(hdc,screenXSize,screenXSize);
+// 	oldBitmap = (HBITMAP)SelectObject(memDC, bitmap);	
+// 		
+// 	::SetStretchBltMode(memDC, HALFTONE);
+	
+	::StretchDIBits(hdc, 0, 0, screenXSize, screenYSize, 0, 0,
 		image.DIBWidth, image.DIBHeight, m_pBitmapData, &bmi, DIB_RGB_COLORS, SRCCOPY);
-	::ReleaseDC(screenHandle, hdc);
+
+//  	::StretchDIBits(memDC, 0, 0, screenXSize, screenYSize, 0, 0,
+//  		image.DIBWidth, image.DIBHeight, m_pBitmapData, &bmi, DIB_RGB_COLORS, SRCCOPY);
+// 
+// 	::BitBlt(hdc,0,0,screenXSize,screenYSize,memDC,0,0,SRCCOPY);
+// 
+// 	::SelectObject(memDC, oldBitmap);
+// 	::DeleteObject(bitmap);
+// 	::DeleteDC(memDC);
+ 	::ReleaseDC(screenHandle, hdc);
+
 }
 
 
@@ -152,5 +169,5 @@ void CDrawJpg::InitDrawJpg(HWND screenHandle, int XSize, int YSize)
 {		
 	this->screenHandle = screenHandle;
 	screenXSize = XSize;
-	screenYSize = YSize;
+	screenYSize = YSize;	
 }

@@ -43,6 +43,9 @@
 #include "ijl.h"
 
 
+#pragma comment(lib, "gdiplus")
+using namespace Gdiplus;
+
 
 #ifdef _UNICODE
 #if defined _M_IX86

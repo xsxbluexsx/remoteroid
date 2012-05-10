@@ -23,7 +23,7 @@ CScreen::~CScreen()
 BEGIN_MESSAGE_MAP(CScreen, CStatic)
 	ON_WM_DESTROY()
 	ON_MESSAGE(WM_RECVJPGINFO, OnSetJpgInfo)
-	ON_MESSAGE(WM_RECVJPGDATA, OnRecvJpgData)
+	ON_MESSAGE(WM_RECVJPGDATA, OnRecvJpgData)	
 END_MESSAGE_MAP()
  
 
@@ -64,5 +64,4 @@ LRESULT CScreen::OnRecvJpgData(WPARAM wParam, LPARAM lParam)
 	drawJpg.RecvJpgData(data, packetSize);
 	return 0;
 }
-
 

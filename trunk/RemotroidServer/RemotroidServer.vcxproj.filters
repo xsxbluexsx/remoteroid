@@ -22,6 +22,12 @@
     <None Include="res\RemotroidServer.ico">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\png1.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\galaxy.png">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RemotroidServer.h">
@@ -60,6 +66,9 @@
     <ClInclude Include="Screen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ImageDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RemotroidServer.cpp">
@@ -87,6 +96,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Screen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
