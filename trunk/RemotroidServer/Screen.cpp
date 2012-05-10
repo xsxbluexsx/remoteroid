@@ -25,6 +25,8 @@ BEGIN_MESSAGE_MAP(CScreen, CStatic)
 	ON_MESSAGE(WM_RECVJPGINFO, OnSetJpgInfo)
 	ON_MESSAGE(WM_RECVJPGDATA, OnRecvJpgData)	
 	ON_WM_LBUTTONDOWN()
+
+
 END_MESSAGE_MAP()
  
 
@@ -76,3 +78,4 @@ void CScreen::OnLButtonDown(UINT nFlags, CPoint point)
 	MessageBox(temp);
 	CStatic::OnLButtonDown(nFlags, point);
 }
+
