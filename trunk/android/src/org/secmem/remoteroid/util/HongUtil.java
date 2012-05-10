@@ -28,6 +28,14 @@ import java.util.GregorianCalendar;
 import org.secmem.remoteroid.data.ExplorerType;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
@@ -37,6 +45,7 @@ public class HongUtil {
 	public static String TYPE_PICTURE = "image";
 	public static String TYPE_VIDEO = "video";
 	public static String TYPE_MUSIC = "audio";
+	public static String TYPE_APK = "application";
 	
 	
 	public static NomalComparator com = new NomalComparator();
@@ -53,14 +62,16 @@ public class HongUtil {
 		}
 	};
 	
-	public static String getMimeType(String path, String fileName){				// 파일의 타입(비디오,오디오,사진 등등)을 체크
+	public static String getMimeType(File file){				// 파일의 타입(비디오,오디오,사진 등등)을 체크
 		String result="";
-		File file = new File(path+fileName);
 		if(file.exists()){
 			MimeTypeMap mtm = MimeTypeMap.getSingleton();
-			String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1 , fileName.length()).toLowerCase();
+			String fileExtension = file.getName().substring(file.getName().lastIndexOf(".") + 1 , file.getName().length()).toLowerCase();
 			String mimeType = mtm.getMimeTypeFromExtension(fileExtension);
-			result = (mimeType.split("/", 0))[0];
+			if(mimeType!=null){
+				result = (mimeType.split("/", 0))[0];
+				Log.i("qq","result= "+result);
+			}
 //			result = mimeType;
 		}
 		
@@ -70,7 +81,7 @@ public class HongUtil {
 	
 	public static int getFileIcon(String path, String fileName){				// 파일의 타입에 대한 아이콘 추출
 		int result=0;
-		String type = getMimeType(path, fileName);
+		String type = getMimeType(new File(path+fileName));
 		
 		if(type.equals(TYPE_PICTURE)){
 			
@@ -87,6 +98,46 @@ public class HongUtil {
 		
 		return result;
 	}
+	
+	public static Bitmap getApkBitmap(File f, Context c){
+		Bitmap result = null;
+		String filePath = f.getPath();
+		PackageInfo packageInfo = c.getPackageManager().getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
+		if(packageInfo !=null){
+			
+			ApplicationInfo appInfo = packageInfo.applicationInfo;
+			if(Build.VERSION.SDK_INT >= 8){
+				appInfo.sourceDir = filePath;
+				appInfo.publicSourceDir = filePath;
+			}
+			Drawable icon = appInfo.loadIcon(c.getPackageManager());
+//			result = (((BitmapDrawable)icon).getBitmap()).createScaledBitmap(result, 72, 72, true);
+			result = result.createScaledBitmap(((BitmapDrawable)icon).getBitmap(),72,72,true);
+						
+			
+		}
+		
+		return result;
+	}
+	
+//	public static Bitmap opticalBitmap(File f){				// 비트맵 이미지 최적화
+//		Bitmap result=null;
+//		BitmapFactory.Options option = new BitmapFactory.Options();
+//		
+//		if(f.length()>200000)
+//			option.inSampleSize = 7;
+//		else
+//			option.inSampleSize = 4;
+//		
+//		if(BitmapFactory.decodeFile(f.getPath(), option)==null){
+//			result = 
+//		}
+//		else{
+//			
+//		}
+//		
+//		return result;
+//	}
 	
 	
 	
