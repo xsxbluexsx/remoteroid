@@ -19,12 +19,13 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	HRSRC		hResource;
-	HGLOBAL		hGlobal;
+	HRSRC		hResource,	hResBack;
+	HGLOBAL		hGlobal,	hBackGlobal;
 	HGLOBAL		hBuffer;
 	LPVOID		pData;
 	IStream		*pStream;
 	Image		*pImagePng;
+	float		m_xScale,	m_yScale;
 	
 public:
 	afx_msg void OnPaint();

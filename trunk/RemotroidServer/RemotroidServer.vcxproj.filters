@@ -28,6 +28,16 @@
     <None Include="res\galaxy.png">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\BACKGROUND.rgn" />
+    <None Include="res\galaxybalck.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\bitmap1.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\galaxybalck11.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RemotroidServer.h">

@@ -96,7 +96,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
+    <None Include="res\BACKGROUND.rgn" />
+    <None Include="res\bitmap1.bmp" />
     <None Include="res\galaxy.png" />
+    <None Include="res\galaxybalck.png" />
+    <None Include="res\galaxybalck11.bmp" />
     <None Include="res\png1.png" />
     <None Include="res\RemotroidServer.ico" />
     <None Include="res\RemotroidServer.rc2" />

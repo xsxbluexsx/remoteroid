@@ -122,7 +122,7 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
-	screen.Create(NULL, WS_CHILD|WS_VISIBLE|WS_BORDER|SS_NOTIFY, CRect(40,90,318,515), this, 1234);
+	screen.Create(NULL, WS_CHILD|WS_VISIBLE|WS_BORDER|SS_NOTIFY, CRect(42,106,402,704), this, 1234);
 
 
 
