@@ -14,27 +14,11 @@ IMPLEMENT_DYNAMIC(CImageDlg, CDialogEx)
 CImageDlg::CImageDlg(UINT nIDTemplate, CWnd *pParent)
 	: CDialogEx(nIDTemplate, pParent), pStream(NULL)
 {
-	hResource = FindResource(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDB_PNG1), _T("PNG"));
-	DWORD imageSize = SizeofResource(AfxGetApp()->m_hInstance, hResource);
-	hGlobal = LoadResource(AfxGetApp()->m_hInstance, hResource);
-	//리소스를 메모리에 로드
-	pData = LockResource(hGlobal);
-	//메모리에 로드된 리소스의 포인터 획득
-	hBuffer = GlobalAlloc(GMEM_MOVEABLE, imageSize);
-	//이미지 싸이즈 만큼 버퍼 획득
-	LPVOID pBuffer = GlobalLock(hBuffer);
-	//획득한 버퍼의 포인터
-	CopyMemory(pBuffer, pData, imageSize);
-	CreateStreamOnHGlobal(hBuffer, TRUE, &pStream);
-	pImagePng = new Image(pStream);
 }
 
 CImageDlg::~CImageDlg()
 {
-	if(pStream != NULL)
-	{
-		pStream->Release();
-	}
+
 }
 
 void CImageDlg::DoDataExchange(CDataExchange* pDX)
@@ -56,13 +40,6 @@ void CImageDlg::OnPaint()
 	CPaintDC dc(this); // device context for painting
 	// TODO: Add your message handler code here
 	// Do not call CDialogEx::OnPaint() for painting messages
-	if(pImagePng->GetLastStatus() != Ok)
-	{
-		return;
-	}
-
-	Graphics gdip(dc);
-	gdip.DrawImage(pImagePng, 0,0, 360, 600);
 }
 
 
@@ -71,25 +48,41 @@ BOOL CImageDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  Add extra initialization here
-	CRgn		m_Rgn;
+	///////////////////////////////
+	//비트맵 모양에 맞춰서 다이얼로그 모양 만들기
+	MoveWindow(0,0,468,846);
 
-	MoveWindow(0,0,360,600);
 
-	CRect rc;
-	GetClientRect(&rc);
+	hResBack = FindResource(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_RGN1), _T("RGN"));
+	hBackGlobal = LoadResource(AfxGetApp()->m_hInstance, hResBack);
+	m_xScale = m_yScale = 1;
 
-	SetBackgroundColor(RGB(10,9,8));
+	if(hBackGlobal)
+	{
+		BYTE *rgndata = (BYTE FAR*)LockResource(hBackGlobal);       
+		
+		if (rgndata) 
+		{
+			HRGN rgn;      
+			XFORM xform;      
+			xform.eM11 = (FLOAT) 1;          
+			xform.eM22 = (FLOAT) 1; 
+			xform.eM12 = (FLOAT) 0.0;       
+			xform.eM21 = (FLOAT) 0.0;             
+			xform.eDx  = (FLOAT) 0;             
+			xform.eDy  = (FLOAT) 0; 
+			
+			rgn = ExtCreateRegion(&xform, sizeof
+				(RGNDATAHEADER) + (sizeof(RECT) * ((RGNDATA*)rgndata)->rdh.nCount),(RGNDATA*)rgndata);
+			VERIFY(rgn!=NULL);  // if you want more comprehensive checking - feel free!
+			::SetWindowRgn(m_hWnd, rgn, TRUE);
+			::UnlockResource(hBackGlobal);
+		}
+	}
+	if(hBackGlobal) ::FreeResource(hBackGlobal);
+	///////////////////////////////
 	
-	SetWindowLong(GetSafeHwnd(), GWL_EXSTYLE,
-		GetWindowLong(GetSafeHwnd(), GWL_EXSTYLE) | WS_EX_LAYERED);
 	
-	SetLayeredWindowAttributes(RGB(10,9,8),0,LWA_COLORKEY);
-	
-	m_Rgn.CreateRoundRectRgn(rc.left+13, 
-		rc.top+4, rc.right-15, rc.bottom-3, 100, 100);
-
-	SetWindowRgn((HRGN)m_Rgn, TRUE);
-
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
