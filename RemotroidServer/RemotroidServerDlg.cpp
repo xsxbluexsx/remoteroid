@@ -86,6 +86,7 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_FILESENDER, &CRemotroidServerDlg::OnBnClickedFilesender)
 	ON_WM_MOUSEMOVE()
 	ON_WM_CTLCOLOR()
+	
 END_MESSAGE_MAP()
 
 
@@ -121,7 +122,7 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
-	screen.Create(NULL, WS_CHILD|WS_VISIBLE|WS_BORDER, CRect(40,90,318,515), this, 1234);
+	screen.Create(NULL, WS_CHILD|WS_VISIBLE|WS_BORDER|SS_NOTIFY, CRect(40,90,318,515), this, 1234);
 
 
 
@@ -508,20 +509,15 @@ void CRemotroidServerDlg::OnBnClickedFilesender()
 void CRemotroidServerDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
-	CRect moveableRect;
-	GetClientRect(&moveableRect);
-	moveableRect.left = max(1, moveableRect.right - 10);
-	moveableRect.top  = max(1, moveableRect.bottom - 10);
-	if( PtInRect(&moveableRect, point))
+	
+	CRect screenRect;
+	screen.GetWindowRect(&screenRect);
+	ScreenToClient(&screenRect);
+
+	if(!PtInRect(&screenRect, point))
 	{
-		SetCursor(LoadCursor(0,IDC_SIZEALL));
-
-		if( nFlags&MK_LBUTTON )
-			SendMessage(WM_NCLBUTTONDOWN, HTBOTTOMRIGHT, 0);
-	}else   // 다이얼로그 위치 이동
 		PostMessage( WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM( point.x, point.y));
-
-
+	}
 	CImageDlg::OnMouseMove(nFlags, point);
 }
 

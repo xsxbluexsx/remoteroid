@@ -24,6 +24,7 @@ BEGIN_MESSAGE_MAP(CScreen, CStatic)
 	ON_WM_DESTROY()
 	ON_MESSAGE(WM_RECVJPGINFO, OnSetJpgInfo)
 	ON_MESSAGE(WM_RECVJPGDATA, OnRecvJpgData)	
+	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
  
 
@@ -65,3 +66,13 @@ LRESULT CScreen::OnRecvJpgData(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+
+
+void CScreen::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	TCHAR temp[100];
+	wsprintf(temp, _T("x:%d, y:%d"), point.x, point.y);
+	MessageBox(temp);
+	CStatic::OnLButtonDown(nFlags, point);
+}
