@@ -73,4 +73,5 @@ public:
 	static UINT UDPRecvFunc(LPVOID pParam);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	
 };

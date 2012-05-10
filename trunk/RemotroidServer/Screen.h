@@ -22,6 +22,7 @@ public:
 	LRESULT OnSetJpgInfo(WPARAM wParam, LPARAM lParam);
 	LRESULT OnRecvJpgData(WPARAM wParam, LPARAM lParam);	
 	
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 };
 
 
