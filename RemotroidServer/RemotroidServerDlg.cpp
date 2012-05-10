@@ -68,7 +68,6 @@ CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
 void CRemotroidServerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	//DDX_Control(pDX, IDC_SCREEN, screen);
 }
 
 BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
@@ -86,7 +85,8 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_FILESENDER, &CRemotroidServerDlg::OnBnClickedFilesender)
 	ON_WM_MOUSEMOVE()
 	ON_WM_CTLCOLOR()
-	
+	ON_WM_KEYDOWN()	
+	ON_WM_CHAR()
 END_MESSAGE_MAP()
 
 
@@ -122,9 +122,10 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
-	screen.Create(NULL, WS_CHILD|WS_VISIBLE|WS_BORDER|SS_NOTIFY, CRect(42,106,402,704), this, 1234);
+	screen.CreateEx(WS_EX_TOPMOST
+		, _T("STATIC"), NULL, WS_CHILD|WS_VISIBLE|WS_BORDER|SS_NOTIFY, CRect(42,106,402,704), this, 1234);
 
-
+	screen.SetFocus();
 
 
 	m_UDPServerSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -181,7 +182,7 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	pAcceptThread = AfxBeginThread(AcceptFunc, this);	
 	pAcceptThread->m_bAutoDelete = FALSE;
 
-	return TRUE;  // return TRUE  unless you set the focus to a control
+	return FALSE;  // return TRUE  unless you set the focus to a control
 }
 
 void CRemotroidServerDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -534,4 +535,34 @@ HBRUSH CRemotroidServerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	}
 	// TODO:  Return a different brush if the default is not desired
 	return hbr;
+}
+
+
+
+void CRemotroidServerDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: Add your message handler code here and/or call default
+	CString str = _T("");
+	str.Format(_T("%c"), nChar);
+	//MessageBox(str);
+	CImageDlg::OnKeyDown(nChar, nRepCnt, nFlags);
+}
+
+
+BOOL CRemotroidServerDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: Add your specialized code here and/or call the base class
+	if(pMsg->message == WM_CHAR)
+	{
+		SendMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
+	}
+	return CImageDlg::PreTranslateMessage(pMsg);
+}
+
+
+void CRemotroidServerDlg::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: Add your message handler code here and/or call default
+
+ 	CImageDlg::OnChar(nChar, nRepCnt, nFlags);
 }

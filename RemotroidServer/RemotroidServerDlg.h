@@ -8,6 +8,8 @@
 #include "FileSender.h"
 #include "screen.h"
 #include "ImageDlg.h"
+#include "afxwin.h"
+
 
 // CRemotroidServerDlg dialog
 class CRemotroidServerDlg : public CImageDlg
@@ -72,6 +74,9 @@ private:
 public:
 	static UINT UDPRecvFunc(LPVOID pParam);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);	
 	
+	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);	
+	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 };
