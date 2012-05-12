@@ -15,6 +15,7 @@
 #define OP_SENDFILEDATA		2
 #define OP_SENDJPGINFO		3
 #define OP_SENDJPGDATA		4
+#define OP_REQFILEDATA		5
 
 
 

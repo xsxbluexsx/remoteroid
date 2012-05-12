@@ -328,7 +328,11 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 			switch(iOPCode)
 			{
 			case OP_SENDFILEINFO:
-				recvFileClass.RecvFileInfo(data);
+				if(recvFileClass.RecvFileInfo(data) != INVALID_HANDLE_VALUE)
+				{
+					//파일은 수신 받을 준비가 되면 req 요청을 전송한다
+					pClient->SendPacket(OP_REQFILEDATA, 0, 0);
+				}
 				break;
 			case OP_SENDFILEDATA:
 				recvFileClass.RecvFileData(data, iPacketSize);				
@@ -401,6 +405,7 @@ void CRemotroidServerDlg::OnDropFiles(HDROP hDropInfo)
 {
 	// TODO: Add your message handler code here and/or call default
 	TCHAR path[MAX_PATH];
+	memset(path, 0, sizeof(path));
 	int count = 0;
 
 	count = DragQueryFile(hDropInfo, 0xffffffff, NULL, 0);
@@ -414,13 +419,14 @@ void CRemotroidServerDlg::OnDropFiles(HDROP hDropInfo)
 		}
 		CATCH (CFileException, e)
 		{
-			MessageBox(_T("다른 프로그램에서 사용중입니다"));
-			break;
+			MessageBox(_T("다른 프로그램에서 사용중입니다"));			
+			continue;
 		}
 		END_CATCH
 		
 		if(FALSE == fileSender.AddSendFile(pFile))
 		{
+			delete pFile;
 			return;
 		}			
 	}
