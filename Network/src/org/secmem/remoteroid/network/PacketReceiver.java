@@ -100,7 +100,7 @@ public class PacketReceiver implements Runnable{
 						break;
 					case CONS.OPCODE.OP_SENDFILEDATA:
 						fileReceiver.RecvFileData(data, iPacketSize);
-						break;
+						break;						
 					}
 				}
 			} catch (IOException e) {	
