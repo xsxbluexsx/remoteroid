@@ -11,12 +11,14 @@ public class PacketReceiver implements Runnable{
 	private byte [] 		bPacketSize 		= new byte[CONS.PACKETSIZE];
 	private byte [] 		bOPCode 			= new byte[CONS.OPCODESIZE];
 	private FileReceiver	fileReceiver		= new FileReceiver();
+	private FileSender		fileSender			= null;
 
 	private int 		iCurrentBufferPos 	= 0;
 	private InputStream in 					= null;
 	
-	public PacketReceiver(InputStream in){
+	public PacketReceiver(InputStream in, FileSender fileSender){
 		this.in = in;
+		this.fileSender = fileSender;
 	}
 
 	
@@ -100,7 +102,9 @@ public class PacketReceiver implements Runnable{
 						break;
 					case CONS.OPCODE.OP_SENDFILEDATA:
 						fileReceiver.RecvFileData(data, iPacketSize);
-						break;						
+						break;		
+					case CONS.OPCODE.OP_REQFILEDATA:
+						fileSender.SendFileData();
 					}
 				}
 			} catch (IOException e) {	
