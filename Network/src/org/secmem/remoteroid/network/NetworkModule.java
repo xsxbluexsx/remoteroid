@@ -2,6 +2,7 @@ package org.secmem.remoteroid.network;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 import android.util.*;
 
@@ -13,7 +14,7 @@ public class NetworkModule {
 	private OutputStream 			out 			= null;
 	private InputStream 			in 				= null;
 	private packetmakeable 			packetMaker 	= null;
-	private iFileSendable 			fileSender		= null;
+	private FileSender				fileSender		= null;
 	private PacketReceiver			packetReceiver 	= null;
 	
 	
@@ -46,30 +47,21 @@ public class NetworkModule {
 		
 		packetMaker = new PacketMaker(out);
 		fileSender = new FileSender(packetMaker);
-		packetReceiver = new PacketReceiver(in);
+		packetReceiver = new PacketReceiver(in, fileSender);
 
 		Thread thread = new Thread(packetReceiver);
 		thread.start();
 	}	
 	
-	public void SendFileInfo(File file){		
+	public void SendFileList(ArrayList<File> fileList){		
 		try {
-			fileSender.SendFileInfo(file);
+			fileSender.SendFileList(fileList);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			Log.i("exception", "SendFileInfo : "+e.getMessage());
 		}		
-	}
-	
-	public void SendFileData(File file){		
-		try {
-			fileSender.SendFileData(file);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Log.i("exception", "SendFileData : "+e.getMessage());
-		}		
-	}
+	}	
+
 	
 	
 	/**

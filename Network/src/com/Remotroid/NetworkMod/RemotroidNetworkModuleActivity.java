@@ -2,6 +2,7 @@ package com.Remotroid.NetworkMod;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 import android.app.*;
 import android.os.*;
@@ -46,8 +47,11 @@ public class RemotroidNetworkModuleActivity extends Activity {
 //				for(int i = 0 ; i<file.listFiles().length ; i++){
 //					Log.i("qq","fileName = "+file.listFiles()[i].getName());
 //				}
-				module.SendFileInfo(file);
-				module.SendFileData(file);
+				ArrayList<File> fileList = new ArrayList<File>();
+				fileList.add(file);
+				fileList.add(new File("/mnt/sdcard/melon/박봄-01-YOU AND I-128.dcf"));
+				module.SendFileList(fileList);
+				
 			} catch (UnknownHostException e) {
 				Log.i("qqq", "UnknownHostException : "+e.getMessage());
 			} catch (IOException e) {

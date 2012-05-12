@@ -4,6 +4,7 @@ public class CONS {
 	static public class OPCODE{
 		final static public int OP_SENDFILEINFO = 1;
 		final static public int OP_SENDFILEDATA = 2;
+		final static public int OP_REQFILEDATA	= 5;
 	}
 	
 	static public class HOST{
