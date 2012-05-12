@@ -76,8 +76,7 @@ int CFileSender::SendFileData(CFile * pFile)
 BOOL CFileSender::AddSendFile(CFile * pFile)
 {
 	if(m_pClient == NULL || isSending == TRUE)
-	{
-		delete pFile;
+	{		
 		return FALSE;
 	}
 
@@ -93,7 +92,7 @@ BOOL CFileSender::StartSendFile(void)
 		DeleteFileList();
 		return FALSE;
 	}
-		
+
 	isSending = TRUE;
 	pSendFileThread = AfxBeginThread(SendFileThread, this);
 	pSendFileThread->m_bAutoDelete = FALSE;

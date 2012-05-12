@@ -13,11 +13,12 @@ CRecvFile::CRecvFile(void):m_hRecvFile(NULL)
 
 CRecvFile::~CRecvFile(void)
 {
+	CloseFileHandle();
 }
 
 
 //파일 정보(이름, 크기) 수신시..
-void CRecvFile::RecvFileInfo(char * data)
+HANDLE CRecvFile::RecvFileInfo(char * data)
 {
 	char bFileName[FILENAMESIZE+1];
 	memset(bFileName, 0, sizeof(bFileName));
@@ -39,9 +40,12 @@ void CRecvFile::RecvFileInfo(char * data)
 		CloseHandle(m_hRecvFile);
 	}
 	m_hRecvFile = CreateFile(m_uniFileName, GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS,
-		FILE_ATTRIBUTE_NORMAL, NULL);
+		FILE_ATTRIBUTE_NORMAL, NULL);	
+
 	m_iRecvFileSize = 0;
 	//현재 받은 파일 크기
+
+	return m_hRecvFile;
 }
 
 
@@ -81,4 +85,13 @@ LONGLONG CRecvFile::atoll(char * str)
 	}
 
 	return(rVal * sign);
+}
+
+
+void CRecvFile::CloseFileHandle(void)
+{
+	if(m_hRecvFile != NULL)
+	{
+		CloseHandle(m_hRecvFile);
+	}
 }
