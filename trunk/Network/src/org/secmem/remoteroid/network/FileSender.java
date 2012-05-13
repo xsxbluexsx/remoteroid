@@ -15,8 +15,7 @@ public class FileSender extends Thread{
 	private String 			fileName 				= null;
 	private packetmakeable 	packetMaker 			= null;
 	private FileInputStream	in 						= null;
-	private ArrayList<File>	fileList				= null;
-	private File			currentFile				= null;
+	private ArrayList<File>	fileList				= null;	
 	
 	
 	public FileSender(packetmakeable packetMaker){
@@ -53,7 +52,7 @@ public class FileSender extends Thread{
 		// sendfileinfo를 위한 프로토콜 조립
 		
 		sendedFileSize = 0;
-		SendPacket(CONS.OPCODE.OP_SENDFILEINFO, data, data.length);			
+		SendPacket(CONS.OPCODE.OP_SENDFILEINFO, data, data.length);		
 	}
 	
 	public void SendFileData(){
@@ -81,6 +80,7 @@ public class FileSender extends Thread{
 			}catch(FileNotFoundException e){
 				Log.i("exception", "file not exception");
 			}catch(IOException e){
+				DeleteFileList();
 				Log.i("exception", "file send thread");
 			}finally{
 				try{
@@ -93,5 +93,10 @@ public class FileSender extends Thread{
 	
 	public void SendPacket(int iOPCode, byte [] data, int length) throws IOException{
 		packetMaker.SendPacket(iOPCode, data, length);
+	}
+	
+	public void DeleteFileList(){
+		fileList.clear();		
+		fileList = null;
 	}
 }

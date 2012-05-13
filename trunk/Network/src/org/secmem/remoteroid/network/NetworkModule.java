@@ -58,11 +58,18 @@ public class NetworkModule {
 			fileSender.SendFileList(fileList);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			fileSender.DeleteFileList();
 			Log.i("exception", "SendFileInfo : "+e.getMessage());
 		}		
 	}	
 
-	
+	public void SendPacket(int iOPCode, byte [] data, int length){
+		try{
+			packetMaker.SendPacket(iOPCode, data, length);
+		}catch(IOException e){
+			Log.i("exception", "NetworkModule sendpacket");
+		}
+	}
 	
 	/**
 	 * 연결 종료시 호출해야함
@@ -70,6 +77,7 @@ public class NetworkModule {
 	public void CloseSocket(){
 		try {
 			Log.i("qqq", "접속 종료");
+			
 			out.close();
 			in.close();
 			socket.close();			

@@ -5,9 +5,10 @@ import java.io.*;
 import android.util.*;
 
 public class PacketMaker implements packetmakeable{	
-	private byte[] 			packet 		= new byte[CONS.MAXPACKETSIZE];
-	OutputStream 			out 		= null;	
-	private StringBuilder 	strHeader 	= new StringBuilder(CONS.HEADERSIZE);
+	private byte [] 			packet 		= new byte[CONS.MAXPACKETSIZE];
+	private	OutputStream 		out 		= null;	
+	private StringBuilder		strHeader 	= new StringBuilder(CONS.HEADERSIZE);
+	
 	
 	public PacketMaker(OutputStream out) {
 		// TODO Auto-generated constructor stub
@@ -26,8 +27,9 @@ public class PacketMaker implements packetmakeable{
 			//프로토콜에 따라 헤더 조립 (2자리수 opcode + 4자리수 totalsize)			
 
 			byte [] header = strHeader.toString().getBytes();
-			System.arraycopy(header, 0, packet, 0, header.length);
-			System.arraycopy(data, 0, packet, header.length, data.length);
+			System.arraycopy(header, 0, packet, 0, header.length);			
+			if(data != null)
+				System.arraycopy(data, 0, packet, header.length, length);
 
 			try{
 				out.write(packet, 0, iTotalSize);				
