@@ -12,6 +12,7 @@ public:
 	~CFileSender(void);
 
 	void DeleteFileList(void);
+	void SendFileData();		
 
 public:	
 	BOOL AddSendFile(CFile * pFile);
@@ -32,8 +33,8 @@ private:
 
 private:
 	int SendPacket(int iOPCode, const char * data, int iDataLen);	
-	int SendFileInfo(CFile *file);
-	int SendFileData(CFile * pFile);		
+	int SendFileInfo();
+	
 	
 	CWinThread *pSendFileThread;
 };

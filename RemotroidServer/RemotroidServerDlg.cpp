@@ -123,7 +123,7 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 
 	// TODO: Add extra initialization here
 	screen.CreateEx(WS_EX_TOPMOST
-		, _T("STATIC"), NULL, WS_CHILD|WS_VISIBLE|WS_BORDER|SS_NOTIFY, CRect(42,106,402,704), this, 1234);
+		, _T("STATIC"), NULL, WS_CHILD|WS_VISIBLE|SS_NOTIFY, CRect(42,104,402,704), this, 1234);
 
 	screen.SetFocus();
 
@@ -337,19 +337,21 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 			case OP_SENDFILEDATA:
 				recvFileClass.RecvFileData(data, iPacketSize);				
 				break;		
-			case OP_SENDJPGINFO:
-				//pDlg->SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);				
-				//pDlg->screen.SetJpgInfo(data);
+			case OP_SENDJPGINFO:				
 				pDlg->screen.SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);
 				break;
-			case OP_SENDJPGDATA:
-				//pDlg->SendMessage(WM_RECVJPGDATA, (WPARAM)iPacketSize, (LPARAM)data);
-				//pDlg->screen.RecvJpgData(data, iPacketSize);
+			case OP_SENDJPGDATA:				
 				pDlg->screen.SendMessage(WM_RECVJPGDATA, iPacketSize, (LPARAM)data);
+				break;
+			case OP_REQFILEDATA:
+				pDlg->fileSender.SendFileData();
 				break;
 			}
 		}
 	}
+
+	pDlg->fileSender.DeleteFileList();
+
 	delete pClient;	
 
 	//종료 버튼을 통한 종료가 아닌 클라이언트 접속종료
