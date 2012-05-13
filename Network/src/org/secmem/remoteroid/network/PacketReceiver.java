@@ -109,8 +109,8 @@ public class PacketReceiver implements Runnable{
 				}
 			} catch (IOException e) {	
 				Log.i("exception", "recv thread : "+e.getMessage());
-				NetworkModule module = NetworkModule.getInstance();
-				module.CloseSocket();
+				fileReceiver.CloseFile();	//파일을 수신 중이였다면.. 뒷정리 해야함
+				NetworkModule.getInstance().CloseSocket();				
 				break;
 			}
 		}

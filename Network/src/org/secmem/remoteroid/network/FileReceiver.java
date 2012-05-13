@@ -47,13 +47,14 @@ public class FileReceiver {
 				overlapCheck++;
 			}			
 			out = new FileOutputStream(file);
-		}catch(FileNotFoundException e){
-			Log.i("exception", "file not exception");			
+			totalFileSize = Long.parseLong(new String(fileSizeBuffer).trim());
+			recvFileSize = 0;			
+			
+			NetworkModule.getInstance().SendPacket(CONS.OPCODE.OP_REQFILEDATA, null, 0);			
 		}catch(IOException e){
-			Log.i("exception", "createnew file : " + e.getMessage());
-		}
-		totalFileSize = Long.parseLong(new String(fileSizeBuffer).trim());
-		recvFileSize = 0;
+			file = null;
+			Log.i("exception", "createnew file : " + e.getMessage());			
+		}		
 	}
 	
 	void RecvFileData(byte [] data, int packetSize){
@@ -63,12 +64,24 @@ public class FileReceiver {
 			recvFileSize += currentRecvLen;
 			if(totalFileSize <= recvFileSize){
 				out.close();
-				out = null;
-				Log.i("qq", "recv file complete");
-				//Toast.makeText(null, "파일 수신 완료", Toast.LENGTH_LONG);
+				out = null;				
 			}
-		}catch(IOException e){
+		}catch(IOException e){			
+			try {
+				out.close();
+			} catch (IOException e1) {				
+			}
+			out = null;
 			Log.i("exception", "RecvFileData" + e.getMessage());
+		}
+	}
+	
+	void CloseFile(){
+		if(out != null){
+			try {
+				out.close();
+			} catch (IOException e) {}
+			out = null;
 		}
 	}
 }
