@@ -310,7 +310,7 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 	CMyClient *pClient = pDlg->GetClientSocket();
 
 	char bPacket[MAXSIZE];
-	CRecvFile recvFileClass;	
+	CRecvFile& recvFileClass = pDlg->recvFileClass;	
 	
 	while (TRUE)
 	{
@@ -355,6 +355,7 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 		}
 	}
 
+	recvFileClass.CloseFileHandle();
 	pDlg->fileSender.DeleteFileList();
 
 	delete pClient;	
@@ -530,7 +531,7 @@ void CRemotroidServerDlg::OnMouseMove(UINT nFlags, CPoint point)
 
 	if(!PtInRect(&screenRect, point) && m_isReadyRecv == FALSE)
 	{
-		//PostMessage( WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM( point.x, point.y));
+		PostMessage( WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM( point.x, point.y));
 	}
 	CImageDlg::OnMouseMove(nFlags, point);
 }
@@ -583,14 +584,50 @@ void CRemotroidServerDlg::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 ////////////////////////////////////////////////////////////
 ////드래그 앤 드롭으로 파일을 수신 받기 위해//////////////////
+void CRemotroidServerDlg::GetStoreFilePath(void)
+{
+	BOOL bResult = FALSE;
+	POINT pt;
+	memset(&pt, 0, sizeof(pt));
+	GetCursorPos(&pt);
+
+	CWnd *wnd = WindowFromPoint(pt);
+	WCHAR temp[MAX_PATH];
+	CWnd *pParent = NULL;		
+
+	for(pParent = wnd; pParent->GetParent(); pParent = pParent->GetParent());				
+
+	CWnd *pToolbarWnd = pParent->FindWindowEx(pParent->GetSafeHwnd(), NULL, _T("WorkerW"), NULL);  
+	if(!pToolbarWnd) goto ENDSEARCH;
+	pToolbarWnd = pToolbarWnd->FindWindowEx(pToolbarWnd->GetSafeHwnd(), NULL, _T("ReBarWindow32"), NULL);  
+	if(!pToolbarWnd) goto ENDSEARCH;
+	pToolbarWnd = pToolbarWnd->FindWindowEx(pToolbarWnd->GetSafeHwnd(), NULL, _T("Address Band Root"), NULL);  
+	if(!pToolbarWnd) goto ENDSEARCH;
+	pToolbarWnd = pToolbarWnd->FindWindowEx(pToolbarWnd->GetSafeHwnd(), NULL, _T("msctls_progress32"), NULL);  
+	if(!pToolbarWnd) goto ENDSEARCH;
+	pToolbarWnd = pToolbarWnd->FindWindowEx(pToolbarWnd->GetSafeHwnd(), NULL, _T("Breadcrumb Parent"), NULL);  
+	if(!pToolbarWnd) goto ENDSEARCH;
+	pToolbarWnd = pToolbarWnd->FindWindowEx(pToolbarWnd->GetSafeHwnd(), NULL, _T("ToolbarWindow32"), NULL);  
+	if(!pToolbarWnd) goto ENDSEARCH;
+
+	//탐색기가 가르키는 곳의 경로 획득	
+	pToolbarWnd->GetWindowText(temp, 50);
+	if(temp[4] >= _T('A') && temp[4] <= _T('Z'))
+		bResult = TRUE;
+
+ENDSEARCH:
+	//경로를 찾지 못하면 디폴트로..
+	bResult ==  TRUE ? recvFileClass.SetFilePath(temp+4) : recvFileClass.SetDefaultPath();
+	return;
+}
 
 
 //안드로이드에서 부터 파일 수신 받을 준비
 LRESULT CRemotroidServerDlg::OnReadyRecvFile(WPARAM wParam, LPARAM lParam)
 {
 	m_isReadyRecv = TRUE;
+	
 	::SetSystemCursor(LoadCursor(0, IDC_HAND), OCR_NORMAL);
-
 	SetCapture();	
 	return LRESULT();
 }
@@ -600,51 +637,20 @@ void CRemotroidServerDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
 
-	//수신 받을 파일을 드래그 한 후 드롭일 경우에...
+	//수신 받을 파일을 드래그 한 후 드롭일 경우에 저장할
 	if(m_isReadyRecv == TRUE)
 	{
-		POINT pt;
-		memset(&pt, 0, sizeof(pt));
-		GetCursorPos(&pt);
-
-		CWnd *wnd = WindowFromPoint(pt);
-		WCHAR temp[50];
-		CWnd *pParent = NULL;	
-
-		//현재 바탕화면의 절대경로 얻어오기
-		SHGetFolderPath(NULL, CSIDL_DESKTOP, NULL, 0, temp);
-		
-
-		
-		for(pParent = wnd; pParent->GetParent(); pParent = pParent->GetParent());				
-
-		CWnd *pToolbarWnd = pParent->FindWindowEx(pParent->GetSafeHwnd(), NULL, _T("WorkerW"), NULL);  
-		if(!pToolbarWnd) goto ENDSEARCH;
-		pToolbarWnd = pToolbarWnd->FindWindowEx(pToolbarWnd->GetSafeHwnd(), NULL, _T("ReBarWindow32"), NULL);  
-		if(!pToolbarWnd) goto ENDSEARCH;
-		pToolbarWnd = pToolbarWnd->FindWindowEx(pToolbarWnd->GetSafeHwnd(), NULL, _T("Address Band Root"), NULL);  
-		if(!pToolbarWnd) goto ENDSEARCH;
-		pToolbarWnd = pToolbarWnd->FindWindowEx(pToolbarWnd->GetSafeHwnd(), NULL, _T("msctls_progress32"), NULL);  
-		if(!pToolbarWnd) goto ENDSEARCH;
-		pToolbarWnd = pToolbarWnd->FindWindowEx(pToolbarWnd->GetSafeHwnd(), NULL, _T("Breadcrumb Parent"), NULL);  
-		if(!pToolbarWnd) goto ENDSEARCH;
-		pToolbarWnd = pToolbarWnd->FindWindowEx(pToolbarWnd->GetSafeHwnd(), NULL, _T("ToolbarWindow32"), NULL);  
-		if(!pToolbarWnd) goto ENDSEARCH;
-		pToolbarWnd->GetWindowText(temp, 50);
-
-		MessageBox(temp);
-
-ENDSEARCH:
+		GetStoreFilePath();
+		SystemParametersInfo(SPI_SETCURSORS, 0, NULL, 0);
 		ReleaseCapture();
-		m_isReadyRecv = FALSE;		
-	}
-	SystemParametersInfo(SPI_SETCURSORS, 0, NULL, 0);
-	
+		m_isReadyRecv = FALSE;
+		TRACE("op reqfileinfo\n");
+		m_pClient->SendPacket(OP_REQFILEINFO, 0, 0);
+	}	
 	CImageDlg::OnLButtonUp(nFlags, point);
 }
 /////드래그 앤 드롭으로 파일을 수신 받기 위해//////////////////
 ////////////////////////////////////////////////////////////
-
 
 
 

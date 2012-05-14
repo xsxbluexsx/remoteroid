@@ -20,6 +20,8 @@ CRecvFile::~CRecvFile(void)
 //파일 정보(이름, 크기) 수신시..
 HANDLE CRecvFile::RecvFileInfo(char * data)
 {
+	TCHAR fullFilePath[MAX_PATH];
+
 	char bFileName[FILENAMESIZE+1];
 	memset(bFileName, 0, sizeof(bFileName));
 	memcpy(bFileName, data, FILENAMESIZE);
@@ -33,18 +35,43 @@ HANDLE CRecvFile::RecvFileInfo(char * data)
 	m_iTotalFileSize = atoll(bFileSize);
 	//앞으로 받을 파일 크기
 	memset(m_uniFileName, 0, sizeof(m_uniFileName));
-	CUtil::UtfToUni(m_uniFileName, bFileName);
+	CUtil::UtfToUni(m_uniFileName, bFileName);	
 
+	CreateDirectory(directoryPath, NULL);
+	
+	_tcscpy(fullFilePath, directoryPath);
+	_tcscat(fullFilePath, m_uniFileName);
+
+	//해당 경로에 이미 같은 이름의 파일이 있을 경우 처리
+	int index = 1;
+	CString strIndex, temp, name, ext;
+	while(PathFileExists(fullFilePath))
+	{
+		temp = m_uniFileName;		
+		AfxExtractSubString(name, temp, 0, '.');
+		AfxExtractSubString(ext, temp, 1, '.');
+		strIndex.Format(_T("-%d"), index);
+		temp = name+strIndex+_T(".")+ext;
+		index++;
+
+		_tcscpy(fullFilePath, directoryPath);
+		_tcscat(fullFilePath, temp);
+	}
+	
 	if(m_hRecvFile)
 	{
 		CloseHandle(m_hRecvFile);
 	}
-	m_hRecvFile = CreateFile(m_uniFileName, GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS,
-		FILE_ATTRIBUTE_NORMAL, NULL);	
+	m_hRecvFile = CreateFile(fullFilePath, GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS,
+		FILE_ATTRIBUTE_NORMAL, NULL);
+
+	if(m_hRecvFile == INVALID_HANDLE_VALUE)
+	{
+		AfxMessageBox(_T("현재 위치에 파일을 저장할 수 없습니다"));
+	}
 
 	m_iRecvFileSize = 0;
 	//현재 받은 파일 크기
-
 	return m_hRecvFile;
 }
 
@@ -95,4 +122,22 @@ void CRecvFile::CloseFileHandle(void)
 		CloseHandle(m_hRecvFile);
 		m_hRecvFile = NULL;
 	}
+}
+
+void CRecvFile::SetFilePath(TCHAR * path)
+{	
+	_tcscpy(directoryPath, path);
+
+	if(directoryPath[_tcslen(directoryPath)-1] != _T('\\'))
+	{
+		_tcscat(directoryPath, _T("\\"));
+	}	
+}
+
+
+void CRecvFile::SetDefaultPath(void)
+{
+	//현재 바탕화면의 절대경로 얻어오기
+	SHGetFolderPath(NULL, CSIDL_DESKTOP, NULL, 0, directoryPath);
+	_tcscat(directoryPath, _T("\\Remotroid\\"));	
 }

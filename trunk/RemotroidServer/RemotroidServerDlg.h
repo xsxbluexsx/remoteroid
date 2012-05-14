@@ -9,6 +9,7 @@
 #include "screen.h"
 #include "ImageDlg.h"
 #include "afxwin.h"
+#include "recvfile.h"
 
 
 
@@ -79,9 +80,11 @@ private:
 	BOOL m_isClickedEndBtn;
 	SOCKET m_UDPServerSocket;
 	BOOL m_isReadyRecv;	
+	CRecvFile recvFileClass;
 
 private:
 	void EndAccept(void);
 	void EndConnect(void);
-	void ReadyRecvFile(void);	
+	void ReadyRecvFile(void);		
+	void GetStoreFilePath(void);
 };
