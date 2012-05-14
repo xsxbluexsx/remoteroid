@@ -103,7 +103,7 @@ UINT CFileSender::SendFileThread(LPVOID pParam)
 	CFile *pFile = (CFile *)pDlg->sendFileList.RemoveHead();
 	unsigned long long totalFileSize = pFile->GetLength();
 	unsigned long long sendedFileSize = 0;
-		
+
 	while(totalFileSize > sendedFileSize)
 	{
 		int iCurrentSendSize = (totalFileSize-sendedFileSize) > MAXDATASIZE ? MAXDATASIZE : totalFileSize-sendedFileSize;		

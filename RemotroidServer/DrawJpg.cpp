@@ -142,25 +142,25 @@ void CDrawJpg::SetBitmapInfo(void)
 	//픽셀당 비트수.. 컬러수*8비트
 	bih.biBitCount = image.DIBChannels*8;
 	
- 	HDC hdc = ::GetDC(this->screenHandle);
+	hdc = ::GetDC(this->screenHandle);
 // 	memDC = ::CreateCompatibleDC(hdc);
 // 	bitmap = ::CreateCompatibleBitmap(hdc,screenXSize,screenXSize);
 // 	oldBitmap = (HBITMAP)SelectObject(memDC, bitmap);	
 // 		
-// 	::SetStretchBltMode(memDC, HALFTONE);
-	
+ 	
+	::SetStretchBltMode(hdc, HALFTONE);	
 	::StretchDIBits(hdc, 0, 0, screenXSize, screenYSize, 0, 0,
 		image.DIBWidth, image.DIBHeight, m_pBitmapData, &bmi, DIB_RGB_COLORS, SRCCOPY);
 
-//  	::StretchDIBits(memDC, 0, 0, screenXSize, screenYSize, 0, 0,
-//  		image.DIBWidth, image.DIBHeight, m_pBitmapData, &bmi, DIB_RGB_COLORS, SRCCOPY);
+// 	::StretchDIBits(memDC, 0, 0, screenXSize, screenYSize, 0, 0,
+// 		image.DIBWidth, image.DIBHeight, m_pBitmapData, &bmi, DIB_RGB_COLORS, SRCCOPY);
 // 
 // 	::BitBlt(hdc,0,0,screenXSize,screenYSize,memDC,0,0,SRCCOPY);
 // 
 // 	::SelectObject(memDC, oldBitmap);
 // 	::DeleteObject(bitmap);
 // 	::DeleteDC(memDC);
- 	::ReleaseDC(screenHandle, hdc);
+	::ReleaseDC(screenHandle, hdc);
 
 }
 

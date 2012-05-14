@@ -34,7 +34,7 @@ private:
 	BOOL SetIJLInfo(void);
 	void SetBitmapInfo(void);
 	HWND screenHandle;
-// 	HDC hdc;
+	HDC hdc;
 // 	HDC memDC;
 // 	HBITMAP bitmap;
 // 	HBITMAP oldBitmap;
