@@ -105,6 +105,10 @@ public class PacketReceiver implements Runnable{
 						break;		
 					case CONS.OPCODE.OP_REQFILEDATA:
 						fileSender.SendFileData();
+						break;
+					case CONS.OPCODE.OP_REQFILEINFO:						
+						fileSender.SendFileInfo();
+						break;
 					}
 				}
 			} catch (IOException e) {	

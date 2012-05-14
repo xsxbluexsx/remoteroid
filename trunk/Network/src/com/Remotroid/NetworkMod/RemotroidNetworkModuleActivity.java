@@ -34,7 +34,7 @@ public class RemotroidNetworkModuleActivity extends Activity {
         Button btn2 = (Button)findViewById(R.id.btnTest);
         btn2.setOnClickListener(new Button.OnClickListener(){
         	public void onClick(View v){
-        		module.CloseSocket();
+        		module.SendPacket(6, null, 0);
         	}
         });
 	}    

@@ -22,9 +22,14 @@ public class FileSender extends Thread{
 		this.packetMaker = packetMaker;
 	}	
 	
+	/**
+	 * PC로 파일 전송이 준비됐다는 패킷 전송
+	 * @param fileList
+	 * @throws IOException
+	 */
 	public void SendFileList(ArrayList<File> fileList) throws IOException{
 		this.fileList = fileList;		
-		SendFileInfo();
+		SendPacket(CONS.OPCODE.OP_READYSEND, null, 0);
 	}
 		
 	/**
@@ -52,12 +57,12 @@ public class FileSender extends Thread{
 		// sendfileinfo를 위한 프로토콜 조립
 		
 		sendedFileSize = 0;
+		Log.i("qqqq", "sendfile info");
 		SendPacket(CONS.OPCODE.OP_SENDFILEINFO, data, data.length);		
 	}
 	
 	public void SendFileData(){
-		SendFileDataThread sendThread = new SendFileDataThread();
-		sendThread.start();
+		new SendFileDataThread().start();		
 	}
 	
 	
@@ -69,13 +74,15 @@ public class FileSender extends Thread{
 			try{				
 				in = new FileInputStream(fileList.remove(0));			
 				
-				while(fileSize > sendedFileSize){
+				while(fileSize > sendedFileSize){					
 					int iCurrentSendSize =
 							(int) ((fileSize - sendedFileSize) > maxDataSize ? maxDataSize : (fileSize - sendedFileSize));
 					in.read(buffer, 0, iCurrentSendSize);	
 					SendPacket(CONS.OPCODE.OP_SENDFILEDATA, buffer, iCurrentSendSize);				
 					sendedFileSize += iCurrentSendSize;
-				}			
+					Log.i("qqqq", "sending : "+sendedFileSize+" : "+fileSize);
+				}				
+				Log.i("qqqq", "complete");
 				SendFileInfo();
 			}catch(FileNotFoundException e){
 				Log.i("exception", "file not exception");
