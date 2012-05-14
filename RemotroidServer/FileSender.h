@@ -35,7 +35,7 @@ private:
 	int SendPacket(int iOPCode, const char * data, int iDataLen);	
 	int SendFileInfo();
 	
-	
 	CWinThread *pSendFileThread;
+
 };
 
