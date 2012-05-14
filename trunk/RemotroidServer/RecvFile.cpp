@@ -93,5 +93,6 @@ void CRecvFile::CloseFileHandle(void)
 	if(m_hRecvFile != NULL)
 	{
 		CloseHandle(m_hRecvFile);
+		m_hRecvFile = NULL;
 	}
 }

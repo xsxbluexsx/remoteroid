@@ -27,6 +27,7 @@ BEGIN_MESSAGE_MAP(CScreen, CStatic)
 	ON_WM_LBUTTONDOWN()
 
 
+	ON_WM_LBUTTONUP()
 END_MESSAGE_MAP()
  
 
@@ -75,7 +76,15 @@ void CScreen::OnLButtonDown(UINT nFlags, CPoint point)
 	// TODO: Add your message handler code here and/or call default
 	TCHAR temp[100];
 	wsprintf(temp, _T("x:%d, y:%d"), point.x, point.y);
-	MessageBox(temp);
+//	MessageBox(temp);
 	CStatic::OnLButtonDown(nFlags, point);
 }
 
+
+
+void CScreen::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	CStatic::OnLButtonUp(nFlags, point);
+}

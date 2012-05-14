@@ -11,6 +11,8 @@
 #include "afxwin.h"
 
 
+
+
 // CRemotroidServerDlg dialog
 class CRemotroidServerDlg : public CImageDlg
 {
@@ -35,6 +37,7 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+
 private:
 	SOCKET m_ServerSocket;	
 	CMyClient *m_pClient;
@@ -52,31 +55,33 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();	
 	afx_msg void OnDropFiles(HDROP hDropInfo);
-
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);	
+	afx_msg void OnBnClickedFilesender();
+	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);	
+	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	
 	LRESULT OnRecvJpgInfo(WPARAM wParam, LPARAM lParam);
 	LRESULT OnRecvJpgData(WPARAM wParam, LPARAM lParam);
+	LRESULT OnEndAccept(WPARAM wParam, LPARAM lParam);
+	LRESULT OnReadyRecvFile(WPARAM wParam, LPARAM lParam);
+	LRESULT OnEndRecv(WPARAM wParam, LPARAM lParam);
+
+	static UINT UDPRecvFunc(LPVOID pParam);
+
+	virtual BOOL PreTranslateMessage(MSG* pMsg);		
+
 private:
 	CWinThread *pRecvThread;
-	void EndConnect(void);
-	BOOL m_isClickedEndBtn;
-public:
-	LRESULT OnEndRecv(WPARAM wParam, LPARAM lParam);
-	afx_msg void OnBnClickedFilesender();
-private:
 	CWinThread *pAcceptThread;
-public:
-	LRESULT OnEndAccept(WPARAM wParam, LPARAM lParam);
+	CWinThread *pUdpRecvThread;
+	BOOL m_isClickedEndBtn;
+	SOCKET m_UDPServerSocket;
+	BOOL m_isReadyRecv;	
+
 private:
 	void EndAccept(void);
-	SOCKET m_UDPServerSocket;
-	CWinThread *pUdpRecvThread;
-public:
-	static UINT UDPRecvFunc(LPVOID pParam);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);	
-	
-	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);	
-	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
+	void EndConnect(void);
+	void ReadyRecvFile(void);	
 };

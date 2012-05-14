@@ -5,6 +5,8 @@
 
 #pragma once
 
+#define OEMRESOURCE
+
 #ifndef _SECURE_ATL
 #define _SECURE_ATL 1
 #endif
@@ -45,6 +47,7 @@
 
 #pragma comment(lib, "gdiplus")
 using namespace Gdiplus;
+
 
 
 #ifdef _UNICODE

@@ -11,7 +11,6 @@
 
 
 
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -60,6 +59,7 @@ CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
 	, m_isClickedEndBtn(FALSE)
 	, pAcceptThread(NULL)
 	, pUdpRecvThread(NULL)
+	, m_isReadyRecv(FALSE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	
@@ -82,11 +82,13 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_MESSAGE(WM_RECVJPGDATA, OnRecvJpgData)
 	ON_MESSAGE(WM_MYENDRECV, OnEndRecv)
 	ON_MESSAGE(WM_MYENDACCEPT, OnEndAccept)
+	ON_MESSAGE(WM_READYRECVFILE, OnReadyRecvFile)
 	ON_BN_CLICKED(IDC_FILESENDER, &CRemotroidServerDlg::OnBnClickedFilesender)
 	ON_WM_MOUSEMOVE()
 	ON_WM_CTLCOLOR()
 	ON_WM_KEYDOWN()	
 	ON_WM_CHAR()
+	ON_WM_LBUTTONUP()
 END_MESSAGE_MAP()
 
 
@@ -346,6 +348,9 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 			case OP_REQFILEDATA:
 				pDlg->fileSender.SendFileData();
 				break;
+			case OP_READYSEND:
+				pDlg->SendMessage(WM_READYRECVFILE, 0, 0);
+				break;
 			}
 		}
 	}
@@ -523,9 +528,9 @@ void CRemotroidServerDlg::OnMouseMove(UINT nFlags, CPoint point)
 	screen.GetWindowRect(&screenRect);
 	ScreenToClient(&screenRect);
 
-	if(!PtInRect(&screenRect, point))
+	if(!PtInRect(&screenRect, point) && m_isReadyRecv == FALSE)
 	{
-		PostMessage( WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM( point.x, point.y));
+		//PostMessage( WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM( point.x, point.y));
 	}
 	CImageDlg::OnMouseMove(nFlags, point);
 }
@@ -574,3 +579,72 @@ void CRemotroidServerDlg::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 
  	CImageDlg::OnChar(nChar, nRepCnt, nFlags);
 }
+
+
+////////////////////////////////////////////////////////////
+////드래그 앤 드롭으로 파일을 수신 받기 위해//////////////////
+
+
+//안드로이드에서 부터 파일 수신 받을 준비
+LRESULT CRemotroidServerDlg::OnReadyRecvFile(WPARAM wParam, LPARAM lParam)
+{
+	m_isReadyRecv = TRUE;
+	::SetSystemCursor(LoadCursor(0, IDC_HAND), OCR_NORMAL);
+
+	SetCapture();	
+	return LRESULT();
+}
+
+
+void CRemotroidServerDlg::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	//수신 받을 파일을 드래그 한 후 드롭일 경우에...
+	if(m_isReadyRecv == TRUE)
+	{
+		POINT pt;
+		memset(&pt, 0, sizeof(pt));
+		GetCursorPos(&pt);
+
+		CWnd *wnd = WindowFromPoint(pt);
+		WCHAR temp[50];
+		CWnd *pParent = NULL;	
+
+		//현재 바탕화면의 절대경로 얻어오기
+		SHGetFolderPath(NULL, CSIDL_DESKTOP, NULL, 0, temp);
+		
+
+		
+		for(pParent = wnd; pParent->GetParent(); pParent = pParent->GetParent());				
+
+		CWnd *pToolbarWnd = pParent->FindWindowEx(pParent->GetSafeHwnd(), NULL, _T("WorkerW"), NULL);  
+		if(!pToolbarWnd) goto ENDSEARCH;
+		pToolbarWnd = pToolbarWnd->FindWindowEx(pToolbarWnd->GetSafeHwnd(), NULL, _T("ReBarWindow32"), NULL);  
+		if(!pToolbarWnd) goto ENDSEARCH;
+		pToolbarWnd = pToolbarWnd->FindWindowEx(pToolbarWnd->GetSafeHwnd(), NULL, _T("Address Band Root"), NULL);  
+		if(!pToolbarWnd) goto ENDSEARCH;
+		pToolbarWnd = pToolbarWnd->FindWindowEx(pToolbarWnd->GetSafeHwnd(), NULL, _T("msctls_progress32"), NULL);  
+		if(!pToolbarWnd) goto ENDSEARCH;
+		pToolbarWnd = pToolbarWnd->FindWindowEx(pToolbarWnd->GetSafeHwnd(), NULL, _T("Breadcrumb Parent"), NULL);  
+		if(!pToolbarWnd) goto ENDSEARCH;
+		pToolbarWnd = pToolbarWnd->FindWindowEx(pToolbarWnd->GetSafeHwnd(), NULL, _T("ToolbarWindow32"), NULL);  
+		if(!pToolbarWnd) goto ENDSEARCH;
+		pToolbarWnd->GetWindowText(temp, 50);
+
+		MessageBox(temp);
+
+ENDSEARCH:
+		ReleaseCapture();
+		m_isReadyRecv = FALSE;		
+	}
+	SystemParametersInfo(SPI_SETCURSORS, 0, NULL, 0);
+	
+	CImageDlg::OnLButtonUp(nFlags, point);
+}
+/////드래그 앤 드롭으로 파일을 수신 받기 위해//////////////////
+////////////////////////////////////////////////////////////
+
+
+
+
