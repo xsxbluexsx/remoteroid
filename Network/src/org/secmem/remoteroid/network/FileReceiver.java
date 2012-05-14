@@ -42,7 +42,7 @@ public class FileReceiver {
 			while(!file.createNewFile()){
 			//파일이 이미 존재한다면 이름을 변경
 				String[] list = fileName.split("\\.");
-				String newfileName = list[0]+overlapCheck+"."+list[1];
+				String newfileName = list[0]+'-'+overlapCheck+"."+list[1];
 				file = new File(strAbsoultePath+newfileName);
 				overlapCheck++;
 			}			
