@@ -34,19 +34,19 @@ bool openInput(){
 
 bool openInputWithoutPermission(){
 	LOGD(LOGTAG, "Opening input device...");
-		struct input_id id = {
-		        BUS_VIRTUAL, /* Bus type. */
-		        1, /* Vendor id. */
-		        1, /* Product id. */
-		        1 /* Version id. */
-		};
+	struct input_id id = {
+			BUS_VIRTUAL, /* Bus type. */
+			1, /* Vendor id. */
+			1, /* Product id. */
+			1 /* Version id. */
+	};
 
-		if((inputFd = suinput_open("qwerty", &id)) == -1){
-			LOGD(LOGTAG, "Cannot open device - 'qwerty'");
-			return false;
-		}
-		LOGI(LOGTAG, "Opened device 'qwerty'");
-		return true;
+	if((inputFd = suinput_open("qwerty_kor", &id)) == -1){
+		LOGD(LOGTAG, "Cannot open device - 'qwerty'");
+		return false;
+	}
+	LOGI(LOGTAG, "Opened device 'qwerty'");
+	return true;
 }
 
 void closeInput(){
@@ -57,6 +57,7 @@ void closeInput(){
 		}
 		LOGI(LOGTAG, "Device closed.");
 		system("su -c \"chmod 660 /dev/uinput\"");
+		inputFd = -1;
 	}else{
 		LOGI(LOGTAG, "Nothing to close.");
 	}

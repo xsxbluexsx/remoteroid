@@ -52,6 +52,8 @@ public class AuthenticateFragment extends Fragment {
 	private boolean isPwValid=false;
 	
 	private SocketModule socket;
+	
+	InputHandler hd = new InputHandler();
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -126,6 +128,7 @@ public class AuthenticateFragment extends Fragment {
 			
 		});
 		
+		hd.openInputDevice();
 		mBtnConnect.setOnClickListener(new OnClickListener(){
 
 			@Override
@@ -144,6 +147,10 @@ public class AuthenticateFragment extends Fragment {
 				} catch (Exception e) {
 					Toast.makeText(getActivity(), "�곌껐�ㅽ�", Toast.LENGTH_LONG);
 				}*/
+				
+				hd.keyStroke(NativeKeyCode.KEY_A);
+				hd.keyStroke(NativeKeyCode.KEY_K);
+				
 			}
 		});
 		
@@ -152,6 +159,12 @@ public class AuthenticateFragment extends Fragment {
 					new ConnectingFragment(Util.Connection.getIpAddress(getActivity()), Util.Connection.getPassword(getActivity())))
 					.commit();
 		}
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		hd.closeInputDevice();
 	}
 
 }

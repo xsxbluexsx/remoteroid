@@ -46,6 +46,6 @@
         android:id="@+id/connect"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/connect" android:layout_marginTop="5dp" android:enabled="false"/>
+        android:text="@string/connect" android:layout_marginTop="5dp"/>
 
 </LinearLayout>
