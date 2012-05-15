@@ -47,10 +47,10 @@ public class DataList extends ListView {
 	
 	private OnPathChangedListener onPathChangedListener = null;
 	private OnFileSelectedListener onFileSelectedListener = null;
-
-
+	
 	public DataList(Context context) {
 		super(context);
+		
 	}
 	
 	private boolean openPath(String path) {
@@ -87,6 +87,7 @@ public class DataList extends ListView {
 		expList.addAll(fileList);
         
 	}
+	
 
 	public void setPath(String value) {
 		if (value.length() == 0) {

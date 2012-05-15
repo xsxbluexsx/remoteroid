@@ -20,22 +20,30 @@
 package org.secmem.remoteroid.util;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.regex.Pattern;
 
+import org.secmem.remoteroid.activity.ExplorerActivity;
+import org.secmem.remoteroid.data.CategoryList;
 import org.secmem.remoteroid.data.ExplorerType;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.provider.MediaStore;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
@@ -51,7 +59,7 @@ public class HongUtil {
 	public static NomalComparator com = new NomalComparator();
 	
 	public static void makeToast(Context c, String str){
-		Toast.makeText(c, str, Toast.LENGTH_LONG).show();
+		Toast.makeText(c, str, Toast.LENGTH_SHORT).show();
 	}
 	
 	public static Comparator<ExplorerType> nameComparator = new Comparator<ExplorerType>() {
@@ -95,11 +103,10 @@ public class HongUtil {
 		else{
 			
 		}
-		
 		return result;
 	}
 	
-	public static Bitmap getApkBitmap(File f, Context c){
+	public static Bitmap getApkBitmap(File f, Context c){				//  apk 아이콘 비트맵 추출
 		Bitmap result = null;
 		String filePath = f.getPath();
 		PackageInfo packageInfo = c.getPackageManager().getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
@@ -120,6 +127,57 @@ public class HongUtil {
 		return result;
 	}
 	
+	public static InputFilter filterAlpha = new InputFilter() {						// 영어만 입력 가능하게 필터링
+		
+		@Override
+		public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+			
+			Pattern ps = Pattern.compile("^[a-zA-Z]+$");
+			if(!ps.matcher(source).matches()){
+				return "";
+			}
+			return null;
+		}
+	};
+	
+	public static File getRootPath(){													// 디바이스 절대경로 리턴
+		String sdcard = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
+		File root = new File(sdcard);
+		Log.i("qq","sdcard = "+sdcard);
+		return root;
+	}
+	
+	public static void searchIndex(File root, String index){						// 디바이스 내의 모든 경로를 검색하며 원하는 인덱스 찾아줌
+		String[] file = root.list();
+		String path = root.getPath();
+		
+		if(file !=null){
+			
+			for(int idx=0 ; idx<file.length ; ++idx)
+			{
+				
+				File f = new File(path+"/"+file[idx]);
+				if(f.isFile())
+				{
+					if(f.getName().indexOf(index)!=-1)
+					{
+						addFile(f);
+					}
+					continue;
+				}
+				if(f.isDirectory())
+				{
+					searchIndex(new File(path+"/"+file[idx]), index);
+				}
+			}
+			
+		}
+	}
+	
+	private static void addFile(File file) {						// 리모트로이드 파일추가
+		ExplorerActivity.searchList.add(new CategoryList(file, ExplorerActivity.TYPE_CUTSOM));
+	}
+
 //	public static Bitmap opticalBitmap(File f){				// 비트맵 이미지 최적화
 //		Bitmap result=null;
 //		BitmapFactory.Options option = new BitmapFactory.Options();
@@ -138,6 +196,94 @@ public class HongUtil {
 //		
 //		return result;
 //	}
+	
+	
+	
+	
+	public static void getPhoto(Cursor imageCursor){						// 이미지 정보 가져오기
+
+//		String[] projection = { MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA};
+//	     쿼리 수행
+//	    Cursor imageCursor = managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, MediaStore.Images.Media.DATE_ADDED + " desc ");
+	   
+		if (imageCursor != null && imageCursor.getCount() > 0)
+	    {
+	      // 컬럼 인덱스
+	      int id = imageCursor.getColumnIndex(MediaStore.Images.Media._ID); 
+	      int path = imageCursor.getColumnIndex(MediaStore.Images.Media.DATA);
+	      
+	      
+	      // 커서에서 이미지의 ID와 경로명을 가져와서 ThumbImageInfo 모델 클래스를 생성해서
+	      // 리스트에 더해준다.
+			while (imageCursor.moveToNext()) {
+				
+				CategoryList categoryList = new CategoryList(new File(imageCursor.getString(path)), ExplorerActivity.TYPE_IMAGE);
+				categoryList.setId(imageCursor.getLong(id));
+				ExplorerActivity.searchList.add(categoryList);
+			}
+	    }
+	    imageCursor.close();
+	}
+	
+	public static void getVideo(Cursor cursor){
+//		String[] infoVideo = new String[] { MediaStore.Video.Media._ID, MediaStore.Video.Media.DATA};
+//		Cursor cursor = managedQuery(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, infoVideo, null, null, null);
+//		
+
+		if (cursor != null && cursor.moveToFirst()) {
+			String path;
+			long id;
+			do {
+				
+				id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
+				path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+				
+				Log.i("query","path = "+path);
+				
+				CategoryList categoryList = new CategoryList(new File(path), ExplorerActivity.TYPE_VIDEO);
+				categoryList.setId(id);
+				ExplorerActivity.searchList.add(categoryList);
+				
+			} while (cursor.moveToNext());
+		}
+	}
+	
+	public static void getMusic(Cursor cursor){								// 음악 데이터 불러오는  함수
+//		String[] mediaData = {
+//				MediaStore.Audio.Media.DATA, MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID};
+//		Cursor cursor = managedQuery(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+//				mediaData, null, null, null);
+		
+		//	MediaStore.Audio.Media.TITLE + " asc"    타이틀순 정렬
+//		Log.i("qq", ""+cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
+		
+		if (cursor != null && cursor.moveToFirst()){
+             String path;
+             long id;
+             int album_id;
+            
+             int cdata = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+             int cid = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
+             int calbum_id = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+             
+             do {
+            	 path = cursor.getString(cdata);
+            	 id = cursor.getLong(cid);
+            	 album_id = cursor.getInt(calbum_id);
+            	 
+            	 Log.i("query","path = "+path);
+            	 
+            	 CategoryList categoryList = new CategoryList(new File(path), ExplorerActivity.TYPE_MUSIC);
+            	 categoryList.setAlbumId(album_id);
+            	 categoryList.setId(id);
+            	 
+            	 ExplorerActivity.searchList.add(categoryList);
+            	 
+             }while (cursor.moveToNext());
+         }
+         cursor.close();
+	}
+	
 	
 	
 	
