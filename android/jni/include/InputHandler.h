@@ -17,10 +17,26 @@ JNIEXPORT jboolean JNICALL Java_org_secmem_remoteroid_natives_InputHandler_openI
 
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
+ * Method:    openInputDeviceWithoutPermission
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_secmem_remoteroid_natives_InputHandler_openInputDeviceWithoutPermission
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_secmem_remoteroid_natives_InputHandler
  * Method:    closeInputDevice
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_closeInputDevice
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_secmem_remoteroid_natives_InputHandler
+ * Method:    closeInputDeviceWithoutRevertPermission
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_closeInputDeviceWithoutRevertPermission
   (JNIEnv *, jobject);
 
 /*
