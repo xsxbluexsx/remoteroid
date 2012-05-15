@@ -20,19 +20,27 @@
 package org.secmem.remoteroid.adapter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.activity.ExplorerActivity;
+import org.secmem.remoteroid.data.CategoryList;
 import org.secmem.remoteroid.data.ExplorerType;
 import org.secmem.remoteroid.data.FileList;
 import org.secmem.remoteroid.util.HongUtil;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,30 +52,48 @@ import android.widget.TextView;
 
 public class ExplorerAdapter extends BaseAdapter{
 	
+	private static int threadCount=0;
 	private Context context;
 	private int layout;
+	private int type;
+	
+	private String categoryType="4";
+	
 	private DataList dataList;
-	private static int threadCount=0;
+	private ArrayList<CategoryList> categoryList = new ArrayList<CategoryList>();
 	
 	private ArrayList<File> fileInfo = new ArrayList<File>();
 	
+	private static final BitmapFactory.Options sBitmapOptionsCache = new BitmapFactory.Options();
+    private static final Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
 	
-	public ExplorerAdapter(Context context, int layout, DataList dataList) {
+	public ExplorerAdapter(Context context, int layout, DataList dataList, int type) {
 		this.context = context;
 		this.layout = layout;
 		this.dataList = dataList;
+		this.type = type;
 		
 	}
 
 	@Override
 	public int getCount() {
-		// TODO Auto-generated method stub
-		return dataList.getExpList().size();
+		int result=0;
+		if(type==ExplorerActivity.ADAPTER_TYPE_EXPLORER)
+			result = dataList.getExpList().size();
+		else if(type==ExplorerActivity.ADAPTER_TYPE_CATEGORY)
+			result = categoryList.size();
+		
+		return result;
 	}
 
 	@Override
-	public ExplorerType getItem(int arg0) {
-		// TODO Auto-generated method stub
+	public Object getItem(int arg0) {
+		Object result=null;
+		if(type==ExplorerActivity.ADAPTER_TYPE_EXPLORER)
+			result = dataList.getExpList().get(arg0);
+		else if(type==ExplorerActivity.ADAPTER_TYPE_CATEGORY)
+			result = categoryList.get(arg0);
+		
 		return dataList.getExpList().get(arg0);
 	}
 
@@ -91,113 +117,221 @@ public class ExplorerAdapter extends BaseAdapter{
             holder.imgHolder = (ImageView)viewItem.findViewById(R.id.grid_explorer_img);
             holder.titleHolder = (TextView)viewItem.findViewById(R.id.grid_explorer_tv);
             viewItem.setTag(holder);
-            
         }
 		else{
 			holder = (ImageViewHolder)viewItem.getTag();
 		}
 		
-		final String path = dataList.getPath();
-		final String fileName = dataList.getExpList().get(pos).getName();
-		
-		holder.titleHolder.setTextColor(Color.WHITE);
-		if(dataList.getExpList().get(pos).getType()==ExplorerType.TYPE_FOLDER){					// 폴더일 때
-			holder.imgHolder.setImageBitmap(null);
-			holder.imgHolder.setBackgroundResource(R.drawable.blue_folder);
-		}
-		else{																													// 파일 일 때
-//			HongUtil.getFileIcon(path, fileName);
-			FileList f = (FileList)dataList.getExpList().get(pos);
-			holder.imgHolder.setImageBitmap(f.getBitmap());
-			File file = new File(path+fileName);
+		if(type==ExplorerActivity.ADAPTER_TYPE_EXPLORER)							// 탐색기 상태 일 때
+		{
+			final String path = dataList.getPath();
+			final String fileName = dataList.getExpList().get(pos).getName();
 			
-			String type = HongUtil.getMimeType(file);
-			if(type.equals(HongUtil.TYPE_PICTURE)){						// 타입이 사진이면 사진 썸네일 추출
-				if(!(ExplorerActivity.SCROLL_STATE)){
-					
-					if(f.isBitmapChecked()){
-						holder.imgHolder.setBackgroundResource(0x00000000);
-						holder.imgHolder.setImageBitmap(f.getBitmap());
+			holder.titleHolder.setTextColor(Color.WHITE);
+			if(dataList.getExpList().get(pos).getType()==ExplorerType.TYPE_FOLDER){					// 폴더일 때
+				holder.imgHolder.setImageBitmap(null);
+				holder.imgHolder.setBackgroundResource(R.drawable.img_folder);
+			}
+			
+			else{																													// 파일 일 때
+				FileList f = (FileList)dataList.getExpList().get(pos);
+				holder.imgHolder.setImageBitmap(f.getBitmap());
+				File file = new File(path+fileName);
+				
+				String type = HongUtil.getMimeType(file);
+				if(type.equals(HongUtil.TYPE_PICTURE)){						// 타입이 사진이면 사진 썸네일 추출
+					if(!(ExplorerActivity.SCROLL_STATE)){
+						
+						if(f.isBitmapChecked()){
+							holder.imgHolder.setBackgroundResource(0x00000000);
+							if(f.getBitmap()!=null)
+								holder.imgHolder.setImageBitmap(f.getBitmap());
+							else
+								holder.imgHolder.setBackgroundResource(R.drawable.photo_camera);
+						}
+						else{
+							holder.imgHolder.setBackgroundResource(R.drawable.photo_camera);
+							if(threadCount<15){
+								f.setBitmapChecked(true);
+								threadCount++;
+								new ThumbAsync().execute(path,fileName, String.valueOf(pos), categoryType);
+							}
+						}
 					}
 					else{
-						holder.imgHolder.setBackgroundResource(R.drawable.rocket_photo_blank);
-//						holder.imgHolder.setBackgroundResource(0x0000);
-						if(threadCount<15){
+						holder.imgHolder.setBackgroundResource(R.drawable.photo_camera);
+					}
+				}
+				else if(file.getPath().endsWith(".apk")){															// 타입이 .APK 일 때 APK 썸네일 추출
+					
+					if(!(ExplorerActivity.SCROLL_STATE)){
+						
+						if(f.isBitmapChecked()){
+							holder.imgHolder.setBackgroundResource(0x00000000);
+							if(f.getBitmap()!=null)
+								holder.imgHolder.setImageBitmap(f.getBitmap());
+							else
+								holder.imgHolder.setBackgroundResource(R.drawable.img_apk);
+						}
+						else{
+							holder.imgHolder.setBackgroundResource(R.drawable.img_apk);
 							f.setBitmapChecked(true);
+							new ApkBitmapAsync().execute(path,fileName, String.valueOf(pos));
+						}
+					}
+					else{
+						holder.imgHolder.setBackgroundResource(R.drawable.img_apk);
+					}
+					
+				}
+				else if(type.equals(HongUtil.TYPE_VIDEO)){
+					holder.imgHolder.setBackgroundResource(R.drawable.video_camera);
+				}
+				else if(type.equals(HongUtil.TYPE_MUSIC)){
+					holder.imgHolder.setBackgroundResource(R.drawable.music_note);
+				}
+				else{
+					holder.imgHolder.setBackgroundResource(R.drawable.img_file);
+				}
+				
+				if(f.isFileSelected()){
+					holder.titleHolder.setTextColor(Color.GREEN);
+				}
+			}
+			holder.titleHolder.setText(dataList.getExpList().get(pos).getName());
+		}
+		
+		else if(type==ExplorerActivity.ADAPTER_TYPE_CATEGORY)						// 검색한 인덱스에 대한 상태일 때
+		{
+			CategoryList item = categoryList.get(pos);
+			holder.imgHolder.setImageBitmap(item.getBitmap());
+			holder.titleHolder.setTextColor(Color.WHITE);
+			
+			if(item.getType().equals(ExplorerActivity.TYPE_IMAGE)){
+				if(!(ExplorerActivity.SCROLL_STATE)){
+					
+					if(item.isBitmapChecked()){
+						holder.imgHolder.setBackgroundResource(0x00000000);
+						if(item.getBitmap()!=null)
+							holder.imgHolder.setImageBitmap(item.getBitmap());
+						else
+							holder.imgHolder.setBackgroundResource(R.drawable.photo_camera);
+					}
+					else{
+						holder.imgHolder.setBackgroundResource(R.drawable.photo_camera);
+						if(threadCount<15){
+							item.setBitmapChecked(true);
 							threadCount++;
-							new ThumbAsync().execute(path,fileName, String.valueOf(pos));
+							new ThumbAsync().execute(item.getFile().getParent()+"/",item.getFile().getName(), String.valueOf(pos), categoryType);
 						}
 					}
 				}
 				else{
-					holder.imgHolder.setBackgroundResource(R.drawable.rocket_photo_blank);
+					holder.imgHolder.setBackgroundResource(R.drawable.photo_camera);
 				}
-				
 			}
-			else if(file.getPath().endsWith(".apk")){															// 타입이 .APK 일 때 APK 썸네일 추출
-				
+			else if(item.getType().equals(ExplorerActivity.TYPE_VIDEO)){
 				if(!(ExplorerActivity.SCROLL_STATE)){
 					
-					if(f.isBitmapChecked()){
+					if(item.isBitmapChecked()){
 						holder.imgHolder.setBackgroundResource(0x00000000);
-						holder.imgHolder.setImageBitmap(f.getBitmap());
+						if(item.getBitmap()!=null)
+							holder.imgHolder.setImageBitmap(item.getBitmap());
+						else
+							holder.imgHolder.setBackgroundResource(R.drawable.video_camera);
 					}
 					else{
-						holder.imgHolder.setBackgroundResource(R.drawable.androidapk);
-						f.setBitmapChecked(true);
-						new ApkBitmapAsync().execute(path,fileName, String.valueOf(pos));
+						holder.imgHolder.setBackgroundResource(R.drawable.video_camera);
+						if(threadCount<15){
+							item.setBitmapChecked(true);
+							threadCount++;
+							new VideoThumbAsync().execute(String.valueOf(item.getId()), categoryType, String.valueOf(pos));
+						}
 					}
 				}
 				else{
-					holder.imgHolder.setBackgroundResource(R.drawable.androidapk);
+					holder.imgHolder.setBackgroundResource(R.drawable.video_camera);
 				}
-				
 			}
-			
-			else{
-				holder.imgHolder.setBackgroundResource(R.drawable.ic_launcher);
+			else if(item.getType().equals(ExplorerActivity.TYPE_MUSIC)){
+				if(!(ExplorerActivity.SCROLL_STATE)){
+					if(item.isBitmapChecked()){
+						holder.imgHolder.setBackgroundResource(0x00000000);
+						if(item.getBitmap()!=null)
+							holder.imgHolder.setImageBitmap(item.getBitmap());
+						else
+							holder.imgHolder.setBackgroundResource(R.drawable.music_note);
+					}
+					else{
+						holder.imgHolder.setBackgroundResource(R.drawable.music_note);
+						if(threadCount<15){
+							item.setBitmapChecked(true);
+							threadCount++;
+							new MusicThumbAsync().execute(String.valueOf(item.getAlbumId()), categoryType, String.valueOf(pos));
+						}
+					}
+				}
+				else{
+					holder.imgHolder.setBackgroundResource(R.drawable.music_note);
+				}
 			}
-			
-			if(f.isFileSelected()){
+			else if(item.getType().equals(ExplorerActivity.TYPE_CUTSOM)){
+				holder.imgHolder.setBackgroundResource(R.drawable.img_file);
+			}
+			if(item.isFileSelected()){
 				holder.titleHolder.setTextColor(Color.GREEN);
 			}
+			holder.titleHolder.setText(categoryList.get(pos).getFile().getName());
 		}
-		holder.titleHolder.setText(dataList.getExpList().get(pos).getName());
 		
 		
 		viewItem.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				
-				String fileName = getItem(pos).getName();
-				
-				if (dataList.getExpList().get(pos).getType()== ExplorerType.TYPE_FOLDER) {
-					dataList.setPath(dataList.getRealPathName(fileName));
-					fileInfo.clear();
-					notifyDataSetChanged();
-				} 
-				else {
-					if (dataList.getOnFileSelected() != null){ 
-						FileList fl = (FileList)dataList.getExpList().get(pos);
-						File f = new File(dataList.getPath()+fileName);
-						Log.i("qq","getPath = " + f.getPath() + "          getAb = "+f.getAbsolutePath());
-						if(fl.isFileSelected()){
-							fl.setFileSelected(false);
-							fileInfo.remove(getFilePos(f));
-							holder.titleHolder.setTextColor(Color.WHITE);
-						}
-						
-						else{
-							fl.setFileSelected(true);
-							fileInfo.add(f);
-							holder.titleHolder.setTextColor(Color.GREEN);
+				if(type==ExplorerActivity.ADAPTER_TYPE_EXPLORER){
+					String fileName = ((ExplorerType)getItem(pos)).getName();
+					
+					if (dataList.getExpList().get(pos).getType()== ExplorerType.TYPE_FOLDER) {
+						dataList.setPath(dataList.getRealPathName(fileName));
+						fileInfo.clear();
+						notifyDataSetChanged();
+					} 
+					else {
+						if (dataList.getOnFileSelected() != null){ 
+							FileList fl = (FileList)dataList.getExpList().get(pos);
+							File f = new File(dataList.getPath()+fileName);
+							if(fl.isFileSelected()){
+								fl.setFileSelected(false);
+								fileInfo.remove(getFilePos(f));
+								holder.titleHolder.setTextColor(Color.WHITE);
+							}
+							
+							else{
+								fl.setFileSelected(true);
+								fileInfo.add(f);
+								holder.titleHolder.setTextColor(Color.GREEN);
+							}
 						}
 					}
+					
 				}
-				
+				else if(type==ExplorerActivity.ADAPTER_TYPE_CATEGORY){
+					CategoryList category = categoryList.get(pos);
+					File f = new File(category.getFile().getParent()+"/"+category.getFile().getName());
+					if(category.isFileSelected()){
+						category.setFileSelected(false);
+						fileInfo.remove(getFilePos(f));
+						holder.titleHolder.setTextColor(Color.WHITE);
+					}
+					else{
+						category.setFileSelected(true);
+						fileInfo.add(f);
+						holder.titleHolder.setTextColor(Color.GREEN);
+					}
+				}
 				printFileInfo();
 			}
-			
 		});
 		return viewItem;
 	}
@@ -212,8 +346,9 @@ public class ExplorerAdapter extends BaseAdapter{
 
 		@Override
 		protected Integer doInBackground(String... params) {
+		
+			int result=setBitmap(params[0],params[1],params[2], params[3]);			// 경로 , 파일 이름, 포지션, 타입
 			
-			int result=setBitmap(params[0],params[1],params[2]);
 			return result;
 		}
 
@@ -225,10 +360,73 @@ public class ExplorerAdapter extends BaseAdapter{
 			}
 			threadCount--;
 		}
-		
 	}
 	
-	private int setBitmap(String path, String file, String position) {
+	private class VideoThumbAsync extends AsyncTask<String, Void, Integer>{
+
+		@Override
+		protected Integer doInBackground(String... params) {
+			
+			int result=1;
+			
+			long id = Long.parseLong(params[0]);
+			String vType = params[1];
+			int pos = Integer.parseInt(params[2]);
+		
+			BitmapFactory.Options option = new BitmapFactory.Options();
+			option.inSampleSize=2;
+			
+			Bitmap b= MediaStore.Video.Thumbnails.getThumbnail(context.getContentResolver(),  id,5000,
+					MediaStore.Video.Thumbnails.MINI_KIND ,option);
+			Bitmap tmp = null;
+			if(b!=null){
+				tmp = Bitmap.createScaledBitmap(b, 300, 300, true);
+				if(type==ExplorerActivity.ADAPTER_TYPE_CATEGORY && categoryType.equals(vType) && !ExplorerActivity.isSearched)
+					categoryList.get(pos).setBitmap(tmp);
+				else
+					result=0;
+			}
+			return result;
+		}
+
+		@Override
+		protected void onPostExecute(Integer result) {
+			super.onPostExecute(result);
+			if(result==1){
+				notifyDataSetChanged();
+			}
+			threadCount--;
+		}
+	}
+	
+	private class MusicThumbAsync extends AsyncTask<String, Void, Integer>{
+
+		@Override
+		protected Integer doInBackground(String... params) {
+			
+			int result=1;
+		
+			Bitmap bitmap = getArtworkQuick(context, Integer.parseInt(params[0]), 100, 100);
+			if(type==ExplorerActivity.ADAPTER_TYPE_CATEGORY && categoryType.equals(params[1])&& !ExplorerActivity.isSearched){
+				categoryList.get(Integer.parseInt(params[2])).setBitmap(bitmap);
+			}
+			else
+				result=0;
+			
+			return result;
+		}
+
+		@Override
+		protected void onPostExecute(Integer result) {
+			super.onPostExecute(result);
+			if(result==1){
+				notifyDataSetChanged();
+			}
+			threadCount--;
+		}
+	}
+	
+	private int setBitmap(String path, String file, String position, String cType) {
 		// TODO Auto-generated method stub
 //		String path = FileListManager.FilePhoto_List.get(position).getPath();
 		
@@ -241,12 +439,37 @@ public class ExplorerAdapter extends BaseAdapter{
 		else
 			option.inSampleSize = 4;
 		
-		Log.i("path","bitmap Path = "+path + "        real Path = "+dataList.get_Path());
-		if(path.equals(dataList.get_Path())){
+		if(type==ExplorerActivity.ADAPTER_TYPE_EXPLORER){
+			if(path.equals(dataList.get_Path())){
+				if(BitmapFactory.decodeFile(path+file, option)==null){
+					Bitmap bitmap = BitmapFactory.decodeFile(path+file, option);
+					if(path.equals(dataList.get_Path())){
+						((FileList)dataList.getExpList().get(pos)).setBitmap(bitmap);
+					}
+					else{
+						result=0;
+					}
+				}
+				else{
+					Bitmap tmp = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(path+file, option), 72, 72, true);
+					if(path.equals(dataList.get_Path())){
+						((FileList)dataList.getExpList().get(pos)).setBitmap(tmp);
+					}
+					else{
+						result=0;
+					}
+				}
+			}
+			else{
+				result=0;
+			}
+		}
+		
+		else if(type==ExplorerActivity.ADAPTER_TYPE_CATEGORY){
 			if(BitmapFactory.decodeFile(path+file, option)==null){
 				Bitmap bitmap = BitmapFactory.decodeFile(path+file, option);
-				if(path.equals(dataList.get_Path())){
-					((FileList)dataList.getExpList().get(pos)).setBitmap(bitmap);
+				if(type==ExplorerActivity.ADAPTER_TYPE_CATEGORY && categoryType.equals(cType) && !ExplorerActivity.isSearched){
+					categoryList.get(pos).setBitmap(bitmap);
 				}
 				else{
 					result=0;
@@ -254,16 +477,13 @@ public class ExplorerAdapter extends BaseAdapter{
 			}
 			else{
 				Bitmap tmp = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(path+file, option), 72, 72, true);
-				if(path.equals(dataList.get_Path())){
-					((FileList)dataList.getExpList().get(pos)).setBitmap(tmp);
+				if(type==ExplorerActivity.ADAPTER_TYPE_CATEGORY && categoryType.equals(cType)&& !ExplorerActivity.isSearched){
+					categoryList.get(pos).setBitmap(tmp);
 				}
 				else{
 					result=0;
 				}
 			}
-		}
-		else{
-			result=0;
 		}
 		
 		return result;
@@ -296,6 +516,57 @@ public class ExplorerAdapter extends BaseAdapter{
 		}
 	}
 	
+	public static Bitmap getArtworkQuick(Context context, int album_id, int w, int h) {
+        w -= 2;
+        h -= 2;
+        ContentResolver res = context.getContentResolver();
+        Uri uri = ContentUris.withAppendedId(sArtworkUri, album_id);
+        if (uri != null) {
+            ParcelFileDescriptor fd = null;
+            try {
+                fd = res.openFileDescriptor(uri, "r");
+                int sampleSize = 1;
+                // Compute the closest power-of-two scale factor 
+                // and pass that to sBitmapOptionsCache.inSampleSize, which will
+                // result in faster decoding and better quality
+                sBitmapOptionsCache.inJustDecodeBounds = true;
+                BitmapFactory.decodeFileDescriptor(
+                        fd.getFileDescriptor(), null, sBitmapOptionsCache);
+                int nextWidth = sBitmapOptionsCache.outWidth >> 1;
+                int nextHeight = sBitmapOptionsCache.outHeight >> 1;
+                while (nextWidth>w && nextHeight>h) {
+                    sampleSize <<= 1;
+                    nextWidth >>= 1;
+                    nextHeight >>= 1;
+                }
+                sBitmapOptionsCache.inSampleSize = sampleSize;
+                sBitmapOptionsCache.inJustDecodeBounds = false;
+                Bitmap b = BitmapFactory.decodeFileDescriptor(
+                        fd.getFileDescriptor(), null, sBitmapOptionsCache);
+
+                if (b != null) {
+                    // finally rescale to exactly the size we need
+                    if (sBitmapOptionsCache.outWidth != w || sBitmapOptionsCache.outHeight != h) {
+                        Bitmap tmp = Bitmap.createScaledBitmap(b, w, h, true);
+                        b.recycle();
+                        b = tmp;
+                    }
+                }
+                
+                return b;
+            } catch (FileNotFoundException e) {
+            } finally {
+                try {
+                    if (fd != null)
+                        fd.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+        return null;
+    }
+			
+	
 	public ArrayList<File> getFileInfo() {
 		return fileInfo;
 	}
@@ -313,6 +584,26 @@ public class ExplorerAdapter extends BaseAdapter{
 		}
 		return result;
 	}
+	
+	public int getType() {
+		return type;
+	}
+	public void setType(int type) {
+		this.type = type;
+	}
+	public ArrayList<CategoryList> getCategoryList() {
+		return categoryList;
+	}
+	public void setCategoryList(ArrayList<CategoryList> categoryList) {
+		this.categoryList = categoryList;
+	}
+	public String getCategoryType() {
+		return categoryType;
+	}
+	public void setCategoryType(String categoryType) {
+		this.categoryType = categoryType;
+	}
+	
 	
 	
 	static class ImageViewHolder{

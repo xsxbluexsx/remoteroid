@@ -73,6 +73,9 @@
         
         <activity android:name=".activity.ConfigurationChecker"></activity>
         <service android:name=".service.SocketService"></service>
+        <activity android:name=".dialog.CategoryDialog"
+            android:theme="@style/CustomTheme">
+        </activity>
         
     </application>
 

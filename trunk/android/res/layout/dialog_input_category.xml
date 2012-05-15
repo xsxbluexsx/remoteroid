@@ -1,37 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="230dp"
-    android:layout_height="400dp" 
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" 
     android:orientation="vertical">
-  <ListView
-        android:id="@+id/dialog_category_list"
+    <EditText 
+        android:id="@+id/dialog_input_edt_in"
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="4"
-        android:cacheColorHint="#00000000"
-        android:divider="#777"
-        android:dividerHeight="1px"
-        android:listSelector="#00629fed" />
+        android:layout_height="wrap_content"
+        android:inputType="textVisiblePassword"
+        />
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:orientation="horizontal" >
         
         <Button 
-            android:id="@+id/dialog_category_btn_add"
+            android:id="@+id/dialog_input_btn_ok"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="추가"
+            android:text="확인"
             />
         <Button 
-            android:id="@+id/dialog_category_btn_close"
+            android:id="@+id/dialog_input_btn_cancel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="닫기"
+            android:text="취소"
             />
     </LinearLayout>
   
