@@ -10,8 +10,7 @@
 #include "ImageDlg.h"
 #include "afxwin.h"
 #include "recvfile.h"
-
-
+#include "MyBitmapBtn.h"
 
 
 // CRemotroidServerDlg dialog
@@ -39,6 +38,9 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 
+
+
+
 private:
 	SOCKET m_ServerSocket;	
 	CMyClient *m_pClient;
@@ -58,7 +60,7 @@ public:
 	afx_msg void OnDropFiles(HDROP hDropInfo);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);	
-	afx_msg void OnBnClickedFilesender();
+
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);	
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
@@ -87,4 +89,14 @@ private:
 	void EndConnect(void);
 	void ReadyRecvFile(void);		
 	void GetStoreFilePath(void);
+public:
+	CMyBitmapBtn m_BackButton;
+	CMyBitmapBtn m_HomeButton;
+	CMyBitmapBtn m_MenuButton;
+	
+	afx_msg void OnClickedBtnBack();
+	afx_msg void OnClickedBtnHome();
+	afx_msg void OnClickedBtnMenu();
+
+	
 };

@@ -97,11 +97,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
+    <None Include="res\backbutton.bmp" />
+    <None Include="res\backbutton_click.bmp" />
+    <None Include="res\backbutton_over.bmp" />
     <None Include="res\BACKGROUND.rgn" />
     <None Include="res\bitmap1.bmp" />
     <None Include="res\galaxy.png" />
     <None Include="res\galaxybalck.png" />
     <None Include="res\galaxybalck11.bmp" />
+    <None Include="res\homebutton.bmp" />
+    <None Include="res\homebutton_down.bmp" />
+    <None Include="res\homebutton_over.bmp" />
+    <None Include="res\menubutton.bmp" />
+    <None Include="res\menubutton_click.bmp" />
+    <None Include="res\menubutton_over.bmp" />
     <None Include="res\png1.png" />
     <None Include="res\RemotroidServer.ico" />
     <None Include="res\RemotroidServer.rc2" />
@@ -110,6 +119,7 @@
     <ClInclude Include="DrawJpg.h" />
     <ClInclude Include="FileSender.h" />
     <ClInclude Include="ImageDlg.h" />
+    <ClInclude Include="MyBitmapBtn.h" />
     <ClInclude Include="MyClient.h" />
     <ClInclude Include="packetdefine.h" />
     <ClInclude Include="RecvFile.h" />
@@ -125,6 +135,7 @@
     <ClCompile Include="DrawJpg.cpp" />
     <ClCompile Include="FileSender.cpp" />
     <ClCompile Include="ImageDlg.cpp" />
+    <ClCompile Include="MyBitmapBtn.cpp" />
     <ClCompile Include="MyClient.cpp" />
     <ClCompile Include="RecvFile.cpp" />
     <ClCompile Include="RemotroidServer.cpp" />
