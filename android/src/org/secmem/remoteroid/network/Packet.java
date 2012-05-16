@@ -1,68 +1,152 @@
 package org.secmem.remoteroid.network;
 
 import java.text.ParseException;
-import java.util.Arrays;
 
-
+/**
+ * Represents remoteroid's packet system.</br>
+ * A packet consisted of header and payload. 
+ * @see PacketHeader
+ * @author Taeho Kim
+ *
+ */
 public class Packet {
-	private static final int HEADER_LENGTH = 6;
-	private static final int OPCODE_LENGTH = 2;
-	private static final int DATASIZE_LENGTH = 4;
-	
-	public static final int MAX_PACKET_LENGTH = 4096;
-	public static final int MAX_FILENAME_LENGTH = 100;
-	public static final int MAX_FILESIZE_LENGTH = 100;
-	
-	class OpCode{
-		public static final int SEND_FILEINFO = 1;
-		public static final int SEND_FILEDATA = 2;
-		public static final int REQUEST_FILEDATA = 5;
-		public static final int READY_TO_SEND = 6;
-		public static final int REQUEST_FILEINFO = 7;
-	}
-	
-	private int opCode;
-	private byte[] data;
-	
-	public Packet parse(byte[] rawPacket) throws ParseException{
-		Packet packet = new Packet();
-		
-		byte[] header = new byte[HEADER_LENGTH];
-		byte[] data = new byte[MAX_PACKET_LENGTH-HEADER_LENGTH];
-		
-		// Get header
-		System.arraycopy(rawPacket, 0, header, 0, HEADER_LENGTH);
-		
-		// Get data
-		System.arraycopy(rawPacket, HEADER_LENGTH, data, 0, rawPacket.length-HEADER_LENGTH);
 
-		return null;
-	}
+	public static final int MAX_LENGTH = 4096;
 	
-	private static byte[] generateHeader(int opCode, int dataLength){
-		if(opCode==-1)
-			throw new IllegalStateException();
-		return String.format("%2d%4d", opCode, dataLength+HEADER_LENGTH).getBytes();
+	/**
+	 * Represents packet data as String.
+	 */
+	private String packetStr;
+	
+	/**
+	 * Packet's header data
+	 */
+	private PacketHeader header;
+	/**
+	 * Packet's actual data
+	 */
+	private byte[] payload;
+	
+	protected Packet(){
+		// Do nothing on here
 	}
 	
 	/**
-	 * Generate packet as byte array.
+	 * Generate packet.
 	 * @param opCode an operation code
 	 * @param data packet data
 	 * @param dataLength length of data
-	 * @return Packet formed as byte[]
 	 */
-	public static byte[] generatePacket(int opCode, byte[] data, int dataLength){
-		if(data==null)
-			throw new IllegalStateException();
+	public Packet(int opCode, byte[] data, int dataLength){
+		header = new PacketHeader(opCode, dataLength);
+		payload = data;
+	}
+	
+	/**
+	 * Parse packet with given raw packet stream.
+	 * @param rawPacket packet data in byte array
+	 * @return Packet object that has received
+	 * @throws ParseException failed to parse packet.
+	 */
+	public static Packet parse(byte[] rawPacket) throws ParseException{
+		Packet packet = new Packet();
+		String packetStr = new String(rawPacket);
 		
-		byte[] payload = new byte[MAX_PACKET_LENGTH];
-		byte[] header = generateHeader(opCode, dataLength);
+		// Convert raw packet data into string to get header data
+		packet.setPacketStr(packetStr);
 		
-		System.arraycopy(header, 0, payload, 0, header.length);
-		System.arraycopy(data, 0, payload, HEADER_LENGTH, dataLength);
+		// Get header
+		packet.setHeader(PacketHeader.parse(packetStr.substring(0, PacketHeader.LENGTH)));
 		
+		int payloadLength = rawPacket.length - PacketHeader.LENGTH;
+		if(payloadLength!=packet.getHeader().getPayloadLength())
+			throw new ParseException("Payload's actual size does not equals to header's payload size.", 2);
+
+		// Get data (payload)
+		byte[] payload = new byte[payloadLength];
+		System.arraycopy(rawPacket, PacketHeader.LENGTH, payload, 0, payloadLength);
+		packet.setPayload(payload);
+		
+		// Packet parsing has done.
+		return packet;
+	}
+	
+	/**
+	 * Get packet as byte array.
+	 * @return
+	 */
+	public byte[] asByteArray(){
+		byte[] packetData = new byte[PacketHeader.LENGTH+payload.length];
+		
+		if(header==null)
+			throw new IllegalStateException("Packet header has not been set.");
+		
+		if(payload==null)
+			throw new IllegalStateException("Payload has not been not set.");
+		
+		// Append header
+		byte[] headerData = header.asByteArray();
+		System.arraycopy(headerData, 0, packetData, 0, PacketHeader.LENGTH);
+		
+		// Append payload
+		System.arraycopy(payload, 0, packetData, PacketHeader.LENGTH, payload.length);
+		return packetData;
+	}
+	
+	/**
+	 * Get packet in Stirng format.
+	 * @return Packet in String format
+	 */
+	public String getPacketStr() {
+		return packetStr;
+	}
+
+	/**
+	 * Set packet's data in String format.
+	 * @param mDataStr Packet data in String format. </br>Use <code>new String(byte[])</code> to convert byte[] into String.
+	 */
+	public void setPacketStr(String mDataStr) {
+		this.packetStr = mDataStr;
+	}
+
+	/**
+	 * Get packet's header.
+	 * @return Packet's header
+	 */
+	public PacketHeader getHeader() {
+		return header;
+	}
+
+	/**
+	 * Set packet's header
+	 * @param mHeader Packet's header
+	 */
+	public void setHeader(PacketHeader mHeader) {
+		this.header = mHeader;
+	}
+
+	/**
+	 * Get packet's actual data(payload).
+	 * @return packet's payload
+	 */
+	public byte[] getPayload() {
 		return payload;
-	}	
+	}
+
+	/**
+	 * Set packet's payload data
+	 * @param payload a data to put into packet with
+	 */
+	public void setPayload(byte[] payload) {
+		this.payload = payload;
+	}
+	
+	/**
+	 * Get packet's opcode
+	 * @return packet's opCode
+	 */
+	public int getOpcode(){
+		return header.getOpCode();
+	}
 
 }

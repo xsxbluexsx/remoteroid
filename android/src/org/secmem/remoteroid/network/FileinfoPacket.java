@@ -2,29 +2,34 @@ package org.secmem.remoteroid.network;
 
 import java.io.File;
 
-import org.secmem.remoteroid.network.Packet.OpCode;
+import org.secmem.remoteroid.network.PacketHeader.OpCode;
 
-public class FileinfoPacket{
+public class FileinfoPacket extends Packet{
 	
-	private static final int MAX_FILEINFO_LENGTH = Packet.MAX_FILENAME_LENGTH+Packet.MAX_FILESIZE_LENGTH;
+	public static final int MAX_FILENAME_LENGTH = 100;
+	public static final int MAX_FILESIZE_LENGTH = 100;
+	private static final int MAX_LENGTH = MAX_FILENAME_LENGTH+MAX_FILESIZE_LENGTH;
+	
+	protected FileinfoPacket(){
+	}
 	
 	/**
 	 * Generates file info packet.
-	 * @param file
-	 * @return
+	 * @param file File to send with
 	 */
-	public static byte[] getPacket(File file){
+	public FileinfoPacket(File file){
 		if(file==null)
 			throw new IllegalStateException();
 		
-		byte[] payload = new byte[MAX_FILEINFO_LENGTH];
+		byte[] payload = new byte[MAX_LENGTH];
 		
 		byte[] fileName = file.getName().getBytes();
 		byte[] fileSize = String.valueOf(file.length()).getBytes();
 		
 		System.arraycopy(fileName, 0, payload, 0, fileName.length);
-		System.arraycopy(fileSize, 0, payload, Packet.MAX_FILENAME_LENGTH, fileSize.length);
+		System.arraycopy(fileSize, 0, payload, MAX_FILENAME_LENGTH, fileSize.length);
 		
-		return Packet.generatePacket(OpCode.SEND_FILEINFO, payload, payload.length);
+		setHeader(new PacketHeader(OpCode.FILEINFO_RECEIVED, payload.length));
+		setPayload(payload);
 	}	
 }
