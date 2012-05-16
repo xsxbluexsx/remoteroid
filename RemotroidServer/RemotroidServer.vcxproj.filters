@@ -38,6 +38,33 @@
     <None Include="res\galaxybalck11.bmp">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\backbutton.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\homebutton.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\menubutton.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\backbutton_click.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\backbutton_over.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\homebutton_down.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\homebutton_over.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\menubutton_click.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\menubutton_over.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RemotroidServer.h">
@@ -79,6 +106,9 @@
     <ClInclude Include="ImageDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MyBitmapBtn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RemotroidServer.cpp">
@@ -109,6 +139,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ImageDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MyBitmapBtn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

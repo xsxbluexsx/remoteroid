@@ -68,6 +68,9 @@ CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
 void CRemotroidServerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_BTN_BACK, m_BackButton);
+	DDX_Control(pDX, IDC_BTN_HOME, m_HomeButton);
+	DDX_Control(pDX, IDC_BTN_MENU, m_MenuButton);
 }
 
 BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
@@ -83,12 +86,17 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_MESSAGE(WM_MYENDRECV, OnEndRecv)
 	ON_MESSAGE(WM_MYENDACCEPT, OnEndAccept)
 	ON_MESSAGE(WM_READYRECVFILE, OnReadyRecvFile)
-	ON_BN_CLICKED(IDC_FILESENDER, &CRemotroidServerDlg::OnBnClickedFilesender)
+	
 	ON_WM_MOUSEMOVE()
 	ON_WM_CTLCOLOR()
 	ON_WM_KEYDOWN()	
 	ON_WM_CHAR()
 	ON_WM_LBUTTONUP()
+	
+	ON_BN_CLICKED(IDC_BTN_BACK, &CRemotroidServerDlg::OnClickedBtnBack)
+	ON_BN_CLICKED(IDC_BTN_HOME, &CRemotroidServerDlg::OnClickedBtnHome)
+	ON_BN_CLICKED(IDC_BTN_MENU, &CRemotroidServerDlg::OnClickedBtnMenu)
+	
 END_MESSAGE_MAP()
 
 
@@ -124,10 +132,25 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
+
+	//스크린 윈도우 위치 및 스타일 설정
 	screen.CreateEx(WS_EX_TOPMOST
 		, _T("STATIC"), NULL, WS_CHILD|WS_VISIBLE|SS_NOTIFY, CRect(42,104,402,704), this, 1234);
-
 	screen.SetFocus();
+
+	//하단 버튼 위치 설정
+	m_MenuButton.MoveWindow(60, 710, BUTTONWIDTH, BUTTONHEIGHT);
+	m_HomeButton.MoveWindow(60+BUTTONWIDTH, 710, BUTTONWIDTH, BUTTONHEIGHT);
+	m_BackButton.MoveWindow(60+BUTTONWIDTH*2, 710, BUTTONWIDTH, BUTTONHEIGHT);
+	
+
+	m_HomeButton.LoadBitmaps(IDB_BITMAP_HOME, IDB_BITMAP_HOME_CLICK);
+	m_HomeButton.SetHoverBitmapID(IDB_BITMAP_HOME_OVER);
+	m_BackButton.LoadBitmaps(IDB_BITMAP_BACK,IDB_BITMAP_BACK_CLICK);
+	m_BackButton.SetHoverBitmapID(IDB_BITMAP_BACK_OVER);
+	m_MenuButton.LoadBitmaps(IDB_BITMAP_MENU, IDB_BITMAP_MENU_CLICK);
+	m_MenuButton.SetHoverBitmapID(IDB_BITMAP_MENU_OVER);
+
 
 
 	m_UDPServerSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -511,12 +534,6 @@ LRESULT CRemotroidServerDlg::OnEndAccept(WPARAM wParam, LPARAM lParam)
 
 
 
-void CRemotroidServerDlg::OnBnClickedFilesender()
-{
-	// TODO: Add your control notification handler code here
-	//closesocket(m_ServerSocket);
-	m_pClient->SendPacket(3,"",0);
-}
 
 
 
@@ -653,4 +670,22 @@ void CRemotroidServerDlg::OnLButtonUp(UINT nFlags, CPoint point)
 ////////////////////////////////////////////////////////////
 
 
+
+
+void CRemotroidServerDlg::OnClickedBtnBack()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CRemotroidServerDlg::OnClickedBtnHome()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CRemotroidServerDlg::OnClickedBtnMenu()
+{
+	// TODO: Add your control notification handler code here
+}
 
