@@ -66,21 +66,21 @@ public class PacketHeader {
 	 * @throws ParseException given packet header is not valid
 	 */
 	public static PacketHeader parse(String headerStr) throws ParseException{
-		if(headerStr.length()!=LENGTH)
-			throw new ParseException("Invalid header length, should be 6 but "+headerStr.length(), 0);
+//		if(headerStr.length()!=LENGTH)
+//			throw new ParseException("Invalid header length, should be 6 but "+headerStr.length(), 0);
 		
 		PacketHeader header = new PacketHeader();
 		
 		try{
 			// Step 1. parse opCode
-			header.setOpCode(Integer.parseInt(headerStr.substring(0, OPCODE_LENGTH)));
+			header.setOpCode(Integer.parseInt(headerStr.substring(0, OPCODE_LENGTH).trim()));
 		}catch(NumberFormatException e){
 			throw new ParseException("Could not parse opcode with given header="+headerStr, 0);
 		}
 		
 		try{
 			// Step 2. parse dataLength
-			header.setPayloadLength(Integer.parseInt(headerStr.substring(OPCODE_LENGTH, LENGTH))-OPCODE_LENGTH);
+			header.setPayloadLength(Integer.parseInt(headerStr.substring(OPCODE_LENGTH, LENGTH).trim())-LENGTH);
 		}catch(NumberFormatException e){
 			throw new ParseException("Could not parse dataLength with given header="+headerStr, 2);
 		}

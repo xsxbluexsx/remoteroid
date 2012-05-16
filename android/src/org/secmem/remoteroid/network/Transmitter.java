@@ -14,7 +14,7 @@ import org.secmem.remoteroid.network.PacketHeader.OpCode;
 public class Transmitter{
 	private static final int PORT = 50000;
 	
-	private Transmitter mInstance;
+	private static Transmitter mInstance;
 	
 	private Socket socket;
 	private OutputStream sendStream;
@@ -30,7 +30,7 @@ public class Transmitter{
 		socket = new Socket();
 	}
 	
-	public Transmitter getInstance(){
+	public static Transmitter getInstance(){
 		if(mInstance==null)
 			mInstance = new Transmitter();
 		return mInstance;
@@ -134,19 +134,22 @@ public class Transmitter{
 		 * @throws IOException a network problem exists
 		 * @throws ParseException a malformed packet received
 		 */
+		
+		private byte[] buffer = new byte[Packet.MAX_LENGTH*2];
+		private int bufferOffset = 0;
+		
 		public Packet getPacket() throws IOException, ParseException{
-			byte[] buffer = new byte[Packet.MAX_LENGTH*2];
-			int bufferOffset = 0;
-			int nRead;
 			
+			int nRead;			
 			while(true){
 				nRead = recvStream.read(buffer, bufferOffset, Packet.MAX_LENGTH);
+				
 				
 				if(nRead>0)
 					bufferOffset+=nRead;
 				
 				// If packet size is smaller than header's length
-				if(nRead < PacketHeader.LENGTH)
+				if(bufferOffset < PacketHeader.LENGTH)
 					continue; // try fetching more data from stream
 				
 				// Try getting header data
@@ -162,6 +165,9 @@ public class Transmitter{
 				
 				// Decrease current offset by last packet's length
 				bufferOffset-=header.getPacketLength();
+				
+				//The remaining packets moves forward
+				System.arraycopy(buffer, header.getPacketLength(), buffer, 0, bufferOffset);
 				
 				// Return packet object
 				return packet;
@@ -199,8 +205,11 @@ public class Transmitter{
 					}
 				} catch(IOException e){
 					e.printStackTrace();
+					//If server was closed, throw an IOException					
+					requestStop();
 				} catch (ParseException e) {
 					e.printStackTrace();
+					requestStop();
 				}
 			}
 		}
