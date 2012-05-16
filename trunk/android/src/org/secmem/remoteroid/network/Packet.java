@@ -58,9 +58,9 @@ public class Packet {
 		// Get header
 		packet.setHeader(PacketHeader.parse(packetStr.substring(0, PacketHeader.LENGTH)));
 		
-		int payloadLength = rawPacket.length - PacketHeader.LENGTH;
-		if(payloadLength!=packet.getHeader().getPayloadLength())
-			throw new ParseException("Payload's actual size does not equals to header's payload size.", 2);
+		int payloadLength = packet.getHeader().getPayloadLength();
+//		if(payloadLength!=packet.getHeader().getPayloadLength())
+//			throw new ParseException("Payload's actual size does not equals to header's payload size.", 2);
 
 		// Get data (payload)
 		byte[] payload = new byte[payloadLength];
