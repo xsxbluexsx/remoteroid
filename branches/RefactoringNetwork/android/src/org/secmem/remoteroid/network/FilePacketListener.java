@@ -1,12 +1,12 @@
 package org.secmem.remoteroid.network;
 
+import java.io.*;
+
 public interface FilePacketListener extends PacketSendListener{
-	public void onFileDataRequested();
-	public void onFileInfoRequested();
 	
-	public void onReceiveFileData();
-	public void onFileDataReceived();
+	public void onReceiveFileData(Packet packet);	
+	public void onReceiveFileInfo(Packet packet);
 	
-	public void onReceiveFileInfo();
-	public void onFileInfoReceived();
+	
+	public void CloseFile();
 }

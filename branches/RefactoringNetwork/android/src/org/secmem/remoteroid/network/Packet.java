@@ -2,6 +2,8 @@ package org.secmem.remoteroid.network;
 
 import java.text.ParseException;
 
+import android.util.*;
+
 /**
  * Represents remoteroid's packet system.</br>
  * A packet consisted of header and payload. 
@@ -25,6 +27,7 @@ public class Packet {
 	/**
 	 * Packet's actual data
 	 */
+	private static byte[] buffer = new byte[MAX_LENGTH];
 	private byte[] payload;
 	
 	protected Packet(){
@@ -49,23 +52,16 @@ public class Packet {
 	 * @throws ParseException failed to parse packet.
 	 */
 	public static Packet parse(byte[] rawPacket) throws ParseException{
-		Packet packet = new Packet();
-		String packetStr = new String(rawPacket);
-		
-		// Convert raw packet data into string to get header data
-		packet.setPacketStr(packetStr);
+		Packet packet = new Packet();		
 		
 		// Get header
-		packet.setHeader(PacketHeader.parse(packetStr.substring(0, PacketHeader.LENGTH)));
+		packet.setHeader(PacketHeader.parse(rawPacket));		
 		
 		int payloadLength = packet.getHeader().getPayloadLength();
-//		if(payloadLength!=packet.getHeader().getPayloadLength())
-//			throw new ParseException("Payload's actual size does not equals to header's payload size.", 2);
 
 		// Get data (payload)
-		byte[] payload = new byte[payloadLength];
-		System.arraycopy(rawPacket, PacketHeader.LENGTH, payload, 0, payloadLength);
-		packet.setPayload(payload);
+		System.arraycopy(rawPacket, PacketHeader.LENGTH, buffer, 0, payloadLength);
+		packet.setPayload(buffer);
 		
 		// Packet parsing has done.
 		return packet;
@@ -76,21 +72,19 @@ public class Packet {
 	 * @return
 	 */
 	public byte[] asByteArray(){
-		byte[] packetData = new byte[PacketHeader.LENGTH+payload.length];
+//		byte[] packetData = new byte[header.getPacketLength()];
 		
 		if(header==null)
 			throw new IllegalStateException("Packet header has not been set.");
-		
-		if(payload==null)
-			throw new IllegalStateException("Payload has not been not set.");
-		
+				
 		// Append header
 		byte[] headerData = header.asByteArray();
-		System.arraycopy(headerData, 0, packetData, 0, PacketHeader.LENGTH);
+		System.arraycopy(headerData, 0, buffer, 0, PacketHeader.LENGTH);
 		
 		// Append payload
-		System.arraycopy(payload, 0, packetData, PacketHeader.LENGTH, payload.length);
-		return packetData;
+		if(payload!=null)			
+			System.arraycopy(payload, 0, buffer, PacketHeader.LENGTH, payload.length);
+		return buffer;
 	}
 	
 	/**
