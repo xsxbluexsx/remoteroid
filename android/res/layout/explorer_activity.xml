@@ -11,23 +11,57 @@
 
         <!-- android:layout_weight="1" -->
 
-        <Button
-            android:id="@+id/explorer_btn_top"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/before_button_selector" />
+            android:layout_weight="1"
+            android:gravity="center_horizontal" >
 
-        <Button
-            android:id="@+id/explorer_btn_home"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/home_button_selector" />
+            <Button
+                android:id="@+id/explorer_btn_top"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/before_button_selector" />
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/explorer_btn_category"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/category_button_selector" />
+            android:layout_weight="1" 
+            android:gravity="center_horizontal">
+
+            <Button
+                android:id="@+id/explorer_btn_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/home_button_selector" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" 
+            android:gravity="center_horizontal">
+
+            <Button
+                android:id="@+id/explorer_btn_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/category_button_selector" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" 
+            android:gravity="center_horizontal">
+
+            <Button
+                android:id="@+id/explorer_btn_exit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/exit_button_selector" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -41,6 +75,7 @@
             android:layout_height="wrap_content"
             android:text="/mnt/sdcard" />
     </LinearLayout>
+    <!-- android:layoutAnimation="@anim/layout_wave_scale" -->
 
     <GridView
         android:id="@+id/explorer_view_grid"

@@ -16,6 +16,7 @@ import android.text.InputFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -117,13 +118,12 @@ public class CategoryDialog extends Activity implements OnClickListener, OnItemC
 		final AlertDialog dialog;
 		LayoutInflater inflater = (LayoutInflater)context.getSystemService(LAYOUT_INFLATER_SERVICE);
 		View layout = inflater.inflate(R.layout.dialog_input_category, null);
-		
 		final EditText edt = (EditText)layout.findViewById(R.id.dialog_input_edt_in);
 		
 		edt.setFilters(new InputFilter[]{HongUtil.filterAlpha});
 		
-		InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.showSoftInput(edt, 0);
+		
+		
 		Button okBtn = (Button)layout.findViewById(R.id.dialog_input_btn_ok);
 		Button cancelBtn = (Button)layout.findViewById(R.id.dialog_input_btn_cancel);
 		
@@ -131,7 +131,7 @@ public class CategoryDialog extends Activity implements OnClickListener, OnItemC
 		builder.setView(layout);
 		dialog = builder.create();
 		dialog.setTitle("확장명을 '.'을 제외하고 입력해주세요(ex: gul)");
-		
+		dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 		
 		okBtn.setOnClickListener(new OnClickListener() {
 			

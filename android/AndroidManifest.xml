@@ -44,7 +44,8 @@
         <activity android:name=".activity.MainActivity">
             
         </activity>
-        <activity android:name=".activity.ExplorerActivity" android:label="@string/file_explorer">
+        <activity android:name=".activity.ExplorerActivity" android:label="@string/file_explorer"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

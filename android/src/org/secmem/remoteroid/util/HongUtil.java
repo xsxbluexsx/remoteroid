@@ -32,7 +32,10 @@ import org.secmem.remoteroid.activity.ExplorerActivity;
 import org.secmem.remoteroid.data.CategoryList;
 import org.secmem.remoteroid.data.ExplorerType;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -177,28 +180,6 @@ public class HongUtil {
 	private static void addFile(File file) {						// 리모트로이드 파일추가
 		ExplorerActivity.searchList.add(new CategoryList(file, ExplorerActivity.TYPE_CUTSOM));
 	}
-
-//	public static Bitmap opticalBitmap(File f){				// 비트맵 이미지 최적화
-//		Bitmap result=null;
-//		BitmapFactory.Options option = new BitmapFactory.Options();
-//		
-//		if(f.length()>200000)
-//			option.inSampleSize = 7;
-//		else
-//			option.inSampleSize = 4;
-//		
-//		if(BitmapFactory.decodeFile(f.getPath(), option)==null){
-//			result = 
-//		}
-//		else{
-//			
-//		}
-//		
-//		return result;
-//	}
-	
-	
-	
 	
 	public static void getPhoto(Cursor imageCursor){						// 이미지 정보 가져오기
 
@@ -284,10 +265,25 @@ public class HongUtil {
          cursor.close();
 	}
 	
-	
-	
-	
-	
+	public static void showExitDialog(Context context){
+		final Context c = context;
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setTitle("종료하시겠습니까?");
+		builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				((Activity)c).finish();
+			}
+		});
+		builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+			}
+		}).show();
+	}
 	
 	
 	
