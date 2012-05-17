@@ -2,6 +2,7 @@ package org.secmem.remoteroid.network;
 
 import java.io.File;
 
+import org.secmem.remoteroid.activity.ExplorerActivity;
 import org.secmem.remoteroid.network.PacketHeader.OpCode;
 
 public class FileinfoPacket extends Packet{
@@ -25,7 +26,6 @@ public class FileinfoPacket extends Packet{
 		
 		byte[] fileName = file.getName().getBytes();
 		byte[] fileSize = String.valueOf(file.length()).getBytes();
-		
 		System.arraycopy(fileName, 0, payload, 0, fileName.length);
 		System.arraycopy(fileSize, 0, payload, MAX_FILENAME_LENGTH, fileSize.length);
 		
