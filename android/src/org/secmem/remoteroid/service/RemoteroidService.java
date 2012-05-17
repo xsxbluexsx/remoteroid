@@ -51,6 +51,7 @@ public class RemoteroidService extends Service {
 			// TODO Notification hooked and notification data has been delivered. Now this data should be sent to PC.
 			
 		}
+		
 
 		@Override
 		public void onReceiveCall(String displayedName, String number, long when)
@@ -65,7 +66,7 @@ public class RemoteroidService extends Service {
 			// TODO SMS Received.
 			
 		}
-
+		
 		@Override
 		public void onSMSSent(String displayedName, String phoneNumber,
 				long when) throws RemoteException {

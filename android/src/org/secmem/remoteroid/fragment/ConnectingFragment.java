@@ -19,10 +19,15 @@
 
 package org.secmem.remoteroid.fragment;
 
-import org.secmem.remoteroid.R;
+import java.io.IOException;
 
+import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.socket.SocketModule;
+
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,12 +38,15 @@ import android.widget.ImageView;
 
 public class ConnectingFragment extends Fragment {
 	
+	private static boolean isConnected;
+	public static SocketModule socket;
+	
 	private ImageView mIvCircuit;
 	private Button mBtnCancel;
 	
 	private String mIpAddr;
 	private String mPassword;
-
+	
 	public ConnectingFragment(String ipAddr, String password){
 		mIpAddr = ipAddr;
 		mPassword = password;
@@ -58,14 +66,45 @@ public class ConnectingFragment extends Fragment {
 		
 		mIvCircuit.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.blink));
 		
+		isConnected=true;
+		new ConnectAsync().execute(mIpAddr,mPassword);
+		
 		mBtnCancel.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
 				// TODO cancel connection
+				isConnected = false;
 				getFragmentManager().beginTransaction().replace(R.id.container, new AuthenticateFragment()).commit();
 			}
 			
 		});
+	}
+	
+	private class ConnectAsync extends AsyncTask<String, Void, Void>{
+
+		@Override
+		protected Void doInBackground(String... params) {
+			String ip = params[0];
+			String pw = params[1];
+			
+			try {
+				socket.SetSocket(ip, 5000);
+			} catch (IOException e) {
+				isConnected = false;
+			}
+			
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			
+			if(ConnectingFragment.this.isResumed())
+				getFragmentManager().beginTransaction().replace(R.id.container, new AuthenticateFragment(isConnected)).commit();
+			
+			super.onPostExecute(result);
+		}
+		
 	}
 }

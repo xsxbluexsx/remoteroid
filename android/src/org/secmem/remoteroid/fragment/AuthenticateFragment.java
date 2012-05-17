@@ -24,9 +24,10 @@ import java.util.regex.Pattern;
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.data.NativeKeyCode;
 import org.secmem.remoteroid.natives.InputHandler;
-import org.secmem.remoteroid.socket.SocketModule;
+import org.secmem.remoteroid.service.FrameBufferService;
 import org.secmem.remoteroid.util.Util;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -50,27 +51,45 @@ public class AuthenticateFragment extends Fragment {
 	
 	private boolean isIpValid=false;
 	private boolean isPwValid=false;
-	
-	private SocketModule socket;
+	private boolean isConnected = false;
 	
 	InputHandler hd = new InputHandler();
+	
+	Intent frameIntent;
+	
+	public AuthenticateFragment(){
+		
+	}
+	
+	public AuthenticateFragment(boolean isConnected){
+		this.isConnected = isConnected;
+	}
+	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_authenticate, null);
+		
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		
 		mEdtIpAddr = (EditText)view.findViewById(R.id.ip_address);
 		mEdtPassword = (EditText)view.findViewById(R.id.password);
 		mCbAutoConn = (CheckBox)view.findViewById(R.id.auto_connect);
 		mBtnConnect = (Button)view.findViewById(R.id.connect);
 		
-		socket = new SocketModule();
+		mEdtIpAddr.setText("210.118.74.80");
+		mEdtPassword.setText("aaa");
+		
+		if(isConnected){
+			frameIntent = new Intent(getActivity(), FrameBufferService.class);
+			frameIntent.putExtra("socket", ConnectingFragment.socket);
+			getActivity().startService(frameIntent);
+		}
+		
 		
 		mEdtIpAddr.addTextChangedListener(new TextWatcher(){
 
@@ -133,20 +152,10 @@ public class AuthenticateFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-//				getFragmentManager().beginTransaction().replace(R.id.container, 
-//						new ConnectingFragment(mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString()))
-//						.commit();
+				getFragmentManager().beginTransaction().replace(R.id.container, 
+						new ConnectingFragment(mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString()))
+						.commit();
 				
-				/*String ip =mEdtIpAddr.getText().toString();
-				int port = 50000;
-				
-				try {
-					socket.SetSocket(ip, port);
-					Toast.makeText(getActivity(), "�곌껐�깃났", Toast.LENGTH_LONG);
-					
-				} catch (Exception e) {
-					Toast.makeText(getActivity(), "�곌껐�ㅽ�", Toast.LENGTH_LONG);
-				}*/
 				
 				hd.keyStroke(NativeKeyCode.KEY_A);
 				hd.keyStroke(NativeKeyCode.KEY_K);
@@ -165,6 +174,12 @@ public class AuthenticateFragment extends Fragment {
 	public void onStop() {
 		super.onStop();
 		hd.closeInputDevice();
+	}
+	
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
 	}
 
 }
