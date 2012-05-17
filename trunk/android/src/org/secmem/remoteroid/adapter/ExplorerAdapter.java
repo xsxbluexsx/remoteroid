@@ -46,6 +46,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -61,8 +64,6 @@ public class ExplorerAdapter extends BaseAdapter{
 	
 	private DataList dataList;
 	private ArrayList<CategoryList> categoryList = new ArrayList<CategoryList>();
-	
-	private ArrayList<File> fileInfo = new ArrayList<File>();
 	
 	private static final BitmapFactory.Options sBitmapOptionsCache = new BitmapFactory.Options();
     private static final Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
@@ -294,8 +295,10 @@ public class ExplorerAdapter extends BaseAdapter{
 					
 					if (dataList.getExpList().get(pos).getType()== ExplorerType.TYPE_FOLDER) {
 						dataList.setPath(dataList.getRealPathName(fileName));
-						fileInfo.clear();
+						ExplorerActivity.fileInfo.clear();
+						
 						notifyDataSetChanged();
+						
 					} 
 					else {
 						if (dataList.getOnFileSelected() != null){ 
@@ -303,13 +306,13 @@ public class ExplorerAdapter extends BaseAdapter{
 							File f = new File(dataList.getPath()+fileName);
 							if(fl.isFileSelected()){
 								fl.setFileSelected(false);
-								fileInfo.remove(getFilePos(f));
+								ExplorerActivity.fileInfo.remove(getFilePos(f));
 								holder.titleHolder.setTextColor(Color.WHITE);
 							}
 							
 							else{
 								fl.setFileSelected(true);
-								fileInfo.add(f);
+								ExplorerActivity.fileInfo.add(f);
 								holder.titleHolder.setTextColor(Color.GREEN);
 							}
 						}
@@ -321,12 +324,12 @@ public class ExplorerAdapter extends BaseAdapter{
 					File f = new File(category.getFile().getParent()+"/"+category.getFile().getName());
 					if(category.isFileSelected()){
 						category.setFileSelected(false);
-						fileInfo.remove(getFilePos(f));
+						ExplorerActivity.fileInfo.remove(getFilePos(f));
 						holder.titleHolder.setTextColor(Color.WHITE);
 					}
 					else{
 						category.setFileSelected(true);
-						fileInfo.add(f);
+						ExplorerActivity.fileInfo.add(f);
 						holder.titleHolder.setTextColor(Color.GREEN);
 					}
 				}
@@ -337,8 +340,8 @@ public class ExplorerAdapter extends BaseAdapter{
 	}
 	
 	private void printFileInfo() {
-		for (int i = 0; i < fileInfo.size(); i++) {
-			Log.i("fileinfo",i + "= "+fileInfo.get(i).getAbsolutePath());
+		for (int i = 0; i < ExplorerActivity.fileInfo.size(); i++) {
+			Log.i("fileinfo",i + "= "+ExplorerActivity.fileInfo.get(i).getAbsolutePath());
 		}
 	}
 	
@@ -567,18 +570,10 @@ public class ExplorerAdapter extends BaseAdapter{
     }
 			
 	
-	public ArrayList<File> getFileInfo() {
-		return fileInfo;
-	}
-
-	public void setFileInfo(ArrayList<File> fileInfo) {
-		this.fileInfo = fileInfo;
-	}
-	
 	private int getFilePos(File f){
 		int result=0;
-		for(int i = 0 ; i < fileInfo.size() ; i++){
-			if(fileInfo.get(i).getAbsolutePath().equals(f.getAbsolutePath())){
+		for(int i = 0 ; i < ExplorerActivity.fileInfo.size() ; i++){
+			if(ExplorerActivity.fileInfo.get(i).getAbsolutePath().equals(f.getAbsolutePath())){
 				return i;
 			}
 		}

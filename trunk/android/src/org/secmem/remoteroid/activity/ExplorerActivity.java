@@ -19,6 +19,7 @@
 
 package org.secmem.remoteroid.activity;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.secmem.remoteroid.R;
@@ -43,6 +44,9 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.Button;
@@ -58,6 +62,9 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	public static ArrayList<CategoryList> searchList = new ArrayList<CategoryList>();
 	public static boolean isSearched=false;
 	
+	public static ArrayList<File> fileInfo = new ArrayList<File>();
+	public static DataList dataList;
+	
 	private static int CODE_CATEGORY = 1;
 	
 	public static String TYPE_IMAGE = "0";
@@ -68,15 +75,23 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	public static int ADAPTER_TYPE_EXPLORER = 1;
 	public static int ADAPTER_TYPE_CATEGORY = 2;
 	
-	private DataList dataList;
-	
 	private Button categoryBtn;
 	private Button homeBtn;
 	private Button topBtn;
+	private Button exitBtn;
 	
 	private TextView pathTv;
 	
-	private GridView gridview;
+	public static GridView gridview;
+	
+	public GridView getGridview() {
+		return gridview;
+	}
+
+	public void setGridview(GridView gridview) {
+		this.gridview = gridview;
+	}
+
 	private ExplorerAdapter adapter;
 	
 	private boolean isTimer=false;
@@ -91,10 +106,12 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		categoryBtn = (Button)findViewById(R.id.explorer_btn_category);
 		topBtn = (Button)findViewById(R.id.explorer_btn_top);
 		homeBtn = (Button)findViewById(R.id.explorer_btn_home);
+		exitBtn = (Button)findViewById(R.id.explorer_btn_exit);
 		
 		categoryBtn.setOnClickListener(topBtnListener);
 		topBtn.setOnClickListener(topBtnListener);
 		homeBtn.setOnClickListener(topBtnListener);
+		exitBtn.setOnClickListener(topBtnListener);
 		
 		pathTv = (TextView)findViewById(R.id.explorer_tv_path);
 		
@@ -108,6 +125,10 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		dataList.setPath("/mnt/sdcard");
 		
 		adapter = new ExplorerAdapter(this, R.layout.grid_explorer_row, dataList, ADAPTER_TYPE_EXPLORER);
+		
+		LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(ExplorerActivity.this, R.anim.layout_wave_scale);
+		gridview.setLayoutAnimation(gridAnimation);
+		
 		gridview.setAdapter(adapter);
 		
 		
@@ -138,9 +159,11 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 				
 				if(adapter.getType()==ADAPTER_TYPE_CATEGORY){
 					adapter.setType(ADAPTER_TYPE_EXPLORER);
-					adapter.getFileInfo().clear();
+					fileInfo.clear();
 				}
 				dataList.setPath("/mnt/sdcard");
+				LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(ExplorerActivity.this, R.anim.layout_wave_scale);
+				gridview.setLayoutAnimation(gridAnimation);
 				setDisplayView();
 				
 				break;
@@ -149,7 +172,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 				
 				if(adapter.getType()==ADAPTER_TYPE_CATEGORY){
 					adapter.setType(ADAPTER_TYPE_EXPLORER);
-					adapter.getFileInfo().clear();
+					fileInfo.clear();
 					setDisplayView();
 				}
 				else{
@@ -162,14 +185,16 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 						HongUtil.makeToast(ExplorerActivity.this, "가장 상위 폴더 입니다.^^");
 					}
 				}
-				
-				
 				break;
 			
 			case R.id.explorer_btn_category:			// 카테고리
 				
 				Intent intent = new Intent(ExplorerActivity.this, CategoryDialog.class);
 				startActivityForResult(intent, CODE_CATEGORY);
+				break;
+				
+			case R.id.explorer_btn_exit:
+				HongUtil.showExitDialog(ExplorerActivity.this);
 				
 				break;
 			}
@@ -182,7 +207,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		
 		if(adapter.getType()==ADAPTER_TYPE_CATEGORY){
 			adapter.setType(ADAPTER_TYPE_EXPLORER);
-			adapter.getFileInfo().clear();
+			fileInfo.clear();
 			setDisplayView();
 		}
 		else if(dataList.getPath().equals("/mnt/sdcard/")){
@@ -343,7 +368,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 			adapter.setType(ADAPTER_TYPE_CATEGORY);
 			adapter.setCategoryList(searchList);
 			adapter.setCategoryType(result);
-			adapter.getFileInfo().clear();
+			fileInfo.clear();
 			adapter.notifyDataSetChanged();
 			isSearched=false;
 			mProgress.dismiss();
