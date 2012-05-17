@@ -1,12 +1,9 @@
 package org.secmem.remoteroid.network;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.text.ParseException;
+import java.io.*;
+import java.net.*;
+import java.text.*;
+import java.util.*;
 
 import org.secmem.remoteroid.network.PacketHeader.OpCode;
 
@@ -23,13 +20,12 @@ public class Transmitter{
 	private InputStream recvStream;
 	
 	private PacketSendListener packetListener;
-	private FilePacketListener fileListener;
+	private FilePacketListener fileListener;	
 	
-	private SendPacketTask sendPacketTask;
-	private PacketReceiver packetReceiver;
+	private PacketReceiver packetReceiver;	
+	private FileTransReceiver fileTransReceiver;
 	
-	private Transmitter(){
-		
+	private Transmitter(){		
 	}
 	
 	public static Transmitter getInstance(){
@@ -49,17 +45,11 @@ public class Transmitter{
 		
 		// Open outputStream
 		sendStream = socket.getOutputStream();
-//		if(packetListener==null)
-//			throw new IllegalStateException("Packet listener does not set!");
-		//sendPacketTask = new SendPacketTask(sendStream, packetListener);
 		
 		// Open inputStream
-		recvStream = socket.getInputStream();
+		recvStream = socket.getInputStream();		
 		
-		fileListener = new FileReceiver();
-		
-		if(fileListener==null)
-			throw new IllegalStateException("File listener does not set!");
+		fileTransReceiver = new FileTransReceiver(sendStream);		
 		
 		// Create and start packet receiver
 		packetReceiver = new PacketReceiver(recvStream, fileListener);
@@ -72,65 +62,34 @@ public class Transmitter{
 	 */
 	public void disconnect(){
 		if(socket!=null){
-			try{
-				packetReceiver.requestStop();
+			try{				
 				recvStream.close();
-			
-				sendPacketTask = null;
-				sendStream.close();		
-				Log.i("qqqq", "socket close");
+				sendStream.close();
+				packetReceiver = null;				
 				socket.close();
 			}catch(IOException e){}
 		}
 	}
 	
+
 	
-	/**
-	 *Send one packet to host. 
-	 * @param opCode
-	 * @param data
-	 * @param length
-	 */
-	public void send(int opCode, byte[] data, int length){
-		if(socket==null)
-			return;
-		
-		try{
-			sendStream.write(new Packet(opCode, data, length).asByteArray(),
-					0, length+PacketHeader.LENGTH);
-		}catch(IOException e){
-			Log.i("exception", "send exception");
-		}
-	}
-	
-	/**
-	 * Send packets to host.
-	 * @param packets an array of packets
-	 */
-	public void send(Packet... packets){
-		if(socket!=null){
-			
-		}
-	}
-	
-	public void sendFile(File file){
+	public void sendFile(ArrayList<File> fileList){
 		// TODO implement send only one file
+		try{
+			fileTransReceiver.sendFileList(fileList);
+		}catch(IOException e){
+			e.printStackTrace();
+		}
 	}
-	
-	public void sendFile(File... files){
-		// TODO implement send multiple file
-	}
-	
-	// TODO send 'ready to send' packet
+
 
 	/**
 	 * Get packet from host and notify to other component via listener to response to each packet properly.
 	 * @author Taeho Kim
 	 *
 	 */
-	class PacketReceiver extends Thread{
+	class PacketReceiver extends Thread{		
 		
-		private boolean isStopRequested = false;
 		private InputStream recvStream;
 		private FilePacketListener fileListener;
 		// TODO private EventPacketListener eventListener;
@@ -139,11 +98,8 @@ public class Transmitter{
 		public PacketReceiver(InputStream recvStream, FilePacketListener fileListener){
 			this.recvStream = recvStream;
 			this.fileListener = fileListener;
-		}
+		}		
 		
-		public void requestStop(){
-			isStopRequested = true;
-		}
 		
 		/**
 		 * Get packet from stream.
@@ -159,8 +115,10 @@ public class Transmitter{
 			
 			int nRead;			
 			while(true){
-				nRead = recvStream.read(buffer, bufferOffset, Packet.MAX_LENGTH);
+				nRead = recvStream.read(buffer, bufferOffset, Packet.MAX_LENGTH);				
 				
+				if(nRead<0)
+					throw new IOException();
 				
 				if(nRead>0)
 					bufferOffset+=nRead;
@@ -193,47 +151,51 @@ public class Transmitter{
 		}
 
 		@Override
-		public void run() {
-			isStopRequested = false;
+		public void run() {			
 			
 			/**
 			 * Run infinitely and get packet from stream before user requested to stop
 			 */
-			while(!isStopRequested){
+			while(true){
 				try{
 					Packet packet = getPacket();					
 					
 					switch(packet.getOpcode()){
 					case OpCode.FILEINFO_RECEIVED:
-						// TODO prototype
-						fileListener.onReceiveFileInfo(packet);
+						// TODO prototype						
+						//fileListener.onReceiveFileInfo();
+						fileTransReceiver.receiveFileInfo(packet);
 						break;
 						
 					case OpCode.FILEDATA_RECEIVED:
 						// TODO prototype
-						fileListener.onReceiveFileData(packet);
+						//fileListener.onReceiveFileData();
+						fileTransReceiver.receiveFileData(packet);
 						break;
 						
 					case OpCode.FILEDATA_REQUESTED:
 						//fileListener.onFileDataRequested();
+						fileTransReceiver.sendFileData();
 						break;
 						
 					case OpCode.FILEINFO_REQUESTED:
 						//fileListener.onFileInfoRequested();
+						fileTransReceiver.sendFileInfo();
 						break;
+						
 					}
 					
 				} catch(IOException e){
-					e.printStackTrace();
-					Log.i("qqqq", "ioexception");
-					//If server was closed, throw an IOException					
+					e.printStackTrace();					
+					//If server was closed, throw an IOException	
+					//If file is open, Shoud be closed
+					fileTransReceiver.closeFile();
 					disconnect();
+					break;
 				} catch (ParseException e) {
-					e.printStackTrace();
-					disconnect();
+					e.printStackTrace();					
 				}
 			}
-		}
-		
+		}		
 	}
 }

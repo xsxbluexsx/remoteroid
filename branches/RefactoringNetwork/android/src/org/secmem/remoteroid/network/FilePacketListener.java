@@ -4,9 +4,6 @@ import java.io.*;
 
 public interface FilePacketListener extends PacketSendListener{
 	
-	public void onReceiveFileData(Packet packet);	
-	public void onReceiveFileInfo(Packet packet);
-	
-	
-	public void CloseFile();
+	public void onReceiveFileData();	
+	public void onReceiveFileInfo();	
 }
