@@ -130,7 +130,7 @@ public class CategoryDialog extends Activity implements OnClickListener, OnItemC
 		builder = new AlertDialog.Builder(context);
 		builder.setView(layout);
 		dialog = builder.create();
-		dialog.setTitle("확장명을 '.'을 제외하고 입력해주세요(ex: gul)");
+		dialog.setTitle(getString(R.string.category_dialog_title));
 		dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 		
 		okBtn.setOnClickListener(new OnClickListener() {
@@ -139,15 +139,16 @@ public class CategoryDialog extends Activity implements OnClickListener, OnItemC
 			public void onClick(View v) {
 				
 				if(edt.getText().toString().length()==0){
-					HongUtil.makeToast(context, "입력 후 확인 버튼을 눌러주세요.");
+					HongUtil.makeToast(context, getString(R.string.dialog_input_toast));
 				}
 				else{
 					addData(edt.getText().toString());
 					categoryList = getCategory();
 					adapter.setCategoryList(categoryList);
 					adapter.notifyDataSetChanged();
+					dialog.dismiss();
 				}
-				dialog.dismiss();
+				
 			}
 
 			
@@ -175,9 +176,10 @@ public class CategoryDialog extends Activity implements OnClickListener, OnItemC
 	private ArrayList<String> getCategory() {
 		
 		ArrayList<String> category = new ArrayList<String>();
-		category.add("사진");
-		category.add("동영상");
-		category.add("음악");
+		String []categoryList = getResources().getStringArray(R.array.category_dialog_list);
+		for(int i = 0 ; i < categoryList.length ; i++){
+			category.add(categoryList[i]);
+		}
 		
 		database.open();
 		category.addAll(database.getIndex());

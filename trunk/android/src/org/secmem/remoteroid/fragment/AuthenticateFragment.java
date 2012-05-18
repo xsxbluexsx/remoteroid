@@ -84,11 +84,11 @@ public class AuthenticateFragment extends Fragment {
 		mEdtIpAddr.setText("210.118.74.80");
 		mEdtPassword.setText("aaa");
 		
-		if(isConnected){
+//		if(isConnected){
 			frameIntent = new Intent(getActivity(), FrameBufferService.class);
-			frameIntent.putExtra("socket", ConnectingFragment.socket);
+//			frameIntent.putExtra("socket", ConnectingFragment.socket);
 			getActivity().startService(frameIntent);
-		}
+//		}
 		
 		
 		mEdtIpAddr.addTextChangedListener(new TextWatcher(){
@@ -159,7 +159,6 @@ public class AuthenticateFragment extends Fragment {
 				
 				hd.keyStroke(NativeKeyCode.KEY_A);
 				hd.keyStroke(NativeKeyCode.KEY_K);
-				
 			}
 		});
 		

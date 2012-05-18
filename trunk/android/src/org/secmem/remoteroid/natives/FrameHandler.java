@@ -26,6 +26,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -34,99 +35,118 @@ public class FrameHandler {
 	private ByteBuffer frameBuffer;
 	private ByteArrayOutputStream frameStream;
 	private byte[] buffer;
+	private Bitmap bitmap;
 	
 	private Context context;
-	private int displaySize;
 	
-	public Bitmap readFrameBuffer(Context context){
-		DisplayMetrics dm = context.getResources().getDisplayMetrics();
-		int width = dm.widthPixels;
-		int height = dm.heightPixels;
-		int pixelDepth = 4;
-		
-		WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-		
-		int rotation = wm.getDefaultDisplay().getRotation();
-		
-		byte[] frameData = new byte[width*height*4];
-//		readFrameBufferNative(width, height, pixelDepth, frameData);
-		
-		ByteBuffer frameBuffer = ByteBuffer.allocate(width*height*4);
-		Bitmap bm = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-		// FIXME
-		
-		return null;
-	}
+	private int displaySize;
+	private int width;
+	private int height;
+	private int pixel;
+	private int orientation;
 	
 	/*
 
 	 1. FrameHandler handler = new FrameHandler();
-	 2. bitmap = getDisplayBitmap(Context context);
 	 3. suPermission();
 	 
-	 **Start Loop
+	 **Start Loop{
 	 
-	 4. if(orientation != getDisplayOrientation()){
-			bitmap = getDisplayBitmap(context);
-		}
-	 
-	 5. frameStream = getFrameStream(Bitmap bitmap);
-	 
-	 **SendScreenShot
-	 
+		 4. frameStream = getFrameStream();
+		 
+		 **SendScreenShot
+	 }
 	 */
+
+	/**
+	 * Read frame buffer from device.
+	 * @param width Screen width
+	 * @param height Screen height
+	 * @param pixelDepth 
+	 * @param dest Byte buffer where frame buffer's data be stored
+	 * @return true if frame buffer loaded successful, false otherwise
+	 */
+//	public native boolean readFrameBufferNative(int width, int height, int pixelDepth, byte[] dest);
+
+	private native int getFrameBuffer(byte[] buff, int width, int height, int pixel, int orientation);
+	
+	static {
+		System.loadLibrary("fbuffer");
+	}
+	
+//	public Bitmap readFrameBuffer(Context context){
+//		DisplayMetrics dm = context.getResources().getDisplayMetrics();
+//		int width = dm.widthPixels;
+//		int height = dm.heightPixels;
+//		int pixelDepth = 4;
+//		
+//		WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+//		
+//		int rotation = wm.getDefaultDisplay().getRotation();
+//		
+//		byte[] frameData = new byte[width*height*4];
+////		readFrameBufferNative(width, height, pixelDepth, frameData);
+//		
+//		ByteBuffer frameBuffer = ByteBuffer.allocate(width*height*4);
+//		Bitmap bm = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+//		// FIXME
+//		
+//		return null;
+//	}
+	
+	
 	
 	public FrameHandler(Context context) {
 		this.context = context;
 		
-		this.displaySize = getDisplaySize(context);
+		setDisplayValue();
+		setBitmap(getDisplayBitmap());
 		
 		frameBuffer = ByteBuffer.allocate(displaySize);
-		frameStream = new ByteArrayOutputStream();
 		buffer = new byte[displaySize];
 	}
 	
 	
-	// get Device Display Bitmap
-	public Bitmap getDisplayBitmap(Context context){
+	private void setDisplayValue() {
 		DisplayMetrics dm = context.getResources().getDisplayMetrics();
-		int width = dm.widthPixels;
-		int height = dm.heightPixels;
+		this.width = dm.widthPixels/2;
+		this.height = dm.heightPixels/2;
+		this.pixel=4;
 		
-		Bitmap bm = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		this.orientation = getDisplayOrientation();
 		
-		return bm;
+		this.displaySize = width*height*pixel;
 	}
-	
-	// get Device Display size
-	public int getDisplaySize(Context context){
-		DisplayMetrics dm = context.getResources().getDisplayMetrics();
-		int width = dm.widthPixels;
-		int height = dm.heightPixels;
-		int pixel=4;
-		
-		return width*height*pixel;
+
+	// get Device Display Bitmap
+	public Bitmap getDisplayBitmap(){
+		return Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
 	}
 	
 	// get Device Display Orientation
-	public int getDisplayOrientation(Context context){
+	public int getDisplayOrientation(){
 		Display display = ((WindowManager) context.getSystemService(context.WINDOW_SERVICE)).getDefaultDisplay();
 		return display.getOrientation();
 	}
 	
 	// Compress JPEG
-	public ByteArrayOutputStream getFrameStream(Bitmap bitmap){
+	public ByteArrayOutputStream getFrameStream(){
+		
+		if(orientation != getDisplayOrientation()){
+			setDisplayValue();
+			setBitmap(getDisplayBitmap());
+		}
+		
 		ByteArrayOutputStream frameStream = new ByteArrayOutputStream();
+		
+		int ret = getFrameBuffer(buffer, getWidth(), getHeight(), getPixel(), getDisplayOrientation());
+		
 		frameBuffer.put(buffer, 0, displaySize);
 		frameBuffer.rewind();
 		bitmap.copyPixelsFromBuffer(frameBuffer);
 		bitmap.compress(CompressFormat.JPEG, 70, frameStream);
-
-		ByteArrayOutputStream result = frameStream;
 		
-		frameStream.reset();
-		
-		return result;
+		return frameStream;
 	}
 	
 	
@@ -155,19 +175,65 @@ public class FrameHandler {
 //	}
 	
 	
-	/**
-	 * Read frame buffer from device.
-	 * @param width Screen width
-	 * @param height Screen height
-	 * @param pixelDepth 
-	 * @param dest Byte buffer where frame buffer's data be stored
-	 * @return true if frame buffer loaded successful, false otherwise
-	 */
-//	public native boolean readFrameBufferNative(int width, int height, int pixelDepth, byte[] dest);
-
-	private native int getFrameBuffer(byte[] buff, int width, int height, int pixel, int orientation);
-	
-	static {
-		System.loadLibrary("fbuffer");
+	public ByteBuffer getFrameBuffer() {
+		return frameBuffer;
 	}
+
+	public void setFrameBuffer(ByteBuffer frameBuffer) {
+		this.frameBuffer = frameBuffer;
+	}
+
+	public byte[] getBuffer() {
+		return buffer;
+	}
+
+	public void setBuffer(byte[] buffer) {
+		this.buffer = buffer;
+	}
+
+	public Context getContext() {
+		return context;
+	}
+
+	public void setContext(Context context) {
+		this.context = context;
+	}
+	public int getWidth() {
+		return width;
+	}
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+	public void setHeight(int height) {
+		this.height = height;
+	}
+	public int getPixel() {
+		return pixel;
+	}
+	public void setPixel(int pixel) {
+		this.pixel = pixel;
+	}
+	public int getDisplaySize() {
+		return displaySize;
+	}
+	public void setDisplaySize(int displaySize) {
+		this.displaySize = displaySize;
+	}
+	public Bitmap getBitmap() {
+		return bitmap;
+	}
+	public void setBitmap(Bitmap bitmap) {
+		this.bitmap = bitmap;
+	}
+	public int getOrientation() {
+		return orientation;
+	}
+	public void setOrientation(int orientation) {
+		this.orientation = orientation;
+	}
+
 }
