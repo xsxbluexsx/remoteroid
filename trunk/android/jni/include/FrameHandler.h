@@ -9,11 +9,11 @@ extern "C" {
 #endif
 /*
  * Class:     org_secmem_remoteroid_natives_FrameHandler
- * Method:    readFrameBufferNative
- * Signature: (III[B)Z
+ * Method:    getFrameBuffer
+ * Signature: ([BIIII)I
  */
-JNIEXPORT jboolean JNICALL Java_org_secmem_remoteroid_natives_FrameHandler_readFrameBufferNative
-  (JNIEnv *, jobject, jint, jint, jint, jbyteArray);
+JNIEXPORT jint JNICALL Java_org_secmem_remoteroid_natives_FrameHandler_getFrameBuffer
+  (JNIEnv *, jobject, jbyteArray, jint, jint, jint, jint);
 
 #ifdef __cplusplus
 }

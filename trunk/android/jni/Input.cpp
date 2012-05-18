@@ -41,11 +41,11 @@ bool openInputWithoutPermission(){
 			1 /* Version id. */
 	};
 
-	if((inputFd = suinput_open("qwerty_kor", &id)) == -1){
-		LOGD(LOGTAG, "Cannot open device - 'qwerty'");
+	if((inputFd = suinput_open("remoteroid", &id)) == -1){
+		LOGD(LOGTAG, "Cannot open device - 'remoteroid'");
 		return false;
 	}
-	LOGI(LOGTAG, "Opened device 'qwerty'");
+	LOGI(LOGTAG, "Opened device 'remoteroid'");
 	return true;
 }
 
