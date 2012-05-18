@@ -4,16 +4,16 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.secmem.remoteroid.natives.FrameHandler;
 import org.secmem.remoteroid.socket.SocketModule;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.WindowManager;
+import android.util.Log;
 
 public class FrameBufferService extends Service {
 	
@@ -24,7 +24,7 @@ public class FrameBufferService extends Service {
 	private boolean flag=false;
 	private Process p;
 	private int operation;
-
+	private FrameHandler fHandler;
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
@@ -34,46 +34,34 @@ public class FrameBufferService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		
-		bitmap = getDisplayBitmap();
+//		bitmap = getDisplayBitmap();
 	}
 
 	@Override
 	public void onStart(Intent intent, int startId) {
 		// TODO Auto-generated method stub
 		super.onStart(intent, startId);
-		fSocket = (SocketModule)intent.getSerializableExtra("socket");
-		if(fSocket.socket.isConnected()){
-			flag = true;
-		}
-		suPermission();
-		
+		fHandler = new FrameHandler(getApplicationContext());
+		Log.i("fService","Size = "+String.valueOf(fHandler.getDisplaySize()));
+		Log.i("fService","Size = "+String.valueOf(fHandler.getDisplayOrientation()));
+//		fSocket = (SocketModule)intent.getSerializableExtra("socket");
+//		if(fSocket.socket.isConnected()){
+//			flag = true;
+//		}
+//		suPermission();
+//		
+		flag=true;
 		Thread thread = new Thread(){
 			public void run(){
 				while(flag){
-					
-					try {
-						int len;
-						byte[] line = new byte[6];
-						
-						if(!flag)
-							break;						
-						else{
-							len = fSocket.inputStream.read(line);
-							if(len <=0){
-								return;
-							}
-							else if(len==6){
-								operation = (int)line[1];
-								
-							}
-						}
-						
-					} catch (Exception e) {
-					}
+					Log.i("fService","Size = "+String.valueOf(fHandler.getDisplaySize()));
+					Log.i("fService","Size = "+String.valueOf(fHandler.getDisplayOrientation()));
+					fHandler.getDisplayBitmap();
+					SystemClock.sleep(2000);
 				}
 			}
 		};
+		thread.start();
 		
 	}
 	

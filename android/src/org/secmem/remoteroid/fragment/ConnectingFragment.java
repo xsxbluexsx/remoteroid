@@ -22,6 +22,7 @@ package org.secmem.remoteroid.fragment;
 import java.io.IOException;
 
 import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.network.Transmitter;
 import org.secmem.remoteroid.socket.SocketModule;
 
 import android.os.AsyncTask;
@@ -68,6 +69,7 @@ public class ConnectingFragment extends Fragment {
 		
 		isConnected=true;
 		new ConnectAsync().execute(mIpAddr,mPassword);
+		
 		
 		mBtnCancel.setOnClickListener(new OnClickListener(){
 
