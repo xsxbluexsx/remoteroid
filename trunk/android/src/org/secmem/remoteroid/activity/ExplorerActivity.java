@@ -44,11 +44,14 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
@@ -64,6 +67,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	
 	public static ArrayList<File> fileInfo = new ArrayList<File>();
 	public static DataList dataList;
+	public static String explorerPath =null;
 	
 	private static int CODE_CATEGORY = 1;
 	
@@ -84,14 +88,6 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	
 	public static GridView gridview;
 	
-	public GridView getGridview() {
-		return gridview;
-	}
-
-	public void setGridview(GridView gridview) {
-		this.gridview = gridview;
-	}
-
 	private ExplorerAdapter adapter;
 	
 	private boolean isTimer=false;
@@ -182,7 +178,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 						setDisplayView();
 					}
 					else{
-						HongUtil.makeToast(ExplorerActivity.this, "가장 상위 폴더 입니다.^^");
+						HongUtil.makeToast(ExplorerActivity.this, getString(R.string.is_the_parent_folder));
 					}
 				}
 				break;
@@ -243,7 +239,6 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		adapter.notifyDataSetChanged();
 		gridview.setSelection(20);
 		gridview.invalidateViews();
-		
 	}
 	
 	public class backTimer extends CountDownTimer{
@@ -310,6 +305,8 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	private OnPathChangedListener onPathChanged = new OnPathChangedListener() {
 		public void onChanged(String path) {
 			pathTv.setText(path);
+			explorerPath = path;
+			
 		}
 	};
     
@@ -326,9 +323,10 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		protected void onPreExecute() {
 			super.onPreExecute();
 			mProgress = new ProgressDialog(ExplorerActivity.this);
-			mProgress.setTitle("검색중입니다.");
-			mProgress.setMessage("파일을 검색중입니다.");
+			mProgress.setTitle(getString(R.string.searching));
+			mProgress.setMessage(getString(R.string.searching_for_file_));
 			mProgress.show();
+			mProgress.setCancelable(false);
 			isSearched=true;
 		}
 
@@ -338,19 +336,28 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 			
 			if(type.equals(TYPE_IMAGE)){
 				String[] projection = { MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA};
+				
+				@SuppressWarnings("deprecation")
 				Cursor imageCursor = managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
+				
 				HongUtil.getPhoto(imageCursor);
 			}
 			
 			else if(type.equals(TYPE_VIDEO)){
 				String[] infoVideo = { MediaStore.Video.Media._ID, MediaStore.Video.Media.DATA};
+				
+				@SuppressWarnings("deprecation")
 				Cursor cursor = managedQuery(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, infoVideo, null, null, null);
+				
 				HongUtil.getVideo(cursor);
 			}
 			
 			else if(type.equals(TYPE_MUSIC)){
 				String[] mediaData = {MediaStore.Audio.Media.DATA, MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID};
+				
+				@SuppressWarnings("deprecation")
 				Cursor cursor = managedQuery(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, mediaData, null, null, null);
+				
 				HongUtil.getMusic(cursor);
 			}
 			
@@ -375,4 +382,12 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		}
 		
 	}
+	
+	public GridView getGridview() {
+		return gridview;
+	}
+	public void setGridview(GridView gridview) {
+		this.gridview = gridview;
+	}
+	
 }

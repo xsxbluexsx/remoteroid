@@ -54,6 +54,10 @@
             <item >Video</item>
             <item >Music</item>
         </string-array>
-    <string name="dialog_input_toast">입력 후 확인 버튼을 눌러주세요.</string>
-    <string name="category_dialog_title">확장명을 \'.\'을 제외하고 입력해주세요(ex: gul)</string>
+    <string name="dialog_input_toast">After entering, press button.</string>
+    <string name="category_dialog_title">Please enter except for \'.\'(ex: gul)</string>
+    <string name="index_is_already_registered_">Index is already registered.</string>
+    <string name="searching_for_file_">Searching for file.....</string>
+    <string name="searching">Searching</string>
+    <string name="is_the_parent_folder">Is the parent folder</string>
 </resources>

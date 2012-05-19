@@ -141,6 +141,9 @@ public class CategoryDialog extends Activity implements OnClickListener, OnItemC
 				if(edt.getText().toString().length()==0){
 					HongUtil.makeToast(context, getString(R.string.dialog_input_toast));
 				}
+				else if(!isDuplicated(edt.getText().toString())){
+					HongUtil.makeToast(context, getString(R.string.index_is_already_registered_));
+				}
 				else{
 					addData(edt.getText().toString());
 					categoryList = getCategory();
@@ -151,7 +154,6 @@ public class CategoryDialog extends Activity implements OnClickListener, OnItemC
 				
 			}
 
-			
 		});
 		
 		cancelBtn.setOnClickListener(new OnClickListener() {
@@ -165,8 +167,23 @@ public class CategoryDialog extends Activity implements OnClickListener, OnItemC
 		});
 		
 		dialog.show();
-	
 	}
+	
+	private boolean isDuplicated(String string) {
+		database.open();
+		ArrayList<String> list = database.getIndex();
+		database.close();
+		if(list.size()>0){
+			for(int i = 0 ; i<list.size() ; i++){
+				if(list.get(i).equals(string))
+					return false;
+			}
+		}
+		
+		
+		return true;
+	}
+	
 	private void addData(String str) {
 		database.open();
 		database.insertIndex(str);

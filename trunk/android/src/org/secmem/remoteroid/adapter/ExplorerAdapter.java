@@ -45,10 +45,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -284,7 +282,18 @@ public class ExplorerAdapter extends BaseAdapter{
 			}
 			holder.titleHolder.setText(categoryList.get(pos).getFile().getName());
 		}
-		
+		viewItem.setOnLongClickListener(new OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View v) {
+				if(ExplorerActivity.fileInfo.size()!=0){
+						// sendFile(ExplorerActivity.fileInfo);
+				}
+				
+				
+				return true;
+			}
+		});
 		
 		viewItem.setOnClickListener(new OnClickListener() {
 			@Override
@@ -336,6 +345,7 @@ public class ExplorerAdapter extends BaseAdapter{
 				printFileInfo();
 			}
 		});
+		
 		return viewItem;
 	}
 	

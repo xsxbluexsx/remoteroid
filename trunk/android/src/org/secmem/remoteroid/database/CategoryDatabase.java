@@ -68,13 +68,6 @@ public class CategoryDatabase {
 				mCursor.moveToNext();
 			}
 		}
-		
-		if(contactList.size()==0){
-			Log.i("contact","0");
-		}
-		else
-			Log.i("contact","1");
-
 		return contactList;
 	}
 	
@@ -94,13 +87,11 @@ public class CategoryDatabase {
 
 		@Override
 		public void onCreate( SQLiteDatabase db ) {
-			Log.i("qq","onCreate");
 			db.execSQL(_CREATE +" IF NOT EXISTS " + _TABLENAME);
 		}
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.i("qq","onUpgrade");
 			Log.w( "INFO : ", "Upgrading db from version" + oldVersion + " to" +
 					newVersion + ", which will destroy all old data");
 			db.execSQL("DROP TABLE IF EXISTS " + _TABLENAME );
