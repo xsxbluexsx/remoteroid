@@ -1,3 +1,4 @@
+pProgressBar
 #include "StdAfx.h"
 #include "RecvFile.h"
 
@@ -6,6 +7,7 @@
 CRecvFile::CRecvFile(void):m_hRecvFile(NULL)
 	, m_iTotalFileSize(0)
 	, m_iRecvFileSize(0)
+	, pProgressBar(NULL)
 {
 	
 }
@@ -70,6 +72,11 @@ HANDLE CRecvFile::RecvFileInfo(char * data)
 		AfxMessageBox(_T("현재 위치에 파일을 저장할 수 없습니다"));
 	}
 
+	
+	pProgressBar->SetPos(0);
+	pProgressBar->ShowWindow(SW_RESTORE);
+	
+
 	m_iRecvFileSize = 0;
 	//현재 받은 파일 크기
 	return m_hRecvFile;
@@ -84,8 +91,15 @@ void CRecvFile::RecvFileData(char * data, int packetSize)
 	DWORD dwWrite;
 	WriteFile(m_hRecvFile, data, iCurrentRecvLen, &dwWrite, NULL);
 	m_iRecvFileSize += iCurrentRecvLen;
+	
+	int percent = (int)(((float)m_iRecvFileSize/m_iTotalFileSize)*100);
+	
+	pProgressBar->SetPos(percent);
+
 	if(m_iTotalFileSize <= m_iRecvFileSize)
 	{
+		pProgressBar->DeleteRgn();
+		pProgressBar->ShowWindow(SW_HIDE);
 		CloseHandle(m_hRecvFile);
 		m_hRecvFile = NULL;
 		AfxMessageBox(_T("파일 수신 완료"));
@@ -140,4 +154,10 @@ void CRecvFile::SetDefaultPath(void)
 	//현재 바탕화면의 절대경로 얻어오기
 	SHGetFolderPath(NULL, CSIDL_DESKTOP, NULL, 0, directoryPath);
 	_tcscat(directoryPath, _T("\\Remotroid\\"));	
+}
+
+
+void CRecvFile::SetProgressBar(CTextProgressCtrl * pProgressBar)
+{
+	this->pProgressBar = pProgressBar;
 }
