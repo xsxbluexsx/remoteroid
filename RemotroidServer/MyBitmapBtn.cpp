@@ -13,8 +13,8 @@ IMPLEMENT_DYNAMIC(CMyBitmapBtn, CBitmapButton)
 
 CMyBitmapBtn::CMyBitmapBtn()
 {	
-	m_bMouseHover			= FALSE;
-	m_nIDBitmapResourceHover= 0;
+	m_bMouseHover				= FALSE;
+	m_nIDBitmapResourceHover	= 0;
 	ZeroMemory(&m_stTrackMouse, sizeof(m_stTrackMouse));
 }
 

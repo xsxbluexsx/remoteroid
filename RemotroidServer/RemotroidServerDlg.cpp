@@ -1,3 +1,5 @@
+m_pClient
+drawJpg
 
 // RemotroidServerDlg.cpp : implementation file
 //
@@ -71,6 +73,7 @@ void CRemotroidServerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BTN_BACK, m_BackButton);
 	DDX_Control(pDX, IDC_BTN_HOME, m_HomeButton);
 	DDX_Control(pDX, IDC_BTN_MENU, m_MenuButton);
+	DDX_Control(pDX, IDC_PROGRESS1, m_progressCtrl);
 }
 
 BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
@@ -97,6 +100,7 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_HOME, &CRemotroidServerDlg::OnClickedBtnHome)
 	ON_BN_CLICKED(IDC_BTN_MENU, &CRemotroidServerDlg::OnClickedBtnMenu)
 	
+	ON_BN_CLICKED(IDC_BUTTON1, &CRemotroidServerDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -135,8 +139,18 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 
 	//스크린 윈도우 위치 및 스타일 설정
 	screen.CreateEx(WS_EX_TOPMOST
-		, _T("STATIC"), NULL, WS_CHILD|WS_VISIBLE|SS_NOTIFY, CRect(42,104,402,704), this, 1234);
+		, _T("STATIC"), NULL, WS_CHILD|WS_VISIBLE|SS_NOTIFY, CRect(LEFT, TOP, RIGHT, BOTTOM), this, 1234);
 	screen.SetFocus();
+	
+	m_progressCtrl.MoveWindow(LEFT, TOP-20, WIDTH, 20);
+	m_progressCtrl.ShowWindow(SW_HIDE);
+	m_progressCtrl.SetBarBkColor(RGB(56,58,60));
+	m_progressCtrl.SetBarColor(RGB(7,215,7));
+	m_progressCtrl.SetTextColor(RGB(255,255,255));
+	m_progressCtrl.SetRoundRect();
+	m_progressCtrl.SetRange(0, 100);
+
+	recvFileClass.SetProgressBar(&m_progressCtrl);
 
 	//하단 버튼 위치 설정
 	m_MenuButton.MoveWindow(60, 710, BUTTONWIDTH, BUTTONHEIGHT);
@@ -273,6 +287,7 @@ UINT CRemotroidServerDlg::AcceptFunc(LPVOID pParam)
 	{		
 		return 0;
 	}
+	AfxMessageBox(_T("sdfsd"));
 	CMyClient *pClient = new CMyClient(ClientSocket);
 	pDlg->SetClientSocket(pClient);
 	pDlg->pRecvThread = AfxBeginThread(RecvFunc, pDlg);
@@ -334,6 +349,7 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 
 	char bPacket[MAXSIZE];
 	CRecvFile& recvFileClass = pDlg->recvFileClass;	
+	CTextProgressCtrl& prgressBar = pDlg->m_progressCtrl;
 	
 	while (TRUE)
 	{
@@ -415,6 +431,7 @@ void CRemotroidServerDlg::OnDestroy()
 	m_isClickedEndBtn = TRUE;
 	EndAccept();
 	EndConnect();
+	m_progressCtrl.DeleteRgn();
 }
 
 
@@ -575,7 +592,7 @@ void CRemotroidServerDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	// TODO: Add your message handler code here and/or call default
 	CString str = _T("");
 	str.Format(_T("%c"), nChar);
-	//MessageBox(str);
+	MessageBox(str);
 	CImageDlg::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
@@ -594,7 +611,9 @@ BOOL CRemotroidServerDlg::PreTranslateMessage(MSG* pMsg)
 void CRemotroidServerDlg::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	// TODO: Add your message handler code here and/or call default
-
+	CString str = _T("");
+	str.Format(_T("%c"), nChar);
+	MessageBox(str);
  	CImageDlg::OnChar(nChar, nRepCnt, nFlags);
 }
 
@@ -689,3 +708,10 @@ void CRemotroidServerDlg::OnClickedBtnMenu()
 	// TODO: Add your control notification handler code here
 }
 
+
+
+void CRemotroidServerDlg::OnBnClickedButton1()
+{
+	// TODO: Add your control notification handler code here
+	
+}
