@@ -1,8 +1,11 @@
 package org.secmem.remoteroid.service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.io.OutputStream;
 
 import org.secmem.remoteroid.natives.FrameHandler;
 import org.secmem.remoteroid.socket.SocketModule;
@@ -10,9 +13,9 @@ import org.secmem.remoteroid.socket.SocketModule;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.os.IBinder;
 import android.os.SystemClock;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
 public class FrameBufferService extends Service {
@@ -25,6 +28,8 @@ public class FrameBufferService extends Service {
 	private Process p;
 	private int operation;
 	private FrameHandler fHandler;
+	
+	int count=0;
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
@@ -34,30 +39,28 @@ public class FrameBufferService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-//		bitmap = getDisplayBitmap();
+		fHandler = new FrameHandler(getApplicationContext());
+		suPermission();
 	}
 
 	@Override
 	public void onStart(Intent intent, int startId) {
 		// TODO Auto-generated method stub
 		super.onStart(intent, startId);
-		fHandler = new FrameHandler(getApplicationContext());
-		Log.i("fService","Size = "+String.valueOf(fHandler.getDisplaySize()));
-		Log.i("fService","Size = "+String.valueOf(fHandler.getDisplayOrientation()));
+		
 //		fSocket = (SocketModule)intent.getSerializableExtra("socket");
 //		if(fSocket.socket.isConnected()){
 //			flag = true;
 //		}
-//		suPermission();
-//		
 		flag=true;
 		Thread thread = new Thread(){
 			public void run(){
 				while(flag){
-					Log.i("fService","Size = "+String.valueOf(fHandler.getDisplaySize()));
-					Log.i("fService","Size = "+String.valueOf(fHandler.getDisplayOrientation()));
-					fHandler.getDisplayBitmap();
-					SystemClock.sleep(2000);
+					
+					ByteArrayOutputStream frameStream = fHandler.getFrameStream();
+					
+					
+					SystemClock.sleep(5000);
 				}
 			}
 		};
@@ -65,23 +68,30 @@ public class FrameBufferService extends Service {
 		
 	}
 	
-	private Bitmap getDisplayBitmap() {
-		
-		Bitmap bitmap;
-		
-		DisplayMetrics dm = getResources().getDisplayMetrics();
-		int width = dm.widthPixels;
-		int height = dm.heightPixels;
-		
-		int size = width*height*4;
-		
-		byte[] frameData = new byte[size];
-		
-		ByteBuffer frameBuffer = ByteBuffer.allocate(size);
-		bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-		
-		return bitmap;
-	}
+	
+//	Bitmap bitmap = fHandler.getTestFrameStream();
+//	
+//	File copyFile = new File("/mnt/sdcard/captured"+count+".png");
+//	OutputStream out = null;
+//	try {
+//		copyFile.createNewFile();
+//		out = new FileOutputStream(copyFile);
+//		bitmap.compress(CompressFormat.JPEG,100,out);
+//	} catch (IOException e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//	}finally{
+//		try {
+//			out.close();
+//		} catch (Exception e2) {
+//			// TODO: handle exception
+//		}
+//	}
+//	
+//	
+//	count++;
+//	Log.i("qq","Service");
+	
 	
 	public void suPermission() {
 		try {

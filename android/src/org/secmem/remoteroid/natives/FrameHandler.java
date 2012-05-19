@@ -54,7 +54,7 @@ public class FrameHandler {
 	 
 		 4. frameStream = getFrameStream();
 		 
-		 **SendScreenShot
+		 **SendScreenShot(frameStream.size() , frameStream.toByteArray());
 	 }
 	 */
 
@@ -68,7 +68,7 @@ public class FrameHandler {
 	 */
 //	public native boolean readFrameBufferNative(int width, int height, int pixelDepth, byte[] dest);
 
-	private native int getFrameBuffer(byte[] buff, int width, int height, int pixel, int orientation);
+	private native int getFrameBuffer(byte[] buff,  int orientation);
 	
 	static {
 		System.loadLibrary("fbuffer");
@@ -109,8 +109,8 @@ public class FrameHandler {
 	
 	private void setDisplayValue() {
 		DisplayMetrics dm = context.getResources().getDisplayMetrics();
-		this.width = dm.widthPixels/2;
-		this.height = dm.heightPixels/2;
+		this.width = dm.widthPixels;
+		this.height = dm.heightPixels;
 		this.pixel=4;
 		
 		this.orientation = getDisplayOrientation();
@@ -139,7 +139,7 @@ public class FrameHandler {
 		
 		ByteArrayOutputStream frameStream = new ByteArrayOutputStream();
 		
-		int ret = getFrameBuffer(buffer, getWidth(), getHeight(), getPixel(), getDisplayOrientation());
+		int ret = getFrameBuffer(buffer, getDisplayOrientation());
 		
 		frameBuffer.put(buffer, 0, displaySize);
 		frameBuffer.rewind();
@@ -147,6 +147,23 @@ public class FrameHandler {
 		bitmap.compress(CompressFormat.JPEG, 70, frameStream);
 		
 		return frameStream;
+	}
+	
+	
+	public Bitmap getTestFrameStream(){
+		
+		if(orientation != getDisplayOrientation()){
+			setDisplayValue();
+			setBitmap(getDisplayBitmap());
+		}
+		
+		int ret = getFrameBuffer(buffer, getDisplayOrientation());
+		
+		frameBuffer.put(buffer, 0, displaySize);
+		frameBuffer.rewind();
+		bitmap.copyPixelsFromBuffer(frameBuffer);
+		
+		return bitmap;
 	}
 	
 	
