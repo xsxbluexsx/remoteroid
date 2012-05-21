@@ -64,10 +64,7 @@ public class FrameBufferService extends Service {
 		}finally{
 			bIntent.putExtra("isConnected", flag);
 			if(ConnectingFragment.isFinished && flag){
-				try {
-					transmitter.disconnect();
-				} catch (IOException e) {
-				}
+				transmitter.disconnect();				
 				stopSelf();
 			}
 			else{

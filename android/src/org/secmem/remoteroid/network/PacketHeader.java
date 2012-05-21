@@ -2,6 +2,8 @@ package org.secmem.remoteroid.network;
 
 import java.text.ParseException;
 
+import android.util.*;
+
 /**
  * Represents packet's header data.</br>
  * Header is consisted of <code>{@link OpCode opCode}</code> and {@link #payloadLength PayloadLength}.
@@ -38,6 +40,9 @@ public class PacketHeader {
 	 */
 	private int payloadLength = 0;
 	
+	private static byte[] opCodeBuffer = new byte[OPCODE_LENGTH];
+	private static byte[] packetSizeBuffer = new byte[PAYLOAD_LENGTH];
+	
 	private PacketHeader(){
 	}
 	
@@ -59,38 +64,34 @@ public class PacketHeader {
 		return toString().getBytes();
 	}
 	
+	
+	private static int ByteToInt(byte [] data){
+		int result = 0;
+		for(int i=0; i<data.length; i++){
+			if(data[i] == ' ')
+				continue;
+			result = result * 10 + (data[i]-'0');
+		}
+		return result;
+	}
 	/**
 	 * Parse packet header from given packet header data.
 	 * @param headerStr packet header's data in String format
 	 * @return PacketHeader object of given packet header
 	 * @throws ParseException given packet header is not valid
-	 */
-	public static PacketHeader parse(String headerStr) throws ParseException{
-//		if(headerStr.length()!=LENGTH)
-//			throw new ParseException("Invalid header length, should be 6 but "+headerStr.length(), 0);
-		
+	 */	
+	public static PacketHeader parse(byte[] rawData) throws ParseException{
 		PacketHeader header = new PacketHeader();
 		
-		try{
-			// Step 1. parse opCode
-			header.setOpCode(Integer.parseInt(headerStr.substring(0, OPCODE_LENGTH).trim()));
-		}catch(NumberFormatException e){
-			throw new ParseException("Could not parse opcode with given header="+headerStr, 0);
-		}
+		System.arraycopy(rawData, 0, opCodeBuffer, 0, OPCODE_LENGTH);
 		
-		try{
-			// Step 2. parse dataLength
-			header.setPayloadLength(Integer.parseInt(headerStr.substring(OPCODE_LENGTH, LENGTH).trim())-LENGTH);
-		}catch(NumberFormatException e){
-			throw new ParseException("Could not parse dataLength with given header="+headerStr, 2);
-		}
+		header.setOpCode(ByteToInt(opCodeBuffer));
 		
-		// Packet header parsing completed.
+		System.arraycopy(rawData, OPCODE_LENGTH, packetSizeBuffer, 0, PAYLOAD_LENGTH);
+		
+		header.setPayloadLength(ByteToInt(packetSizeBuffer)-PacketHeader.LENGTH);
+		
 		return header;
-	}
-	
-	public static PacketHeader parse(byte[] rawData) throws ParseException{
-		return parse(new String(rawData));
 	}
 
 	/**
