@@ -7,66 +7,94 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.secmem.remoteroid.activity.ExplorerActivity;
+import org.secmem.remoteroid.fragment.ConnectingFragment;
 import org.secmem.remoteroid.natives.FrameHandler;
+import org.secmem.remoteroid.network.Transmitter;
 import org.secmem.remoteroid.socket.SocketModule;
 
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
 
 public class FrameBufferService extends Service {
 	
-	private Bitmap bitmap;
-	private int size;
-	
-	private SocketModule fSocket;
 	private boolean flag=false;
-	private Process p;
-	private int operation;
+	private Process p=null;
+	
 	private FrameHandler fHandler;
+	private Transmitter transmitter;
 	
 	int count=0;
 	@Override
 	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		flag=false;
+		if(p!=null)
+			suClose();
 	}
 	
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		fHandler = new FrameHandler(getApplicationContext());
-		suPermission();
+		
 	}
 
 	@Override
-	public void onStart(Intent intent, int startId) {
-		// TODO Auto-generated method stub
-		super.onStart(intent, startId);
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		Log.i("qq","onStartCommand");
 		
-//		fSocket = (SocketModule)intent.getSerializableExtra("socket");
-//		if(fSocket.socket.isConnected()){
-//			flag = true;
-//		}
-		flag=true;
+		transmitter = Transmitter.getInstance();
+		Intent bIntent = new Intent("connecting_fragment_connect");
+		
+		try {
+			transmitter.connect(intent.getStringExtra("IP"));
+			flag=true;
+		} catch (Exception e) {
+		}finally{
+			bIntent.putExtra("isConnected", flag);
+			if(ConnectingFragment.isFinished && flag){
+				try {
+					transmitter.disconnect();
+				} catch (IOException e) {
+				}
+				stopSelf();
+			}
+			else{
+				sendBroadcast(bIntent);
+				if(!flag)
+					stopSelf();
+			}
+		}
+		fHandler = new FrameHandler(getApplicationContext());
+		suPermission();
+		
 		Thread thread = new Thread(){
-			public void run(){
+			@Override
+			public void run() {
+				
 				while(flag){
-					
 					ByteArrayOutputStream frameStream = fHandler.getFrameStream();
 					
-					
-					SystemClock.sleep(5000);
+					// sendScreen(frameStream);
 				}
+				
 			}
 		};
-		thread.start();
 		
+		return super.onStartCommand(intent, flags, startId);
 	}
+	
 	
 	
 //	Bitmap bitmap = fHandler.getTestFrameStream();
@@ -92,7 +120,6 @@ public class FrameBufferService extends Service {
 //	count++;
 //	Log.i("qq","Service");
 	
-	
 	public void suPermission() {
 		try {
 			p = Runtime.getRuntime().exec("su");
@@ -102,9 +129,21 @@ public class FrameBufferService extends Service {
 			os.writeBytes("exit\n");
 			os.flush();
 		} catch (IOException e) {	
-			Intent i = new Intent("su_fail");
-			sendBroadcast(i);
-			e.printStackTrace();	}
+			
+		}
+	}
+	
+	public void suClose() {
+		try {
+			p = Runtime.getRuntime().exec("su");
+			DataOutputStream os = new DataOutputStream(p.getOutputStream());
+			os.writeBytes("chmod 660 /dev/graphics/fb0\n");
+			os.writeBytes("chmod 664 /dev/graphics/fb1\n");
+			os.writeBytes("exit\n");
+			os.flush();
+		} catch (IOException e) {
+			
+		}
 	}
 
 }

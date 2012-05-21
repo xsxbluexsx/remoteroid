@@ -109,6 +109,8 @@ public class RemoteroidService extends Service {
 				System.out.println(msg.toString());
 			}
 		}
+		
+		
 		return super.onStartCommand(intent, flags, startId);
 	}
 

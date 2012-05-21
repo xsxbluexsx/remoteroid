@@ -51,18 +51,12 @@ public class AuthenticateFragment extends Fragment {
 	
 	private boolean isIpValid=false;
 	private boolean isPwValid=false;
-	private boolean isConnected = false;
 	
 	InputHandler hd = new InputHandler();
 	
-	Intent frameIntent;
 	
 	public AuthenticateFragment(){
 		
-	}
-	
-	public AuthenticateFragment(boolean isConnected){
-		this.isConnected = isConnected;
 	}
 	
 
@@ -83,13 +77,6 @@ public class AuthenticateFragment extends Fragment {
 		
 		mEdtIpAddr.setText("210.118.74.80");
 		mEdtPassword.setText("aaa");
-		
-//		if(isConnected){
-			frameIntent = new Intent(getActivity(), FrameBufferService.class);
-//			frameIntent.putExtra("socket", ConnectingFragment.socket);
-			getActivity().startService(frameIntent);
-//		}
-		
 		
 		mEdtIpAddr.addTextChangedListener(new TextWatcher(){
 

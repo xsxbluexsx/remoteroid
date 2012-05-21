@@ -23,8 +23,14 @@ import java.io.IOException;
 
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.network.Transmitter;
+import org.secmem.remoteroid.service.FrameBufferService;
 import org.secmem.remoteroid.socket.SocketModule;
+import org.secmem.remoteroid.util.HongUtil;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -39,14 +45,17 @@ import android.widget.ImageView;
 
 public class ConnectingFragment extends Fragment {
 	
-	private static boolean isConnected;
-	public static SocketModule socket;
+	public static boolean isFinished=false;
+	
 	
 	private ImageView mIvCircuit;
 	private Button mBtnCancel;
 	
 	private String mIpAddr;
 	private String mPassword;
+	
+	private Intent frameIntent;
+	private IntentFilter filter;
 	
 	public ConnectingFragment(String ipAddr, String password){
 		mIpAddr = ipAddr;
@@ -64,49 +73,62 @@ public class ConnectingFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 		mIvCircuit = (ImageView)view.findViewById(R.id.circuit_board);
 		mBtnCancel = (Button)view.findViewById(R.id.cancel);
-		
 		mIvCircuit.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.blink));
 		
-		isConnected=true;
-		new ConnectAsync().execute(mIpAddr,mPassword);
+		isFinished = false;
 		
+		filter = new IntentFilter();
+		filter.addAction("connecting_fragment_connect");
+		
+		frameIntent = new Intent(getActivity(), FrameBufferService.class);
+		frameIntent.putExtra("IP", mIpAddr);
+		getActivity().startService(frameIntent);
 		
 		mBtnCancel.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
 				// TODO cancel connection
-				isConnected = false;
 				getFragmentManager().beginTransaction().replace(R.id.container, new AuthenticateFragment()).commit();
 			}
 			
 		});
 	}
-	
-	private class ConnectAsync extends AsyncTask<String, Void, Void>{
-
-		@Override
-		protected Void doInBackground(String... params) {
-			String ip = params[0];
-			String pw = params[1];
-			
-			try {
-				socket.SetSocket(ip, 5000);
-			} catch (IOException e) {
-				isConnected = false;
-			}
-			
-			return null;
-		}
-		
-		@Override
-		protected void onPostExecute(Void result) {
-			
-			if(ConnectingFragment.this.isResumed())
-				getFragmentManager().beginTransaction().replace(R.id.container, new AuthenticateFragment(isConnected)).commit();
-			
-			super.onPostExecute(result);
-		}
-		
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		getActivity().registerReceiver(service_BR, filter);
 	}
+	
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		getActivity().unregisterReceiver(service_BR);
+	}
+	
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		isFinished = true;
+	}
+	
+	private BroadcastReceiver service_BR = new BroadcastReceiver() {
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			
+			if(intent.getAction().equals("connecting_fragment_connect")){
+				if(intent.getBooleanExtra("isConnected", true)){
+					HongUtil.makeToast(getActivity(), "Success");
+				}
+				else{
+					HongUtil.makeToast(getActivity(), "Fail");
+				}
+				getFragmentManager().beginTransaction().replace(R.id.container, new AuthenticateFragment()).commit();
+			}
+		}
+	};
 }
