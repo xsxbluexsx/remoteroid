@@ -1,6 +1,6 @@
 package org.secmem.remoteroid.network;
 
-import java.text.ParseException;
+import java.text.*;
 
 /**
  * Represents remoteroid's packet system.</br>
@@ -12,11 +12,8 @@ import java.text.ParseException;
 public class Packet {
 
 	public static final int MAX_LENGTH = 4096;
+	public static final int MAX_PAYLOAD_LENGTH = MAX_LENGTH - PacketHeader.LENGTH;
 	
-	/**
-	 * Represents packet data as String.
-	 */
-	private String packetStr;
 	
 	/**
 	 * Packet's header data
@@ -25,6 +22,8 @@ public class Packet {
 	/**
 	 * Packet's actual data
 	 */
+	private static byte[] packetBuffer = new byte[MAX_LENGTH];
+	private static byte[] payloadBuffer = new byte[MAX_PAYLOAD_LENGTH];
 	private byte[] payload;
 	
 	protected Packet(){
@@ -49,24 +48,17 @@ public class Packet {
 	 * @throws ParseException failed to parse packet.
 	 */
 	public static Packet parse(byte[] rawPacket) throws ParseException{
-		Packet packet = new Packet();
-		String packetStr = new String(rawPacket);
-		
-		// Convert raw packet data into string to get header data
-		packet.setPacketStr(packetStr);
+		Packet packet = new Packet();		
 		
 		// Get header
-		packet.setHeader(PacketHeader.parse(packetStr.substring(0, PacketHeader.LENGTH)));
+		packet.setHeader(PacketHeader.parse(rawPacket));		
 		
 		int payloadLength = packet.getHeader().getPayloadLength();
-//		if(payloadLength!=packet.getHeader().getPayloadLength())
-//			throw new ParseException("Payload's actual size does not equals to header's payload size.", 2);
 
 		// Get data (payload)
-		byte[] payload = new byte[payloadLength];
-		System.arraycopy(rawPacket, PacketHeader.LENGTH, payload, 0, payloadLength);
-		packet.setPayload(payload);
-		
+		System.arraycopy(rawPacket, PacketHeader.LENGTH, payloadBuffer, 0, payloadLength);
+		packet.setPayload(payloadBuffer);		
+				
 		// Packet parsing has done.
 		return packet;
 	}
@@ -75,39 +67,21 @@ public class Packet {
 	 * Get packet as byte array.
 	 * @return
 	 */
-	public byte[] asByteArray(){
-		byte[] packetData = new byte[PacketHeader.LENGTH+payload.length];
+	public byte[] asByteArray(){		
 		
 		if(header==null)
 			throw new IllegalStateException("Packet header has not been set.");
-		
-		if(payload==null)
-			throw new IllegalStateException("Payload has not been not set.");
-		
+				
 		// Append header
 		byte[] headerData = header.asByteArray();
-		System.arraycopy(headerData, 0, packetData, 0, PacketHeader.LENGTH);
+		System.arraycopy(headerData, 0, packetBuffer, 0, PacketHeader.LENGTH);
 		
 		// Append payload
-		System.arraycopy(payload, 0, packetData, PacketHeader.LENGTH, payload.length);
-		return packetData;
-	}
-	
-	/**
-	 * Get packet in Stirng format.
-	 * @return Packet in String format
-	 */
-	public String getPacketStr() {
-		return packetStr;
+		if(payload!=null)			
+			System.arraycopy(payload, 0, packetBuffer, PacketHeader.LENGTH, payload.length);
+		return packetBuffer;
 	}
 
-	/**
-	 * Set packet's data in String format.
-	 * @param mDataStr Packet data in String format. </br>Use <code>new String(byte[])</code> to convert byte[] into String.
-	 */
-	public void setPacketStr(String mDataStr) {
-		this.packetStr = mDataStr;
-	}
 
 	/**
 	 * Get packet's header.
