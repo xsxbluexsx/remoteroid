@@ -43,12 +43,12 @@ public class Main extends SherlockFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
-        
         mAuthFragment = new AuthenticateFragment();
         mDriverFragment = new DriverInstallationFragment();
 
         getSupportFragmentManager().beginTransaction().replace(R.id.container, mAuthFragment).commit();
     }
+    
 
 	@Override
 	protected void onResume() {
