@@ -121,46 +121,9 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		gridview.setLayoutAnimation(gridAnimation);
 		
 		gridview.setAdapter(adapter);
-		mThread mm = new mThread(ExplorerActivity.this);
-		mm.start();
 		
 	}
 	
-	private class mThread extends Thread{
-
-		Context context;
-		mHandler handler;
-		public mThread(Context c) {
-			this.context = c;
-			handler = new mHandler(context);
-		}
-		
-		@Override
-		public void run() {
-			while(true){
-				
-				handler.sendEmptyMessage(1);
-				SystemClock.sleep(5000);
-			}
-		}
-		
-	}
-	
-	private class mHandler extends Handler{
-		
-		Context c;
-		
-		public mHandler(Context c) {
-			this.c = c;
-		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-			HongUtil.makeToast(c, "Thread Execute");
-		}
-		
-	}
 	
 
 	@Override

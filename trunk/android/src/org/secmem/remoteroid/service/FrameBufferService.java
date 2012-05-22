@@ -2,24 +2,15 @@ package org.secmem.remoteroid.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
-import org.secmem.remoteroid.activity.ExplorerActivity;
 import org.secmem.remoteroid.fragment.ConnectingFragment;
 import org.secmem.remoteroid.natives.FrameHandler;
 import org.secmem.remoteroid.network.Transmitter;
-import org.secmem.remoteroid.socket.SocketModule;
 
 import android.app.Service;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.os.AsyncTask;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.util.Log;
 
 public class FrameBufferService extends Service {

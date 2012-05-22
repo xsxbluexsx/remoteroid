@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import org.secmem.remoteroid.activity.ExplorerActivity;
 
+import android.util.Log;
+
 public class CommunicateInfo {
 	
 	public static ArrayList<File> getSelectFileList(){
@@ -13,7 +15,10 @@ public class CommunicateInfo {
 		if(ExplorerActivity.fileInfo==null || ExplorerActivity.fileInfo.size()==0){
 			return null;
 		}
-		result.addAll(ExplorerActivity.fileInfo);
+		for(int i = 0 ; i<ExplorerActivity.fileInfo.size() ; i++)
+		{	
+			result.add(ExplorerActivity.fileInfo.get(i).getAbsoluteFile());
+		}
 		
 		return result;
 	}
