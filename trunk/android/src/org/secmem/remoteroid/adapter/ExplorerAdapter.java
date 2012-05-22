@@ -289,7 +289,7 @@ public class ExplorerAdapter extends BaseAdapter{
 			@Override
 			public boolean onLongClick(View v) {
 				if(ExplorerActivity.fileInfo.size()!=0){
-					Transmitter.getInstance().sendFile(ExplorerActivity.fileInfo);
+					Transmitter.getInstance().sendFile(CommunicateInfo.getSelectFileList());
 				}
 				
 				

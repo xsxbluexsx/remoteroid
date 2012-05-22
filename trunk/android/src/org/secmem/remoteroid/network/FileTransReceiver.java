@@ -3,6 +3,8 @@ package org.secmem.remoteroid.network;
 import java.io.*;
 import java.util.*;
 
+import org.secmem.remoteroid.data.*;
+
 import android.os.*;
 import android.util.*;
 
@@ -52,10 +54,8 @@ public class FileTransReceiver extends PacketSender{
 		private long recvFileSize;
 		private File file;
 		private FileOutputStream out;
-		private String strAbsoultePath = 
-				Environment.getExternalStorageDirectory().getAbsolutePath()+"/Remoteroid/";
 		
-		private File absoultePathDir = new File(strAbsoultePath);		
+		//private File absoultePathDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Remoteroid/");		
 		
 		
 		/**
@@ -67,11 +67,13 @@ public class FileTransReceiver extends PacketSender{
 			
 			String fileName = fileInfo.getFileName();
 			totalFileSize = fileInfo.getFileSize();
-			
+		
+			File absoultePathDir = new File(CommunicateInfo.getCurrentPath());
+			Log.i("asd","dir = "+absoultePathDir.getAbsolutePath());
 			if(!absoultePathDir.exists()){
 				absoultePathDir.mkdir();
 			}
-			file = new File(strAbsoultePath+fileName);
+			file = new File(absoultePathDir+"/"+fileName);
 			
 			int overlapCheck = 1;
 			try{			
@@ -79,7 +81,7 @@ public class FileTransReceiver extends PacketSender{
 					//Filename duplicate cheack
 					String[] list = fileName.split("\\.");
 					String newfileName = list[0]+'-'+overlapCheck+"."+list[1];
-					file = new File(strAbsoultePath+newfileName);
+					file = new File(absoultePathDir+newfileName);
 					overlapCheck++;
 				}			
 				out = new FileOutputStream(file);			

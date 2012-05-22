@@ -129,6 +129,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		dataList = null;
 	}
 
 	@Override

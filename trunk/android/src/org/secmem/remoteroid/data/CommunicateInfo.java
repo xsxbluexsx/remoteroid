@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.secmem.remoteroid.activity.ExplorerActivity;
 
+import android.os.*;
 import android.util.Log;
 
 public class CommunicateInfo {
@@ -27,11 +28,12 @@ public class CommunicateInfo {
 		String result="";
 		
 		if(ExplorerActivity.dataList==null || ExplorerActivity.dataList.getPath()==null || ExplorerActivity.dataList.getPath().equals("") ){
-			return null;
+			Log.i("asd","null path = "+Environment.getExternalStorageDirectory().getAbsolutePath()+"/Remoteroid/");
+			return Environment.getExternalStorageDirectory().getAbsolutePath()+"/Remoteroid/";
 		}
 		
 		result = ExplorerActivity.dataList.getPath();
-		
+		Log.i("asd","result = "+result);
 		return result;
 	}
 
