@@ -609,7 +609,7 @@ public class HangulAutomata {
 	    	String c = new String(codes, 0, 1);
 	    	try
 	    	{
-	    		str = new String(c.getBytes(), SoftKeyboard.DEF_CHARSET);
+	    		str = new String(c.getBytes(), HardKeyboard.DEF_CHARSET);
 	    	}
 	    	catch(UnsupportedEncodingException e)
 	    	{
@@ -625,7 +625,7 @@ public class HangulAutomata {
     public static String encodingString(String text){
     	String str = null;
     	try{
-    		str = new String(text.getBytes(), SoftKeyboard.DEF_CHARSET);
+    		str = new String(text.getBytes(), HardKeyboard.DEF_CHARSET);
     	}catch(UnsupportedEncodingException e){
     		e.printStackTrace();
     	}
