@@ -1,5 +1,8 @@
 #pragma once
 #include "DrawJpg.h"
+#include "MyClient.h"
+#include "VitualEventPacket.h"
+
 
 // CScreen
 #define WIDTH	360
@@ -23,6 +26,7 @@ protected:
 
 private:
 	CDrawJpg drawJpg;	
+	CMyClient *pClient;
 public:
 	void InitDrawJpg(void);
 	afx_msg void OnDestroy();
@@ -31,6 +35,10 @@ public:
 	
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+
+	
+	void SetClient(CMyClient * pClient);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };
 
 

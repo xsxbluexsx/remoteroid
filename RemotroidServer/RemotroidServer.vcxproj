@@ -132,6 +132,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TextProgressCtrl.h" />
     <ClInclude Include="Util.h" />
+    <ClInclude Include="VitualEventPacket.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DrawJpg.cpp" />
@@ -149,6 +150,7 @@
     </ClCompile>
     <ClCompile Include="TextProgressCtrl.cpp" />
     <ClCompile Include="Util.cpp" />
+    <ClCompile Include="VitualEventPacket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="RemotroidServer.rc" />

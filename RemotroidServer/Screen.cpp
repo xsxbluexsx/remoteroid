@@ -1,3 +1,4 @@
+
 // Screen.cpp : implementation file
 //
 
@@ -11,6 +12,7 @@
 IMPLEMENT_DYNAMIC(CScreen, CStatic)
 
 CScreen::CScreen()
+: pClient(NULL)
 {	
 }
 
@@ -28,6 +30,7 @@ BEGIN_MESSAGE_MAP(CScreen, CStatic)
 
 
 	ON_WM_LBUTTONUP()
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
  
 
@@ -74,9 +77,15 @@ LRESULT CScreen::OnRecvJpgData(WPARAM wParam, LPARAM lParam)
 void CScreen::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
-	TCHAR temp[100];
-	wsprintf(temp, _T("x:%d, y:%d"), point.x, point.y);
-	//MessageBox(temp);
+	if(pClient == NULL)
+		return;
+
+
+	TRACE("\t down %d %d\n", point.x, point.y);
+
+	CVitualEventPacket event(TOUCHDOWN, point.x, point.y);
+	pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
+
 	CStatic::OnLButtonDown(nFlags, point);
 }
 
@@ -85,6 +94,37 @@ void CScreen::OnLButtonDown(UINT nFlags, CPoint point)
 void CScreen::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
+	if(pClient == NULL)
+		return;
+
+	TRACE("\t up %d %d\n", point.x, point.y);
+
+	CVitualEventPacket event(TOUCHUP);
+	pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
 
 	CStatic::OnLButtonUp(nFlags, point);
+}
+
+
+void CScreen::SetClient(CMyClient * pClient)
+{
+	this->pClient = pClient;
+}
+
+
+void CScreen::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+		
+	if((nFlags & MK_LBUTTON)==MK_LBUTTON)
+	{
+		if(pClient == NULL)
+			return;
+
+		CVitualEventPacket event(SETCOORDINATES, point.x, point.y);
+		
+		int err = pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
+		TRACE("\t %d %d %d\n", point.x, point.y, err);
+	}
+	CStatic::OnMouseMove(nFlags, point);
 }

@@ -102,6 +102,10 @@ CTextProgressCtrl::~CTextProgressCtrl()
 	// delete vertical font if needed
 	if (m_VerticalFont.m_hObject)
 		m_VerticalFont.DeleteObject();
+	if(m_Rgn.m_hObject != NULL)
+	{
+		m_Rgn.DeleteObject();
+	}
 }
 
 BEGIN_MESSAGE_MAP(CTextProgressCtrl, CProgressCtrl)
@@ -131,6 +135,7 @@ ON_MESSAGE(PBM_SETSHOWPERCENT, OnSetShowPercent)
 ON_MESSAGE(PBM_ALIGNTEXT, OnAlignText)
 ON_MESSAGE(PBM_SETMARQUEE, OnSetMarquee)
 ON_MESSAGE(PBM_SETMARQUEEOPTIONS, OnSetMarqueeOptions)
+ON_WM_CREATE()
 END_MESSAGE_MAP()
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -622,7 +627,7 @@ void CTextProgressCtrl::SetRoundRect(void)
 {
 	CRect rect;
 	GetClientRect(&rect);
-	m_Rgn.CreateRoundRectRgn(rect.left, rect.top, rect.right, rect.bottom, 5, 5);
+	m_Rgn.CreateRoundRectRgn(rect.left, rect.top, rect.right, rect.bottom, 3, 3);
 	SetWindowRgn((HRGN)m_Rgn, TRUE);
 }
 
@@ -630,4 +635,25 @@ void CTextProgressCtrl::SetRoundRect(void)
 void CTextProgressCtrl::DeleteRgn(void)
 {
 	m_Rgn.DeleteObject();
+}
+
+
+
+
+int CTextProgressCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CProgressCtrl::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+	// TODO:  Add your specialized creation code here
+
+	return 0;
+}
+
+
+void CTextProgressCtrl::PreSubclassWindow()
+{
+	// TODO: Add your specialized code here and/or call the base class
+	SetRoundRect();
+	CProgressCtrl::PreSubclassWindow();
 }
