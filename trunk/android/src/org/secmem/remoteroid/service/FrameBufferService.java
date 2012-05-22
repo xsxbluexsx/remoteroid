@@ -63,13 +63,13 @@ public class FrameBufferService extends Service {
 		} catch (Exception e) {
 		}finally{
 			bIntent.putExtra("isConnected", flag);
-			if(ConnectingFragment.isFinished && flag){
+			if(ConnectingFragment.isFinished && flag){		// 접속중이고 접속을 취소하였다면
 				transmitter.disconnect();				
 				stopSelf();
 			}
-			else{
+			else{														// 접속을 취소하지 않았다면
 				sendBroadcast(bIntent);
-				if(!flag)
+				if(!flag)												// 접속이 안됬으면 서비스종료
 					stopSelf();
 			}
 		}

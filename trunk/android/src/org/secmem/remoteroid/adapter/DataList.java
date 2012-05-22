@@ -47,7 +47,7 @@ public class DataList extends ListView {
 	
 	private OnPathChangedListener onPathChangedListener = null;
 	private OnFileSelectedListener onFileSelectedListener = null;
-	
+	public static ArrayList<File> fileInfo = new ArrayList<File>();
 	public DataList(Context context) {
 		super(context);
 		
@@ -105,18 +105,6 @@ public class DataList extends ListView {
 			setList();	        
 			if (onPathChangedListener != null) onPathChangedListener.onChanged(value);
 		}
-	}
-
-	public String DelteRight(String value, String border) {
-		String list[] = value.split(border);
-
-		String result = "";
-		
-		for (int i=0; i<list.length; i++) {
-			result = result + list[i] + border; 
-		}
-		
-		return result;
 	}
 	
 	private String deleteLastFolder(String value) {
