@@ -291,6 +291,9 @@ private:
 public:
 	void SetRoundRect(void);
 	void DeleteRgn(void);
+	
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	virtual void PreSubclassWindow();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

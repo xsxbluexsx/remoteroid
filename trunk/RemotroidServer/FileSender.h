@@ -2,6 +2,7 @@
 
 #include "MyClient.h"
 #include "afxcoll.h"
+#include "TextProgressCtrl.h"
 
 #define MAXDATASIZE		MAXSIZE-HEADERSIZE
 
@@ -13,12 +14,13 @@ public:
 
 	void DeleteFileList(void);
 	void SendFileData();		
-
-public:	
+	void SetProgressBar(CTextProgressCtrl * pProgressCtrl);
 	BOOL AddSendFile(CFile * pFile);
 	void SetClient(CMyClient *pClient);	
 	BOOL StartSendFile(void);		
 	static UINT SendFileThread(LPVOID pParam);
+
+public:	
 	CPtrList sendFileList;	
 	BOOL isSending;	
 	
@@ -29,13 +31,12 @@ private:
 	char buffer[MAXDATASIZE];
 	unsigned long long sendedFileSize;
 	unsigned long long totalFileSize;
+	CWinThread *pSendFileThread;
+	CTextProgressCtrl *m_progressCtrl;
 	
 
 private:
 	int SendPacket(int iOPCode, const char * data, int iDataLen);	
 	int SendFileInfo();
-	
-	CWinThread *pSendFileThread;
-
 };
 

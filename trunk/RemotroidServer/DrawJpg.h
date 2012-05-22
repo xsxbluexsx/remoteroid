@@ -29,17 +29,12 @@ public:
 	void RecvJpgData(char * data, int packetSize);
 	// 한 프레임 jpg 출력
 	void DrawScreen(void);
-	
+	void InitDrawJpg(HWND screenHandle, int XSize, int YSize);	
 private:
 	BOOL SetIJLInfo(void);
 	void SetBitmapInfo(void);
 	HWND screenHandle;
-	HDC hdc;
-// 	HDC memDC;
-// 	HBITMAP bitmap;
-// 	HBITMAP oldBitmap;
-	
-public:
-	void InitDrawJpg(HWND screenHandle, int XSize, int YSize);
+	HDC hdc;	
+
 };
 

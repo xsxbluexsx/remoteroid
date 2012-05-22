@@ -18,6 +18,7 @@
 #define OP_REQFILEDATA		5
 #define OP_READYSEND		6
 #define OP_REQFILEINFO		7
+#define OP_VIRTUALEVENT		8
 
 
 

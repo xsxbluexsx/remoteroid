@@ -84,7 +84,7 @@ private:
 	SOCKET m_UDPServerSocket;
 	BOOL m_isReadyRecv;	
 	CRecvFile recvFileClass;
-	CTextProgressCtrl m_progressCtrl;
+	
 
 private:
 	void EndAccept(void);
@@ -100,4 +100,5 @@ public:
 	afx_msg void OnClickedBtnHome();
 	afx_msg void OnClickedBtnMenu();	
 	afx_msg void OnBnClickedButton1();
+	CTextProgressCtrl m_progressCtrl;
 };

@@ -6,6 +6,7 @@ CFileSender::CFileSender()
 	: totalFileSize(0), m_pClient(NULL),
 	sendedFileSize(0),isSending(FALSE)	
 	, pSendFileThread(NULL)
+	, m_progressCtrl(NULL)
 {
 	memset(buffer, 0, sizeof(buffer));
 }
@@ -104,14 +105,24 @@ UINT CFileSender::SendFileThread(LPVOID pParam)
 	unsigned long long totalFileSize = pFile->GetLength();
 	unsigned long long sendedFileSize = 0;
 
+	pDlg->m_progressCtrl->ShowWindow(SW_RESTORE);
+	
 	while(totalFileSize > sendedFileSize)
 	{
 		int iCurrentSendSize = (totalFileSize-sendedFileSize) > MAXDATASIZE ? MAXDATASIZE : totalFileSize-sendedFileSize;		
 		pFile->Read(pDlg->buffer, iCurrentSendSize);
 		if(pDlg->SendPacket(OP_SENDFILEDATA, pDlg->buffer, iCurrentSendSize) == SOCKET_ERROR)
-			break;		
+		{
+			pDlg->m_progressCtrl->ShowWindow(SW_HIDE);
+			return 0;		
+		}
+
 		sendedFileSize += iCurrentSendSize;
+		
+		int percent = (int)(((float)sendedFileSize/totalFileSize)*100);
+		pDlg->m_progressCtrl->SetPos(percent);
 	}
+	pDlg->m_progressCtrl->ShowWindow(SW_HIDE);
 
 	delete pFile;
 	pDlg->SendFileInfo();
@@ -138,4 +149,10 @@ void CFileSender::DeleteFileList(void)
 	sendFileList.RemoveAll();
 	isSending = FALSE;
 	return;
+}
+
+
+void CFileSender::SetProgressBar(CTextProgressCtrl * pProgressCtrl)
+{
+	this->m_progressCtrl = pProgressCtrl;
 }

@@ -72,7 +72,7 @@ void CRemotroidServerDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_BTN_BACK, m_BackButton);
 	DDX_Control(pDX, IDC_BTN_HOME, m_HomeButton);
-	DDX_Control(pDX, IDC_BTN_MENU, m_MenuButton);
+	DDX_Control(pDX, IDC_BTN_MENU, m_MenuButton);	
 	DDX_Control(pDX, IDC_PROGRESS1, m_progressCtrl);
 }
 
@@ -98,8 +98,7 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	
 	ON_BN_CLICKED(IDC_BTN_BACK, &CRemotroidServerDlg::OnClickedBtnBack)
 	ON_BN_CLICKED(IDC_BTN_HOME, &CRemotroidServerDlg::OnClickedBtnHome)
-	ON_BN_CLICKED(IDC_BTN_MENU, &CRemotroidServerDlg::OnClickedBtnMenu)
-	
+	ON_BN_CLICKED(IDC_BTN_MENU, &CRemotroidServerDlg::OnClickedBtnMenu)	
 	ON_BN_CLICKED(IDC_BUTTON1, &CRemotroidServerDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
@@ -140,17 +139,17 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	//스크린 윈도우 위치 및 스타일 설정
 	screen.CreateEx(WS_EX_TOPMOST
 		, _T("STATIC"), NULL, WS_CHILD|WS_VISIBLE|SS_NOTIFY, CRect(LEFT, TOP, RIGHT, BOTTOM), this, 1234);
-	screen.SetFocus();
+	screen.SetFocus();	
 	
-	m_progressCtrl.MoveWindow(LEFT, TOP-20, WIDTH, 20);
+	m_progressCtrl.MoveWindow(LEFT, TOP-10, WIDTH, 10);
 	m_progressCtrl.ShowWindow(SW_HIDE);
 	m_progressCtrl.SetBarBkColor(RGB(56,58,60));
 	m_progressCtrl.SetBarColor(RGB(7,215,7));
-	m_progressCtrl.SetTextColor(RGB(255,255,255));
-	m_progressCtrl.SetRoundRect();
+	m_progressCtrl.SetTextColor(RGB(255,255,255));	
 	m_progressCtrl.SetRange(0, 100);
 
 	recvFileClass.SetProgressBar(&m_progressCtrl);
+	fileSender.SetProgressBar(&m_progressCtrl);
 
 	//하단 버튼 위치 설정
 	m_MenuButton.MoveWindow(60, 710, BUTTONWIDTH, BUTTONHEIGHT);
@@ -413,6 +412,7 @@ void CRemotroidServerDlg::SetClientSocket(CMyClient * pClient)
 	m_pClient = pClient;
 	fileSender.SetClient(pClient);
 	screen.InitDrawJpg();
+	screen.SetClient(pClient);
 }
 
 CMyClient * CRemotroidServerDlg::GetClientSocket(void)
@@ -430,8 +430,7 @@ void CRemotroidServerDlg::OnDestroy()
 	// TODO: Add your message handler code here	
 	m_isClickedEndBtn = TRUE;
 	EndAccept();
-	EndConnect();
-	m_progressCtrl.DeleteRgn();
+	EndConnect();	
 }
 
 
