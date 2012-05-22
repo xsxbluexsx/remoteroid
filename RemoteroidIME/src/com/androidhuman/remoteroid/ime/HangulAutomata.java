@@ -4,7 +4,7 @@
  * Hangul automata can be found in here : http://www.androidpub.com/14256
  * 
  * Applied bugfix by Taeho Kim :
- * - 'ㅆ'이 받침으로 입력되지 않는 문제 수정
+ * - '����諛�묠�쇰� ������ ��� 臾몄� ���
  */
 
 package com.androidhuman.remoteroid.ime;
@@ -100,7 +100,7 @@ public class HangulAutomata {
 			return 12635;
 		case 'z':
 		case 'Z':
-			return 12619;
+			return Hangul.Jaeum.KHIEUKH;
 		default:
 			return engCode;
 		
