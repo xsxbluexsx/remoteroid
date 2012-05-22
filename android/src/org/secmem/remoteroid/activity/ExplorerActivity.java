@@ -31,30 +31,26 @@ import org.secmem.remoteroid.expinterface.OnFileSelectedListener;
 import org.secmem.remoteroid.expinterface.OnPathChangedListener;
 import org.secmem.remoteroid.util.HongUtil;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
-import android.content.CursorLoader;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -67,7 +63,6 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	
 	public static ArrayList<File> fileInfo = new ArrayList<File>();
 	public static DataList dataList;
-	public static String explorerPath =null;
 	
 	private static int CODE_CATEGORY = 1;
 	
@@ -126,9 +121,47 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		gridview.setLayoutAnimation(gridAnimation);
 		
 		gridview.setAdapter(adapter);
-		
+		mThread mm = new mThread(ExplorerActivity.this);
+		mm.start();
 		
 	}
+	
+	private class mThread extends Thread{
+
+		Context context;
+		mHandler handler;
+		public mThread(Context c) {
+			this.context = c;
+			handler = new mHandler(context);
+		}
+		
+		@Override
+		public void run() {
+			while(true){
+				
+				handler.sendEmptyMessage(1);
+				SystemClock.sleep(5000);
+			}
+		}
+		
+	}
+	
+	private class mHandler extends Handler{
+		
+		Context c;
+		
+		public mHandler(Context c) {
+			this.c = c;
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			HongUtil.makeToast(c, "Thread Execute");
+		}
+		
+	}
+	
 
 	@Override
 	protected void onDestroy() {
@@ -264,8 +297,6 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		if(resultCode == RESULT_OK){
 			if(requestCode == CODE_CATEGORY){
 				
-				Log.i("qq","result = "+data.getStringExtra("category"));
-				
 				if(searchList.size()!=0){
 					searchList.clear();
 				}
@@ -305,7 +336,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	private OnPathChangedListener onPathChanged = new OnPathChangedListener() {
 		public void onChanged(String path) {
 			pathTv.setText(path);
-			explorerPath = path;
+			Log.i("qq","path = "+path);
 			
 		}
 	};

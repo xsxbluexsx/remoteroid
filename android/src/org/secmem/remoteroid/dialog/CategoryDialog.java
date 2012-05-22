@@ -122,8 +122,6 @@ public class CategoryDialog extends Activity implements OnClickListener, OnItemC
 		
 		edt.setFilters(new InputFilter[]{HongUtil.filterAlpha});
 		
-		
-		
 		Button okBtn = (Button)layout.findViewById(R.id.dialog_input_btn_ok);
 		Button cancelBtn = (Button)layout.findViewById(R.id.dialog_input_btn_cancel);
 		
@@ -179,7 +177,6 @@ public class CategoryDialog extends Activity implements OnClickListener, OnItemC
 					return false;
 			}
 		}
-		
 		
 		return true;
 	}
