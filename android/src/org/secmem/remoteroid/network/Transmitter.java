@@ -24,6 +24,7 @@ public class Transmitter{
 	
 	private PacketReceiver packetReceiver;	
 	private FileTransReceiver fileTransReceiver;
+	private VirtualEventGen virtualEventGen;
 	
 	private Transmitter(){		
 	}
@@ -49,7 +50,10 @@ public class Transmitter{
 		// Open inputStream
 		recvStream = socket.getInputStream();		
 		
-		fileTransReceiver = new FileTransReceiver(sendStream);		
+		fileTransReceiver = new FileTransReceiver(sendStream);
+		
+		//TODO Should VirtualEventListener implement				
+		virtualEventGen = new VirtualEventGen(null);
 		
 		// Create and start packet receiver
 		packetReceiver = new PacketReceiver(recvStream, fileListener);
@@ -92,12 +96,12 @@ public class Transmitter{
 		
 		private InputStream recvStream;
 		private FilePacketListener fileListener;
-		// TODO private EventPacketListener eventListener;
+		// TODO private EventPacketListener eventListener;		
 		
 		
 		public PacketReceiver(InputStream recvStream, FilePacketListener fileListener){
 			this.recvStream = recvStream;
-			this.fileListener = fileListener;
+			this.fileListener = fileListener;			
 		}		
 		
 		
@@ -106,8 +110,7 @@ public class Transmitter{
 		 * @return a Packet object
 		 * @throws IOException a network problem exists
 		 * @throws ParseException a malformed packet received
-		 */
-		
+		 */		
 		private byte[] buffer = new byte[Packet.MAX_LENGTH*2];
 		private int bufferOffset = 0;
 		
@@ -115,8 +118,12 @@ public class Transmitter{
 			
 			int nRead;			
 			while(true){
-				nRead = recvStream.read(buffer, bufferOffset, Packet.MAX_LENGTH);				
+				int currentRead = Packet.MAX_LENGTH*2-bufferOffset < Packet.MAX_LENGTH ? 
+						Packet.MAX_LENGTH*2-bufferOffset : Packet.MAX_LENGTH;
 				
+				nRead = recvStream.read(buffer, bufferOffset, currentRead);				 
+				
+				Log.i("qqqq", "currentRead : "+currentRead + "nRead : "+ nRead);
 				if(nRead<0)
 					throw new IOException();
 				
@@ -181,6 +188,9 @@ public class Transmitter{
 					case OpCode.FILEINFO_REQUESTED:
 						//fileListener.onFileInfoRequested();
 						fileTransReceiver.sendFileInfo();
+						break;
+					case OpCode.EVENT_RECEIVED:
+						virtualEventGen.GenerateVirtualEvent(packet);
 						break;
 						
 					}
