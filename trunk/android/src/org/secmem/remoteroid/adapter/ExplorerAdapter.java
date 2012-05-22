@@ -29,6 +29,7 @@ import org.secmem.remoteroid.activity.ExplorerActivity;
 import org.secmem.remoteroid.data.CategoryList;
 import org.secmem.remoteroid.data.ExplorerType;
 import org.secmem.remoteroid.data.FileList;
+import org.secmem.remoteroid.network.*;
 import org.secmem.remoteroid.util.HongUtil;
 
 import android.content.ContentResolver;
@@ -287,7 +288,7 @@ public class ExplorerAdapter extends BaseAdapter{
 			@Override
 			public boolean onLongClick(View v) {
 				if(ExplorerActivity.fileInfo.size()!=0){
-						// sendFile(ExplorerActivity.fileInfo);
+					Transmitter.getInstance().sendFile(ExplorerActivity.fileInfo);
 				}
 				
 				
