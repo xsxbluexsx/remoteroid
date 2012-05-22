@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+   <string name="ime_mode_kor">한국어</string>
+    <string name="ime_mode_eng">영어</string>
+</resources>
