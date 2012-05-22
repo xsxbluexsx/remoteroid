@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.activity.ExplorerActivity;
 import org.secmem.remoteroid.data.CategoryList;
+import org.secmem.remoteroid.data.CommunicateInfo;
 import org.secmem.remoteroid.data.ExplorerType;
 import org.secmem.remoteroid.data.FileList;
 import org.secmem.remoteroid.network.*;
@@ -344,6 +345,7 @@ public class ExplorerAdapter extends BaseAdapter{
 					}
 				}
 				printFileInfo();
+				CommunicateInfo.getSelectFileList();
 			}
 		});
 		
