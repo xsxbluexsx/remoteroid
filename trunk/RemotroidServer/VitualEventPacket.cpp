@@ -34,8 +34,7 @@ char* CVitualEventPacket::asByteArray()
 
 //터지점 설정
 char* CVitualEventPacket::SetCoordinates()
-{
-	/*
+{	
 	wsprintfA(bEventCode, "%d", m_EventCode);
 	wsprintfA(bXPos, "%4d", m_xPos);
 	wsprintfA(bYPos, "%4d", m_yPos);
@@ -43,11 +42,11 @@ char* CVitualEventPacket::SetCoordinates()
 	memcpy(buffer, bEventCode, EVENTCODE_SIZE);
 	memcpy(buffer+EVENTCODE_SIZE, bXPos, XPOSITION_SIZE);
 	memcpy(buffer+EVENTCODE_SIZE+XPOSITION_SIZE, bYPos, YPOSITION_SIZE);
-	*/
+	
 
-	memcpy(buffer, &m_EventCode, sizeof(m_EventCode));
-	memcpy(buffer+EVENTCODE_SIZE, &m_xPos, sizeof(m_xPos));
-	memcpy(buffer+EVENTCODE_SIZE+XPOSITION_SIZE, &m_yPos, sizeof(m_yPos));
+// 	memcpy(buffer, &m_EventCode, sizeof(m_EventCode));
+// 	memcpy(buffer+EVENTCODE_SIZE, &m_xPos, sizeof(m_xPos));
+// 	memcpy(buffer+EVENTCODE_SIZE+XPOSITION_SIZE, &m_yPos, sizeof(m_yPos));
 
 	return buffer;
 }
@@ -55,27 +54,25 @@ char* CVitualEventPacket::SetCoordinates()
 //키입력시
 char* CVitualEventPacket::KeyDownUp()
 {
-	/*
+	
 	wsprintfA(bEventCode, "%d", m_EventCode);
 	wsprintfA(bKeyCode, "%4d", m_keyCode);
 
 	memcpy(buffer, bEventCode, EVENTCODE_SIZE);
-	memcpy(buffer, bKeyCode, KEYCODE_SIZE);
-	*/
+	memcpy(buffer, bKeyCode, KEYCODE_SIZE);	
 
-	memcpy(buffer, &m_EventCode, sizeof(m_EventCode));
-	memcpy(buffer+EVENTCODE_SIZE, &m_keyCode, sizeof(m_keyCode));
+// 	memcpy(buffer, &m_EventCode, sizeof(m_EventCode));
+// 	memcpy(buffer+EVENTCODE_SIZE, &m_keyCode, sizeof(m_keyCode));
 	return buffer;
 }
 
 //터치 다운업 시
 char* CVitualEventPacket::TouchUp()
-{
-	/*
-	wsprintfA(bEventCode, "%d", m_EventCode);	
-	*/
+{	
+	wsprintfA(bEventCode, "%d", m_EventCode);
+	memcpy(buffer, bEventCode, EVENTCODE_SIZE);
 
-	memcpy(buffer, &m_EventCode, sizeof(m_EventCode));
+//	memcpy(buffer, &m_EventCode, sizeof(m_EventCode));
 	return buffer;
 }
 

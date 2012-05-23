@@ -67,14 +67,27 @@ int CMyClient::SendPacket(int iOPCode, const char * data, int iDataLen)
 
 	memcpy(packet, bOPCode, OPCODESIZE);
 	memcpy(packet+OPCODESIZE, bPacketSize, TOTALSIZE);
-	memcpy(packet+HEADERSIZE, data, iDataLen);	
-
+	if(data != NULL)
+		memcpy(packet+HEADERSIZE, data, iDataLen);	
+		
 	int iResult = send(m_ClientSocket, packet, iPacketSize, NULL);
+	
 	return iResult;
 }
 
 
 void CMyClient::CloseSocket(void)
-{
+{	
 	closesocket(m_ClientSocket);
+	m_ClientSocket = INVALID_SOCKET;	
+}
+
+
+void CMyClient::SetNoDelay(BOOL bOp)
+{
+	//마우스 무브시 빠르게 전송을 위해 네이글 알고리즘 비사용
+	BOOL bOptVal = bOp;
+	int bOptLen = sizeof(BOOL);
+	int iOptLen = sizeof(int);
+	setsockopt(m_ClientSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&bOptVal, bOptLen);
 }

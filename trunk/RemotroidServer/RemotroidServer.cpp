@@ -67,7 +67,7 @@ BOOL CRemotroidServerApp::InitInstance()
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
-
+	
 	//gdi+
 	GdiplusStartupInput gdiplusStartupInput;
 	if(::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL) != Ok)

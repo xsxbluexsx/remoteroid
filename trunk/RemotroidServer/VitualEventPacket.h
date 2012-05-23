@@ -8,12 +8,15 @@
 #define TOUCHUP			2
 #define KEYDOWN			3
 #define KEYUP			4
+#define BACKBUTTON		5
+#define HOMEBUTTON		6
+#define MENUBUTTON		7
 
 
-#define EVENTCODE_SIZE	sizeof(char)
-#define XPOSITION_SIZE	sizeof(int)
-#define YPOSITION_SIZE	sizeof(int)
-#define KEYCODE_SIZE	sizeof(int)
+#define EVENTCODE_SIZE	1
+#define XPOSITION_SIZE	4
+#define YPOSITION_SIZE	4
+#define KEYCODE_SIZE	4
 #define MAXEVENT_SIZE	EVENTCODE_SIZE+XPOSITION_SIZE+YPOSITION_SIZE
 
 
@@ -30,10 +33,10 @@ private:
 	int m_xPos;
 	int m_yPos;
 	int m_keyCode;
-// 	char bEventCode[EVENTCODE_SIZE+1];
-// 	char bXPos[XPOSITION_SIZE+1];
-// 	char bYPos[YPOSITION_SIZE+1];
-// 	char bKeyCode[KEYCODE_SIZE+1];
+ 	char bEventCode[EVENTCODE_SIZE+1];
+ 	char bXPos[XPOSITION_SIZE+1];
+ 	char bYPos[YPOSITION_SIZE+1];
+ 	char bKeyCode[KEYCODE_SIZE+1];
 	char buffer[MAXEVENT_SIZE];
 
 public:
