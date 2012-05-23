@@ -56,7 +56,7 @@ public class Hangul {
 		/**
 		 * Stands for hangul 'ㅆ' (U+110A)
 		 */
-		public static final int SSANGSIOS = 12514;
+		public static final int SSANGSIOS = 12614;
 		/**
 		 * Stands for hangul 'ㅇ' (U+110B)
 		 */
@@ -64,7 +64,7 @@ public class Hangul {
 		/**
 		 * Stands for hangul 'ㅈ' (U+110C)
 		 */
-		public static final int CIEUC = 12619;
+		public static final int CIEUC = 12616;
 		/**
 		 * Stands for hangul 'ㅉ' (U+110D)
 		 */
@@ -187,7 +187,7 @@ public class Hangul {
 		 */
 		public static final int WAE = 12633;
 		/**
-		 * Stands for hangul 'ㅗ' (U+116C)
+		 * Stands for hangul 'ᅬ' (U+116C)
 		 */
 		public static final int OE = 12634;
 		/**

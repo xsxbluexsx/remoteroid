@@ -106,35 +106,31 @@ public class HangulAutomata {
 		
 		}
 	}
-
-	// ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ??
-	// r   R  s   e  E   f   a  q   Q  t   T  o   w  W   c   z  x   v   g
+    
     private static final int[] PREF_CHO = {
-    	// ??    ??     ??    ??     ??    ??    ??     ??
-    	12593, 12594, 12596, 12599, 12600, 12601, 12609, 12610,
-    	// ??    ??     ??    ??     ??    ??    ??     ??
-    	12611, 12613, 12614, 12615, 12616, 12617, 12618, 12619,
-    	// ??    ??     ??
-    	12620, 12621, 12622};
+    	Hangul.Jaeum.KIYEOK, Hangul.Jaeum.SSANGKIYEOK, Hangul.Jaeum.NIEUN, 
+    	Hangul.Jaeum.TIKEUT, Hangul.Jaeum.SSANGTIKEUT,
+    	Hangul.Jaeum.RIEUL, Hangul.Jaeum.MIEUM, Hangul.Jaeum.PIEUP, Hangul.Jaeum.SSANGPIEUP,
+    	Hangul.Jaeum.SIOS, Hangul.Jaeum.SSANGSIOS, Hangul.Jaeum.IEUNG, 
+    	Hangul.Jaeum.CIEUC, Hangul.Jaeum.SSANGCIEUC,
+    	Hangul.Jaeum.CHIEUCH, Hangul.Jaeum.KHIEUKH, 
+    	Hangul.Jaeum.THIEUTH, Hangul.Jaeum.PHIEUPH, Hangul.Jaeum.HIEUH};
     
-    
-    // ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ??
-    // k   o  K   O   j  p   J  P   h  -   -  -   -   n  -   -   -  N   m  -   l
     private static final int[] PREF_JUNG = {
-    	// ??     ??     ??    ??    ??    ??     ??    ??
-    	12623, 12624, 12625, 12626, 12627, 12628, 12629, 12630,
-    	// ??    ??     ??     ??    ??     ??    ??    ??   
-    	12631, 12632, 12633, 12634, 12635, 12636, 12637, 12638,
-    	// ??     ??    ??     ??     ??
-    	12639, 12640, 12641, 12642, 12643};
-    
-    // ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ??
-    // r   R   -  s   -  -   e  f   -  -   -   -  -   -  -   a  q   -  t  T   d   w  c   z  x   v   g
+    	Hangul.Moeum.A, Hangul.Moeum.AE, Hangul.Moeum.YA, Hangul.Moeum.YAE, Hangul.Moeum.EO, Hangul.Moeum.E, Hangul.Moeum.YEO, Hangul.Moeum.YE,
+    	Hangul.Moeum.O, Hangul.Moeum.WA, Hangul.Moeum.WAE, Hangul.Moeum.OE, Hangul.Moeum.YO, Hangul.Moeum.U, Hangul.Moeum.WEO, Hangul.Moeum.WE,
+    	Hangul.Moeum.WI, Hangul.Moeum.YU, Hangul.Moeum.EU, Hangul.Moeum.YI, Hangul.Moeum.I
+    };
+  
     private static final int[] PREF_JONG = {
-    	12593, 12594, 12595, 12596, 12597, 12598, 12599, 12601, 
-    	12602, 12603, 12604, 12605, 12606, 12607, 12608, 12609, 
-    	12610, 12612, 12613, 12614, 12615, 12616, 12618, 12619, 
-    	12620, 12621, 12622};
+    	Hangul.Jaeum.KIYEOK, Hangul.Jaeum.SSANGKIYEOK, Hangul.Jaeum.KIYEOK_SIOS, 
+    	Hangul.Jaeum.NIEUN, Hangul.Jaeum.NIEUN_CIEUC, Hangul.Jaeum.NIEUN_HIEUH, 
+    	Hangul.Jaeum.TIKEUT, Hangul.Jaeum.RIEUL,   
+    	Hangul.Jaeum.RIEUL_KIYEOK, Hangul.Jaeum.RIEUL_MIEUM, Hangul.Jaeum.RIEUL_PIEUP, Hangul.Jaeum.RIEUL_SIOS, 
+    	Hangul.Jaeum.RIEUL_THIEUTH, Hangul.Jaeum.RIEUL_PHIEUPH , Hangul.Jaeum.RIEUL_HIEUH, Hangul.Jaeum.MIEUM, 
+    	Hangul.Jaeum.PIEUP, Hangul.Jaeum.PIEUP_SIOS, Hangul.Jaeum.SIOS, Hangul.Jaeum.SSANGSIOS,
+    	Hangul.Jaeum.IEUNG, Hangul.Jaeum.CIEUC, Hangul.Jaeum.CHIEUCH, Hangul.Jaeum.KHIEUKH,
+    	Hangul.Jaeum.THIEUTH, Hangul.Jaeum.PHIEUPH, Hangul.Jaeum.HIEUH};
     
     private static final String mChoseong = new String(PREF_CHO, 0, PREF_CHO.length);
     private static final String mJungseong = new String(PREF_JUNG, 0, PREF_JUNG.length);
@@ -837,35 +833,30 @@ public class HangulAutomata {
     	return r;
     }
 
-    private static int getJongseongPair(int v1, int v2)
-    {
-    	switch(v1)
-		{
-		case 12593:
-			switch(v2)
-			{
-			case 12613:
-				return 12595;
+    private static int getJongseongPair(int v1, int v2){
+    	switch(v1){
+		case Hangul.Jaeum.KIYEOK:
+			switch(v2){
+			case Hangul.Jaeum.SIOS:
+				return Hangul.Jaeum.KIYEOK_SIOS;
 			default:
 				break;
 			}
 			break;
-		case 12596:
-			switch(v2)
-			{
-			case 12616:
-				return 12597;
-			case 12622:
-				return 12598;
+		case Hangul.Jaeum.NIEUN:
+			switch(v2){
+			case Hangul.Jaeum.CIEUC:
+				return Hangul.Jaeum.NIEUN_CIEUC;
+			case Hangul.Jaeum.HIEUH:
+				return Hangul.Jaeum.NIEUN_HIEUH;
 			default:
 				break;
 			}
 			break;
-		case 12601:
-			switch(v2)
-			{
-			case 12593:
-				return 12602;
+		case Hangul.Jaeum.RIEUL:
+			switch(v2){
+			case Hangul.Jaeum.KIYEOK:
+				return Hangul.Jaeum.RIEUL_KIYEOK;
 			case 12609:
 				return 12603;
 			case 12610:
@@ -898,8 +889,7 @@ public class HangulAutomata {
     	return -1;
     }
 
-    public static String encode(String text)
-    {
+    public static String encode(String text){
     	String out = new String();
     	
     	if(null != text && text.length() > 0)
@@ -924,8 +914,7 @@ public class HangulAutomata {
     	return out;
     }
 
-    public static String decode(String text)
-    {
+    public static String decode(String text){
     	String out = new String();
     	int[] buffer = new int[5];
     	char c;
