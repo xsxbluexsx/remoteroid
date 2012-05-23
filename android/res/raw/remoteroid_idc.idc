@@ -15,8 +15,8 @@
 touch.deviceType = touchScreen
 touch.orientationAware = 1
 
-keyboard.layout = qwerty
-keyboard.characterMap = qwerty
+keyboard.layout = remoteroid
+keyboard.characterMap = remoteroid
 keyboard.orientationAware = 1
 keyboard.builtIn = 0
 

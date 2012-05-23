@@ -55,7 +55,7 @@ public class InputHandler {
 	/**
 	 * Open input device using suinput, without setting permission 666 to /dev/uinput.<br/>
 	 * If user has su binary that doesn't supports 'su -c' option, which enables running shell command with root permission,
-	 * Change permission through org.secmem.remoteroie.util.ComandLine.execAsRoot() first, then use this command to open device.
+	 * Change permission through org.secmem.remoteroid.util.ComandLine.execAsRoot() first, then use this command to open device.
 	 * @return true device has opened without error, false otherwise
 	 */
 	public native boolean openInputDeviceWithoutPermission();

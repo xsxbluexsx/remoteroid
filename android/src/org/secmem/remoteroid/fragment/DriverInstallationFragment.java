@@ -47,7 +47,7 @@ public class DriverInstallationFragment extends Fragment {
 					
 				}else{
 					// Proceed to authenticate fragment
-					getFragmentManager().beginTransaction().replace(R.id.container, new AuthenticateFragment());
+					getFragmentManager().beginTransaction().replace(R.id.container, new AuthenticateFragment()).commit();
 				}
 				
 			}
@@ -65,7 +65,7 @@ public class DriverInstallationFragment extends Fragment {
 			super.onPreExecute();
 			// Disable button, change button text, then show progressbar
 			btnConfirm.setEnabled(false);
-			btnConfirm.setText("Installing...");
+			btnConfirm.setText(R.string.installing);
 			prgProgress.setVisibility(View.VISIBLE);
 		}
 
@@ -91,12 +91,16 @@ public class DriverInstallationFragment extends Fragment {
 			switch(result){
 			case ERR_SECURITY:
 				// Root access denied
-				tvMsg.setText("Failed to get root permission. Check out whether device has rooted or not.");
-				btnConfirm.setText("Retry");
+				tvMsg.setText(R.string.failed_to_get_root_permission_check_out_whether_device_has_rooted_or_not);
+				btnConfirm.setText(R.string.retry);
 				break;
 			case ERR_IO:
-				tvMsg.setText("Failed to copy driver files.");
-				btnConfirm.setText("Retry");
+				tvMsg.setText(R.string.failed_to_copy_driver_files);
+				btnConfirm.setText(R.string.retry);
+				break;
+			default: // Driver installation succeed
+				tvMsg.setText(R.string.driver_installation_complete);
+				btnConfirm.setText(android.R.string.ok);
 				break;
 			}	
 			prgProgress.setVisibility(View.GONE);

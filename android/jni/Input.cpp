@@ -51,7 +51,7 @@ bool openInputWithoutPermission(){
 
 void closeInput(){
 	LOGD(LOGTAG, "Closing input device...");
-	if(inputFd==-1){
+	if(inputFd!=-1){
 		if(suinput_close(inputFd)==-1){
 			LOGD(LOGTAG, "Error closing input device..");
 		}
@@ -59,7 +59,7 @@ void closeInput(){
 		system("su -c \"chmod 660 /dev/uinput\"");
 		inputFd = -1;
 	}else{
-		LOGI(LOGTAG, "Nothing to close.");
+		LOGI(LOGTAG, "Nothing to close. (Device has not opened)");
 	}
 }
 

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import org.secmem.remoteroid.R;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 /**
@@ -172,33 +173,6 @@ public class CommandLine {
 		    
 		return retval;
 	}
-	
-	public static boolean isDriverExists(){
-		File file;
-		boolean fileExists = true;
-		
-		try{
-			// Check IDC
-			file = new File("/system/usr/idc/remoteroid.idc");
-			fileExists &= file.exists();
-			
-			// Check kcm.bin
-			file = new File("/system/usr/keychars/remoteroid.kcm.bin");
-			fileExists &= file.exists();
-			
-			// Check kcm
-			file = new File("/system/usr/keychars/remoteroid.kcm");
-			fileExists &= file.exists();
-			
-			// Check KeyLayout
-			file = new File("/system/usr/keylayout/remoteroid.kl");
-			fileExists &= file.exists();
-			
-		}catch(Exception e){
-			return false;
-		}
-		return fileExists;
-	}
 
     public static boolean isDriverExists(Context context){
         File file;
@@ -213,21 +187,23 @@ public class CommandLine {
                 file = new File("/system/usr/idc/remoteroid.idc");
                 if(!file.exists())
                         return false;
-                
-                // Check kcm.bin
-                file = new File("/system/usr/keychars/remoteroid.kcm.bin");
-                if(!file.exists())
-                        return false;
-                
-                // Check kcm
-                file = new File("/system/usr/keychars/remoteroid.kcm");
-                if(!file.exists())
-                        return false;
+                /*
+                if(Build.VERSION.SDK_INT < 11){
+	                // Check kcm.bin
+	                file = new File("/system/usr/keychars/remoteroid.kcm.bin");
+	                if(!file.exists())
+	                        return false;
+                }else{
+	                // Check kcm
+	                file = new File("/system/usr/keychars/remoteroid.kcm");
+	                if(!file.exists())
+	                        return false;
+                }
                 
                 // Check KeyLayout
                 file = new File("/system/usr/keylayout/remoteroid.kl");
                 if(!file.exists())
-                        return false;
+                        return false;*/
                 
         }catch(Exception e){
                 return false;
@@ -254,11 +230,25 @@ public class CommandLine {
         
         // Step 1. Extract driver files from resources
         // Copy IDC(Input Device Configuration)
-        copyRawResourceIntoFile(context, R.raw.remoteroid, context.getFilesDir().getAbsolutePath()+"/remoteroid.idc");
-
+        copyRawResourceIntoFile(context, R.raw.remoteroid_idc, context.getFilesDir().getAbsolutePath()+"/remoteroid.idc");
+        /*
+        if(Build.VERSION.SDK_INT < 11){
+        	// Copy kcm.bin
+        	copyRawResourceIntoFile(context, R.raw.remoteroid_kb, context.getFilesDir().getAbsolutePath()+"/remoteroid.kcm.bin");
+        }else{
+        	// Copy kcm (new standard since honeycomb)
+        	copyRawResourceIntoFile(context, R.raw.remoteroid_kcm, context.getFilesDir().getAbsolutePath()+"/remoteroid.kcm");
+        }
+        // Copy KeyLayout
+        copyRawResourceIntoFile(context, R.raw.remoteroid_kl, context.getFilesDir().getAbsolutePath()+"/remoteroid.kl");
+*/
         // Step 2. Move driver files into appropriate path
         ArrayList<String> cmdList = new ArrayList<String>();
+        
         cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.idc /system/usr/idc/remoteroid.idc");
+        //cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.kcm.bin /system/usr/keychars/remoteroid.kcm.bin");
+        //cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.kcm /system/usr/keychars/remoteroid.kcm");
+        //cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.kl /system/usr/keylayout/remoteroid.kl");
         cmdList.add("mount -oro,remount /system"); // Mount /system as r/o
         execAsRoot(cmdList);
 	}

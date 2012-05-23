@@ -53,10 +53,10 @@ public class Main extends SherlockFragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		// Check driver existence
-//        if(!CommandLine.isDriverExists()){
-//                getSupportFragmentManager().beginTransaction().replace(R.id.container, mDriverFragment).commit();
-//        }
+		//Check driver existence
+        if(!CommandLine.isDriverExists(getApplicationContext())){
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, mDriverFragment).commit();
+        }
 	}
 
 	@Override
