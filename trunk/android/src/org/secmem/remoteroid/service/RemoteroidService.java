@@ -91,10 +91,12 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		public void connect(String ipAddress, String password)
 				throws RemoteException {
 			try {
-				// Open input device
-				mInputHandler.open();
+				
 				// Start connection and receive events from server
 				mTransmitter.connect(ipAddress);
+				
+				// Open input device
+				mInputHandler.open();
 				
 				// TODO Start fetch frame buffer and send it to server
 				
