@@ -22,12 +22,8 @@ package org.secmem.remoteroid.fragment;
 import java.util.regex.Pattern;
 
 import org.secmem.remoteroid.R;
-import org.secmem.remoteroid.data.NativeKeyCode;
-import org.secmem.remoteroid.natives.InputHandler;
-import org.secmem.remoteroid.service.FrameBufferService;
 import org.secmem.remoteroid.util.Util;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -48,17 +44,13 @@ public class AuthenticateFragment extends Fragment {
 	private EditText mEdtPassword;
 	private CheckBox mCbAutoConn;
 	private Button mBtnConnect;
-	
+
 	private boolean isIpValid=false;
 	private boolean isPwValid=false;
-	
-	InputHandler hd = new InputHandler();
-	
 	
 	public AuthenticateFragment(){
 		
 	}
-	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,7 +65,6 @@ public class AuthenticateFragment extends Fragment {
 		mEdtIpAddr = (EditText)view.findViewById(R.id.ip_address);
 		mEdtPassword = (EditText)view.findViewById(R.id.password);
 		mCbAutoConn = (CheckBox)view.findViewById(R.id.auto_connect);
-		mBtnConnect = (Button)view.findViewById(R.id.connect);
 		
 		mEdtIpAddr.setText("210.118.74.85");
 		mEdtPassword.setText("aaa");
@@ -134,7 +125,7 @@ public class AuthenticateFragment extends Fragment {
 			
 		});
 		
-		hd.openInputDevice();
+		
 		mBtnConnect.setOnClickListener(new OnClickListener(){
 
 			@Override
@@ -143,9 +134,6 @@ public class AuthenticateFragment extends Fragment {
 						new ConnectingFragment(mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString()))
 						.commit();
 				
-				
-				hd.keyStroke(NativeKeyCode.KEY_A);
-				hd.keyStroke(NativeKeyCode.KEY_K);
 			}
 		});
 		
@@ -154,18 +142,6 @@ public class AuthenticateFragment extends Fragment {
 					new ConnectingFragment(Util.Connection.getIpAddress(getActivity()), Util.Connection.getPassword(getActivity())))
 					.commit();
 		}
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		hd.closeInputDevice();
-	}
-	
-	@Override
-	public void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
 	}
 
 }

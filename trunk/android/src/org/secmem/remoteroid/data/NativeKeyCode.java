@@ -20,7 +20,7 @@
 package org.secmem.remoteroid.data;
 
 /**
- * Represents Keycode defined in kernel source, <linux/input.h>.</br>
+ * Represents Keycode defined in kernel source, <linux/input.h> and Generic.kl keylayout files.</br>
  * Based on API level 14.
  * @author Taeho Kim
  *
@@ -128,7 +128,11 @@ public class NativeKeyCode {
 	public static final int KEY_SYSRQ = 99;
 	public static final int KEY_RIGHTALT = 100;
 	public static final int KEY_LINEFEED = 101;
-	public static final int KEY_HOME = 102;
+	/**
+	 * Keylayout qwerty defined home as this, but Generic.kl uses other one </br>
+	 * Use {@link #KEY_HOME} instead.
+	 */
+	public static final int KEY_MOVE_HOME = 102; // 
 	public static final int KEY_UP = 103;
 	public static final int KEY_PAGEUP = 104;
 	public static final int KEY_LEFT = 105;
@@ -154,7 +158,7 @@ public class NativeKeyCode {
 	public static final int KEY_YEN = 124;
 	public static final int KEY_LEFTMETA = 125;
 	public static final int KEY_RIGHTMETA = 126;
-	public static final int KEY_COMPOSE = 127;
+	public static final int KEY_MENU = 127;
 
 	public static final int KEY_STOP = 128;
 	public static final int KEY_AGAIN = 129;
@@ -167,7 +171,7 @@ public class NativeKeyCode {
 	public static final int KEY_FIND = 136;
 	public static final int KEY_CUT = 137;
 	public static final int KEY_HELP = 138;
-	public static final int KEY_MENU = 139;
+	public static final int KEY_MENU2 = 139; 
 	public static final int KEY_CALC = 140;
 	public static final int KEY_SETUP = 141;
 	public static final int KEY_SLEEP = 142;
@@ -200,7 +204,7 @@ public class NativeKeyCode {
 	public static final int KEY_PHONE = 169;
 	public static final int KEY_ISO = 170;
 	public static final int KEY_CONFIG = 171;
-	public static final int KEY_HOMEPAGE = 172;
+	public static final int KEY_HOME = 172;
 	public static final int KEY_REFRESH = 173;
 	public static final int KEY_EXIT = 174;
 	public static final int KEY_MOVE = 175;

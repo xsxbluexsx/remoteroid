@@ -60,4 +60,9 @@
     <string name="searching_for_file_">Searching for file.....</string>
     <string name="searching">Searching</string>
     <string name="is_the_parent_folder">Is the parent folder</string>
+    <string name="installing">Installing...</string>
+    <string name="failed_to_get_root_permission_check_out_whether_device_has_rooted_or_not">Failed to get root permission. Check out whether device has rooted or not.</string>
+    <string name="failed_to_copy_driver_files">Failed to copy driver files.</string>
+    <string name="retry">Retry</string>
+    <string name="driver_installation_complete">Driver installation complete.</string>
 </resources>

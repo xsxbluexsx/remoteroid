@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     org_secmem_remoteroid_natives_FrameHandler
  * Method:    getFrameBuffer
- * Signature: ([BIIII)I
+ * Signature: ([BI)I
  */
 JNIEXPORT jint JNICALL Java_org_secmem_remoteroid_natives_FrameHandler_getFrameBuffer
-  (JNIEnv *, jobject, jbyteArray, jint, jint, jint, jint);
+  (JNIEnv *, jobject, jbyteArray, jint);
 
 #ifdef __cplusplus
 }

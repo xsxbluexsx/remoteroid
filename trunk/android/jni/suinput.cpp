@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "include/uinput.h"
 #include "include/suinput.h"
 
-char* UINPUT_FILEPATHS[] = {
+const char* UINPUT_FILEPATHS[] = {
     "/android/dev/uinput",
     "/dev/uinput",
     "/dev/input/uinput",
@@ -180,7 +180,7 @@ int suinput_close(int uinput_fd)
     looking for better ways. The question is: how to know whether there
     are any unprocessed uinput events?
    */
-    sleep(2);
+    //sleep(2);
 
     if (ioctl(uinput_fd, UI_DEV_DESTROY) == -1) {
         close(uinput_fd);
