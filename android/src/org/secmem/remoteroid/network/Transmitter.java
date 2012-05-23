@@ -7,7 +7,7 @@ import java.util.*;
 
 import org.secmem.remoteroid.network.PacketHeader.OpCode;
 
-import android.util.*;
+import android.content.*;
 
 
 public class Transmitter{

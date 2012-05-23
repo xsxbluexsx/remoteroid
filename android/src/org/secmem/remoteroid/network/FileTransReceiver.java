@@ -74,14 +74,14 @@ public class FileTransReceiver extends PacketSender{
 				absoultePathDir.mkdir();
 			}
 			file = new File(absoultePathDir+"/"+fileName);
-			
+			Log.i("asd","dir2 = "+file.getAbsolutePath());
 			int overlapCheck = 1;
 			try{			
 				while(!file.createNewFile()){
 					//Filename duplicate cheack
 					String[] list = fileName.split("\\.");
 					String newfileName = list[0]+'-'+overlapCheck+"."+list[1];
-					file = new File(absoultePathDir+newfileName);
+					file = new File(absoultePathDir+"/"+newfileName);
 					overlapCheck++;
 				}			
 				out = new FileOutputStream(file);			
