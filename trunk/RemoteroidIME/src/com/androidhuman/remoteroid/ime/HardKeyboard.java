@@ -168,19 +168,12 @@ public class HardKeyboard extends InputMethodService {
      * continue to the app.
      */
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
-    	
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
-                // The InputMethodService already takes care of the back
-                // key for us, to dismiss the input method if it is shown.
-                // However, our keyboard could be showing a pop-up window
-                // that back should dismiss, so we first allow it to do that.
-                if (event.getRepeatCount() == 0) {
-                    
-                	mHangulAutomata.reset();
-                    return true;
-                    
-                }
+            	if(this.isInputViewShown()){
+            		mHangulAutomata.reset();
+            		this.hideWindow();
+            	}
                 break;
                 
             case KeyEvent.KEYCODE_CAPS_LOCK:
