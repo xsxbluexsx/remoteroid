@@ -120,7 +120,7 @@ public class AuthenticateFragment extends Fragment {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-				Util.Connection.setAutoConnect(getActivity(), isChecked);
+//				Util.Connection.setAutoConnect(getActivity(), isChecked);
 			}
 			
 		});
@@ -137,11 +137,11 @@ public class AuthenticateFragment extends Fragment {
 			}
 		});
 		
-		if(Util.Connection.isAutoConnectEnabled(getActivity())){
-			getFragmentManager().beginTransaction().replace(R.id.container, 
-					new ConnectingFragment(Util.Connection.getIpAddress(getActivity()), Util.Connection.getPassword(getActivity())))
-					.commit();
-		}
+//		if(Util.Connection.isAutoConnectEnabled(getActivity())){
+//			getFragmentManager().beginTransaction().replace(R.id.container, 
+//					new ConnectingFragment(Util.Connection.getIpAddress(getActivity()), Util.Connection.getPassword(getActivity())))
+//					.commit();
+//		}
 	}
 
 }

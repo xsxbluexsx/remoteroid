@@ -81,7 +81,7 @@ public class EventPacket {
 		eventPacket.SetEventCode(buffer.get());
 		
 		switch(eventPacket.GetEventCode()){		
-		case SETCOORDINATES:
+		case SETCOORDINATES:		
 		case TOUCHDOWN:
 			eventPacket.SetXPosition(buffer.getInt());
 			eventPacket.SetYPosition(buffer.getInt());

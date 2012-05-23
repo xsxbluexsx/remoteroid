@@ -113,88 +113,91 @@ public class Transmitter{
 		 */		
 		private byte[] buffer = new byte[Packet.MAX_LENGTH*2];
 		private int bufferOffset = 0;
+		private Packet packet;
 		
-		public Packet getPacket() throws IOException, ParseException{
+		public int ReadPacket() throws IOException{
+//			int currentRead = Packet.MAX_LENGTH*2-bufferOffset <  Packet.MAX_LENGTH ? 
+//					Packet.MAX_LENGTH*2-bufferOffset : Packet.MAX_LENGTH;				
 			
-			int nRead;			
-			while(true){
-				int currentRead = Packet.MAX_LENGTH*2-bufferOffset < Packet.MAX_LENGTH ? 
-						Packet.MAX_LENGTH*2-bufferOffset : Packet.MAX_LENGTH;
+			int readLen = recvStream.read(buffer, bufferOffset, Packet.MAX_LENGTH);			
 				
-				nRead = recvStream.read(buffer, bufferOffset, currentRead);				 
-				
-				Log.i("qqqq", "currentRead : "+currentRead + "nRead : "+ nRead);
-				if(nRead<0)
-					throw new IOException();
-				
-				if(nRead>0)
-					bufferOffset+=nRead;
-				
-				// If packet size is smaller than header's length
-				if(bufferOffset < PacketHeader.LENGTH)
-					continue; // try fetching more data from stream
-				
-				// Try getting header data
-				PacketHeader header = PacketHeader.parse(buffer);
-				
-				// If read data's length is smaller than whole packet's length
-				
-				if(bufferOffset < header.getPacketLength())
-					continue; //  try fetching more data from stream
-				
-				// If you reached here, all required packed data has received.
-				// Now we can parse received data as Packet object.
-				Packet packet = Packet.parse(buffer);
-				
-				// Decrease current offset by last packet's length
-				bufferOffset-=header.getPacketLength();
-				
-				//The remaining packets moves forward
-				System.arraycopy(buffer, header.getPacketLength(), buffer, 0, bufferOffset);
-				
-				// Return packet object
-				return packet;
-			}
+			if(readLen>0)
+				bufferOffset+=readLen;
+			
+			return readLen;
 		}
+		
+		public boolean GetPacket(){
+			if(bufferOffset < PacketHeader.LENGTH)
+				return false; // try fetching more data from stream
+			
+			// Try getting header data
+			PacketHeader header = PacketHeader.parse(buffer);
+			
+			// If read data's length is smaller than whole packet's length
+			
+			if(bufferOffset < header.getPacketLength())
+				return false; //  try fetching more data from stream
+			
+			// If you reached here, all required packed data has received.
+			// Now we can parse received data as Packet object.
+			packet = Packet.parse(buffer);
+			
+			// Decrease current offset by last packet's length
+			bufferOffset-=header.getPacketLength();
+			
+			//The remaining packets moves forward
+			System.arraycopy(buffer, header.getPacketLength(), buffer, 0, bufferOffset);
+			
+			// Return packet object
+			return true;
+		}	
+		
 
 		@Override
 		public void run() {			
 			
 			/**
 			 * Run infinitely and get packet from stream before user requested to stop
-			 */
+			 */		
+			
 			while(true){
 				try{
-					Packet packet = getPacket();					
-					
-					switch(packet.getOpcode()){
-					case OpCode.FILEINFO_RECEIVED:
-						// TODO prototype						
-						//fileListener.onReceiveFileInfo();
-						fileTransReceiver.receiveFileInfo(packet);
-						break;
-						
-					case OpCode.FILEDATA_RECEIVED:
-						// TODO prototype
-						//fileListener.onReceiveFileData();
-						fileTransReceiver.receiveFileData(packet);
-						break;
-						
-					case OpCode.FILEDATA_REQUESTED:
-						//fileListener.onFileDataRequested();
-						fileTransReceiver.sendFileData();
-						break;
-						
-					case OpCode.FILEINFO_REQUESTED:
-						//fileListener.onFileInfoRequested();
-						fileTransReceiver.sendFileInfo();
-						break;
-					case OpCode.EVENT_RECEIVED:
-						virtualEventGen.GenerateVirtualEvent(packet);
-						break;
-						
+					int readLen = ReadPacket();
+					if(readLen < 0){
+						//when host was closed
+						throw new IOException();
 					}
 					
+					while(GetPacket()){
+						switch(packet.getOpcode()){
+						case OpCode.FILEINFO_RECEIVED:
+							// TODO prototype						
+							//fileListener.onReceiveFileInfo();
+							fileTransReceiver.receiveFileInfo(packet);
+							break;
+							
+						case OpCode.FILEDATA_RECEIVED:
+							// TODO prototype
+							//fileListener.onReceiveFileData();
+							fileTransReceiver.receiveFileData(packet);
+							break;
+							
+						case OpCode.FILEDATA_REQUESTED:
+							//fileListener.onFileDataRequested();
+							fileTransReceiver.sendFileData();
+							break;
+							
+						case OpCode.FILEINFO_REQUESTED:
+							//fileListener.onFileInfoRequested();
+							fileTransReceiver.sendFileInfo();
+							break;
+						case OpCode.EVENT_RECEIVED:
+							virtualEventGen.GenerateVirtualEvent(packet);
+							break;
+							
+						}
+					}					
 				} catch(IOException e){
 					e.printStackTrace();					
 					//If server was closed, throw an IOException	
@@ -202,8 +205,6 @@ public class Transmitter{
 					fileTransReceiver.closeFile();
 					disconnect();
 					break;
-				} catch (ParseException e) {
-					e.printStackTrace();					
 				}
 			}
 		}		

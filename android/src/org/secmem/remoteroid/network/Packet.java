@@ -47,7 +47,7 @@ public class Packet {
 	 * @return Packet object that has received
 	 * @throws ParseException failed to parse packet.
 	 */
-	public static Packet parse(byte[] rawPacket) throws ParseException{
+	public static Packet parse(byte[] rawPacket){
 		Packet packet = new Packet();		
 		
 		// Get header
