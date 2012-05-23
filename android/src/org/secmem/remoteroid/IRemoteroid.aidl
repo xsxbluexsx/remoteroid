@@ -1,7 +1,7 @@
 package org.secmem.remoteroid;
 
 interface IRemoteroid{
-	int getConnectionStatus();
+	boolean getConnectionStatus();
 	void connect(String ipAddress, String password);
 	void disconnect();
 	void onNotificationCatched(String notificationText, long when);

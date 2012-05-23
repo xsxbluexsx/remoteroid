@@ -19,11 +19,17 @@
 
 package org.secmem.remoteroid.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.secmem.remoteroid.IRemoteroid;
 import org.secmem.remoteroid.data.RDSmsMessage;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
+import org.secmem.remoteroid.natives.InputHandler;
+import org.secmem.remoteroid.network.FileTransmissionListener;
+import org.secmem.remoteroid.network.Transmitter;
+import org.secmem.remoteroid.network.VirtualEventListener;
 import org.secmem.remoteroid.receiver.SmsReceiver;
 
 import android.app.PendingIntent;
@@ -41,7 +47,9 @@ import android.telephony.SmsManager;
  * @author Taeho Kim
  *
  */
-public class RemoteroidService extends Service {
+public class RemoteroidService extends Service implements FileTransmissionListener, VirtualEventListener{
+	private Transmitter mTransmitter;
+	private InputHandler mInputHandler;
 	
 	private IBinder mBinder = new IRemoteroid.Stub() {
 		
@@ -75,22 +83,33 @@ public class RemoteroidService extends Service {
 		}
 
 		@Override
-		public int getConnectionStatus() throws RemoteException {
-			// TODO Auto-generated method stub
-			return 0;
+		public boolean getConnectionStatus() throws RemoteException {
+			return mTransmitter.isConnected();
 		}
 
 		@Override
 		public void connect(String ipAddress, String password)
 				throws RemoteException {
-			// TODO Auto-generated method stub
-			
+			try {
+				// Open input device
+				mInputHandler.open();
+				// Start connection and receive events from server
+				mTransmitter.connect(ipAddress);
+				
+				// TODO Start fetch frame buffer and send it to server
+				
+				sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTED));
+			} catch (IOException e) {
+				e.printStackTrace();
+				sendBroadcast(new Intent(RemoteroidIntent.ACTION_INTERRUPTED));
+			}
 		}
 
 		@Override
 		public void disconnect() throws RemoteException {
-			// TODO Auto-generated method stub
-			
+			mInputHandler.close();
+			mTransmitter.disconnect();
+			sendBroadcast(new Intent(RemoteroidIntent.ACTION_DISCONNECTED));
 		}
 	};
 
@@ -101,15 +120,26 @@ public class RemoteroidService extends Service {
 	
 	
 	@Override
+	public void onCreate() {
+		super.onCreate();
+		mTransmitter = new Transmitter();
+		mTransmitter.setFileTransmissionListener(this);
+		mTransmitter.setVirtualEventListener(this);
+		
+		mInputHandler = new InputHandler();
+	}
+
+
+	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if(intent.getExtras()!=null && intent.getParcelableArrayListExtra(SmsReceiver.EXTRA_MSGS)!=null){
 			ArrayList<RDSmsMessage> list = intent.getParcelableArrayListExtra(SmsReceiver.EXTRA_MSGS);
 			
 			for(RDSmsMessage msg : list){
 				System.out.println(msg.toString());
+				// TODO Message received..
 			}
 		}
-		
 		
 		return super.onStartCommand(intent, flags, startId);
 	}
@@ -133,7 +163,6 @@ public class RemoteroidService extends Service {
 			throw new NumberFormatException("Invalid phone number format.");
 		SmsManager mng = SmsManager.getDefault();
 		PendingIntent sentIntent = PendingIntent.getBroadcast(this, 0, new Intent(RemoteroidIntent.ACTION_SMS_SENT), 0);
-		
 		mng.sendTextMessage(phoneNumber, null, body, sentIntent, null);
 	}
 	
@@ -143,6 +172,76 @@ public class RemoteroidService extends Service {
 	private void lockNow(){
 		DevicePolicyManager mDpm = (DevicePolicyManager)getSystemService(Context.DEVICE_POLICY_SERVICE);
 		mDpm.lockNow();
+	}
+
+
+	@Override
+	public void onSetCoordinates(int xPosition, int yPosition) {
+		if(mInputHandler.isDeviceOpened())
+			mInputHandler.touchSetPtr(xPosition, yPosition);
+	}
+
+
+	@Override
+	public void onTouchDown() {
+		if(mInputHandler.isDeviceOpened())
+			mInputHandler.touchDown();
+	}
+
+
+	@Override
+	public void onTouchUp() {
+		if(mInputHandler.isDeviceOpened())
+			mInputHandler.touchUp();
+	}
+
+
+	@Override
+	public void onKeyDown(int keyCode) {
+		if(mInputHandler.isDeviceOpened())
+			mInputHandler.keyDown(keyCode);
+	}
+
+
+	@Override
+	public void onKeyUp(int keyCode) {
+		if(mInputHandler.isDeviceOpened())
+			mInputHandler.keyUp(keyCode);
+	}
+
+
+	@Override
+	public void onFileInfoReceived(String fileName, long size) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onReadyToSend(ArrayList<File> filesToSend) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onSendFileInfo(File file) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onFileSent(File file) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onInterrupt() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

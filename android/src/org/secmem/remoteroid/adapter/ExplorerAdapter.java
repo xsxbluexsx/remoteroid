@@ -123,24 +123,24 @@ public class ExplorerAdapter extends BaseAdapter{
 			holder = (ImageViewHolder)viewItem.getTag();
 		}
 		
-		if(type==ExplorerActivity.ADAPTER_TYPE_EXPLORER)							// 탐색기 상태 일 때
+		if(type==ExplorerActivity.ADAPTER_TYPE_EXPLORER)							// ���湲���� ����
 		{
 			final String path = dataList.getPath();
 			final String fileName = dataList.getExpList().get(pos).getName();
 			
 			holder.titleHolder.setTextColor(Color.WHITE);
-			if(dataList.getExpList().get(pos).getType()==ExplorerType.TYPE_FOLDER){					// 폴더일 때
+			if(dataList.getExpList().get(pos).getType()==ExplorerType.TYPE_FOLDER){					// �대�����
 				holder.imgHolder.setImageBitmap(null);
 				holder.imgHolder.setBackgroundResource(R.drawable.img_folder);
 			}
 			
-			else{																													// 파일 일 때
+			else{																													// ��� ����
 				FileList f = (FileList)dataList.getExpList().get(pos);
 				holder.imgHolder.setImageBitmap(f.getBitmap());
 				File file = new File(path+fileName);
 				
 				String type = HongUtil.getMimeType(file);
-				if(type.equals(HongUtil.TYPE_PICTURE)){						// 타입이 사진이면 사진 썸네일 추출
+				if(type.equals(HongUtil.TYPE_PICTURE)){						// ������ъ��대㈃ �ъ� �몃���異��
 					if(!(ExplorerActivity.SCROLL_STATE)){
 						
 						if(f.isBitmapChecked()){
@@ -163,7 +163,7 @@ public class ExplorerAdapter extends BaseAdapter{
 						holder.imgHolder.setBackgroundResource(R.drawable.photo_camera);
 					}
 				}
-				else if(file.getPath().endsWith(".apk")){															// 타입이 .APK 일 때 APK 썸네일 추출
+				else if(file.getPath().endsWith(".apk")){															// �����.APK ����APK �몃���異��
 					
 					if(!(ExplorerActivity.SCROLL_STATE)){
 						
@@ -202,7 +202,7 @@ public class ExplorerAdapter extends BaseAdapter{
 			holder.titleHolder.setText(dataList.getExpList().get(pos).getName());
 		}
 		
-		else if(type==ExplorerActivity.ADAPTER_TYPE_CATEGORY)						// 검색한 인덱스에 대한 상태일 때
+		else if(type==ExplorerActivity.ADAPTER_TYPE_CATEGORY)						// 寃�����몃��ㅼ� ��� �������
 		{
 			CategoryList item = categoryList.get(pos);
 			holder.imgHolder.setImageBitmap(item.getBitmap());
@@ -289,7 +289,9 @@ public class ExplorerAdapter extends BaseAdapter{
 			@Override
 			public boolean onLongClick(View v) {
 				if(ExplorerActivity.fileInfo.size()!=0){
-					Transmitter.getInstance().sendFile(CommunicateInfo.getSelectFileList());
+					//Transmitter.getInstance().sendFile(CommunicateInfo.getSelectFileList());
+					// TODO transferring file should be handled on RemoteroidService.
+					// Bind to RemoteroidService and communicate with service using AIDL.
 				}
 				
 				
@@ -363,7 +365,7 @@ public class ExplorerAdapter extends BaseAdapter{
 		@Override
 		protected Integer doInBackground(String... params) {
 		
-			int result=setBitmap(params[0],params[1],params[2], params[3]);			// 경로 , 파일 이름, 포지션, 타입
+			int result=setBitmap(params[0],params[1],params[2], params[3]);			// 寃쎈� , ��� �대�, �ъ��� ���
 			
 			return result;
 		}
@@ -517,7 +519,7 @@ public class ExplorerAdapter extends BaseAdapter{
 				((FileList)dataList.getExpList().get(Integer.parseInt(params[2]))).setBitmap(b);
 			}
 			else{
-				result = 0;							// 경로가 바뀌었을 경우 체크
+				result = 0;							// 寃쎈�媛�諛����� 寃쎌� 泥댄�
 			}
 			
 			return result;

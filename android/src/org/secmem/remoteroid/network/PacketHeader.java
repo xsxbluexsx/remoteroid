@@ -2,8 +2,6 @@ package org.secmem.remoteroid.network;
 
 import java.text.ParseException;
 
-import android.util.*;
-
 /**
  * Represents packet's header data.</br>
  * Header is consisted of <code>{@link OpCode opCode}</code> and {@link #payloadLength PayloadLength}.

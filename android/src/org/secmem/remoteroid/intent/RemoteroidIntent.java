@@ -33,6 +33,21 @@ public final class RemoteroidIntent {
 	public static final String ACTION_SMS_SENT = "org.secmem.remoteroid.intent.action.SMS_SENT";
 	
 	/**
+	 * An action that successfully connected to server. (Broadcast)
+	 */
+	public static final String ACTION_CONNECTED = "org.secmem.remoteroid.intent.action.CONNECTED";
+	
+	/**
+	 * An action that a client has disconnected from server.
+	 */
+	public static final String ACTION_DISCONNECTED = "org.secmem.remoteroid.intent.action.DISCONNECTED";
+	
+	/**
+	 * An action that there connection was interrupted by some reason.
+	 */
+	public static final String ACTION_INTERRUPTED = "org.secmem.remoteroid.intent.action.INTERRUPTED";
+	
+	/**
 	 * Key for extra data contains phone number.
 	 * @see RemoteroidIntent#ACTION_SMS_SENT
 	 */

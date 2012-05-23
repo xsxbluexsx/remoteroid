@@ -1,12 +1,12 @@
 package org.secmem.remoteroid.network;
 
-import java.nio.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
-import android.util.*;
 
 /**
  * This class combine eventCode, xPosition, yPosition, keyCode from packet
- * @author ssm
+ * @author Hyomin Oh
  */
 public class EventPacket {
 	
