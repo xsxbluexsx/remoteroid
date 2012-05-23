@@ -27,7 +27,7 @@ public class VirtualEventGen {
 			//listener.onSetCoordinates(eventPacket.GetXPosition(), eventPacket.GetYPosition());
 			//listener.onTouchDown();
 			Log.i("qqqq", "SetCoordinate x : "+eventPacket.GetXPosition()+" y : "+eventPacket.GetYPosition());
-			Log.i("qqqq", "TOUCHDOWN");
+			Log.i("qqqq", "TOUCHDOWN x");
 			break;
 		case EventPacket.TOUCHUP:
 			//listener.onTouchUp();

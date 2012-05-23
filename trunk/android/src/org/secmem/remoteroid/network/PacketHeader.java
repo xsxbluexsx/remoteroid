@@ -81,14 +81,14 @@ public class PacketHeader {
 	 * @return PacketHeader object of given packet header
 	 * @throws ParseException given packet header is not valid
 	 */	
-	public static PacketHeader parse(byte[] rawData) throws ParseException{
+	public static PacketHeader parse(byte[] rawData){
 		PacketHeader header = new PacketHeader();
 		
 		System.arraycopy(rawData, 0, opCodeBuffer, 0, OPCODE_LENGTH);
 		
 		header.setOpCode(ByteToInt(opCodeBuffer));
 		
-		System.arraycopy(rawData, OPCODE_LENGTH, packetSizeBuffer, 0, PAYLOAD_LENGTH);
+		System.arraycopy(rawData, OPCODE_LENGTH, packetSizeBuffer, 0, PAYLOAD_LENGTH);				
 		
 		header.setPayloadLength(ByteToInt(packetSizeBuffer)-PacketHeader.LENGTH);
 		
