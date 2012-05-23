@@ -45,7 +45,7 @@ public class FrameBufferService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.i("qq","onStartCommand");
 		
-		transmitter = Transmitter.getInstance();
+		transmitter = new Transmitter();
 		Intent bIntent = new Intent("connecting_fragment_connect");
 		
 		try {
@@ -54,13 +54,13 @@ public class FrameBufferService extends Service {
 		} catch (Exception e) {
 		}finally{
 			bIntent.putExtra("isConnected", flag);
-			if(ConnectingFragment.isFinished && flag){		// 접속중이고 접속을 취소하였다면
+			if(ConnectingFragment.isFinished && flag){		// ���以��怨������痍⑥�����ㅻ㈃
 				transmitter.disconnect();				
 				stopSelf();
 			}
-			else{														// 접속을 취소하지 않았다면
+			else{														// �����痍⑥���� ����ㅻ㈃
 				sendBroadcast(bIntent);
-				if(!flag)												// 접속이 안됬으면 서비스종료
+				if(!flag)												// ���������쇰㈃ ����ㅼ�猷�
 					stopSelf();
 			}
 		}

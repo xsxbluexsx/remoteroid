@@ -28,6 +28,29 @@ import org.secmem.remoteroid.util.CommandLine;
  */
 public class InputHandler {
 	
+	private boolean isDeviceOpened = false;
+	
+	public boolean isDeviceOpened(){
+		return isDeviceOpened;
+	}
+	
+	/**
+	 * Opens uinput(User-level input) device for event injection.
+	 * @return true device has opened without error, false otherwise
+	 */
+	public boolean open(){
+		isDeviceOpened = openInputDevice();
+		return isDeviceOpened;
+	}
+	
+	/**
+	 * Closes uinput device.
+	 */
+	public void close(){
+		closeInputDevice();
+		isDeviceOpened = false;
+	}
+	
 	static{
 		System.loadLibrary("remoteroid");
 	}
@@ -50,7 +73,7 @@ public class InputHandler {
 	 * Opens uinput(User-level input) device for event injection.
 	 * @return true device has opened without error, false otherwise
 	 */
-	public native boolean openInputDevice();
+	private native boolean openInputDevice();
 	
 	/**
 	 * Open input device using suinput, without setting permission 666 to /dev/uinput.<br/>
@@ -63,7 +86,7 @@ public class InputHandler {
 	/**
 	 * Closes uinput device.
 	 */
-	public native void closeInputDevice();
+	private native void closeInputDevice();
 	
 	/**
 	 * Close input device, without reverting back /dev/uinput's permission to 660.

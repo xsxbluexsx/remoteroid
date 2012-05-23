@@ -1,23 +1,27 @@
 package org.secmem.remoteroid.network;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
 
-import org.secmem.remoteroid.data.*;
+import org.secmem.remoteroid.BuildConfig;
+import org.secmem.remoteroid.data.CommunicateInfo;
 
-import android.os.*;
-import android.util.*;
+import android.util.Log;
 
-public class FileTransReceiver extends PacketSender{
-	
+public class FileTranceiver extends PacketSender{
+	private static final String TAG = "FileTranceiver";
 	FileReceiver fileReceiver;
 	FileSender fileSender;
 	
-	public FileTransReceiver(OutputStream stream){
+	public FileTranceiver(OutputStream stream, FileTransmissionListener listener){
 		super(stream);
-		
-		fileReceiver = new FileReceiver();
-		fileSender = new FileSender();
+		fileReceiver = new FileReceiver(listener);
+		fileSender = new FileSender(listener);
 	}
 	
 	public void receiveFileInfo(Packet packet){
@@ -29,14 +33,14 @@ public class FileTransReceiver extends PacketSender{
 	}
 	public void closeFile(){
 		fileSender.DeleteFileList();
-		fileReceiver.CloseFile();
+		fileReceiver.closeFile();
 	}
 	
 	public void sendFileList(ArrayList<File> fileList) throws IOException{
-		fileSender.sendFileList(fileList);
+		fileSender.setFilesToSend(fileList);
 	}
 	
-	public void sendFileInfo() throws IOException{
+	public void sendFileInfo(){
 		fileSender.SendFileInfo();
 	}
 	
@@ -54,9 +58,11 @@ public class FileTransReceiver extends PacketSender{
 		private long recvFileSize;
 		private File file;
 		private FileOutputStream out;
+		private FileTransmissionListener mListener;
 		
-		//private File absoultePathDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Remoteroid/");		
-		
+		public FileReceiver(FileTransmissionListener listener){
+			this.mListener = listener;
+		}
 		
 		/**
 		 * Create file that Received information(file name, size)		   
@@ -67,14 +73,18 @@ public class FileTransReceiver extends PacketSender{
 			
 			String fileName = fileInfo.getFileName();
 			totalFileSize = fileInfo.getFileSize();
+			
+			mListener.onFileInfoReceived(fileName, totalFileSize);
 		
 			File absoultePathDir = new File(CommunicateInfo.getCurrentPath());
-			Log.i("asd","dir = "+absoultePathDir.getAbsolutePath());
+			if(BuildConfig.DEBUG) 
+				Log.i(TAG,"dir = "+absoultePathDir.getAbsolutePath());
 			if(!absoultePathDir.exists()){
 				absoultePathDir.mkdir();
 			}
 			file = new File(absoultePathDir+"/"+fileName);
-			Log.i("asd","dir2 = "+file.getAbsolutePath());
+			if(BuildConfig.DEBUG)
+				Log.i(TAG,"dir2 = "+file.getAbsolutePath());
 			int overlapCheck = 1;
 			try{			
 				while(!file.createNewFile()){
@@ -95,8 +105,6 @@ public class FileTransReceiver extends PacketSender{
 			}		
 		}
 		
-		
-		
 		/**
 		 * Store file to SDCARD that received file data
 		 * @param packet
@@ -113,11 +121,11 @@ public class FileTransReceiver extends PacketSender{
 				}
 			}catch(IOException e){
 				e.printStackTrace();
-				CloseFile();		
+				closeFile();		
 			}
 		}
 		
-		void CloseFile(){
+		void closeFile(){
 			if(out != null){
 				try {
 					out.close();
@@ -137,44 +145,45 @@ public class FileTransReceiver extends PacketSender{
 		private byte [] 		buffer 					= new byte[MAXDATASIZE];			
 		private FileInputStream	in 						= null;
 		private ArrayList<File>	fileList				= null;	
+		private FileTransmissionListener mListener;
 		
-		
-		public FileSender(){		
-		}	
-		
+		public FileSender(FileTransmissionListener listener){		
+			mListener = listener;
+		}
 		
 		/**
 		 * Set fileList for transmit and 
 		 * Send to host that ready for send file
 		 * @param fileList
 		 */
-		public void sendFileList(ArrayList<File> fileList) throws IOException{
+		public void setFilesToSend(ArrayList<File> fileList) throws IOException{
 			this.fileList = fileList;
-			send(new Packet(PacketHeader.OpCode.READY_TO_SEND, null, 0));			
+			send(new Packet(PacketHeader.OpCode.READY_TO_SEND, null, 0));
+			mListener.onReadyToSend(fileList);
 		}
-		
 		
 		/**
 		 * Send first file information(Name, Size) of FileList to Host
 		 * @throws IOException
 		 */
-		public void SendFileInfo() throws IOException{		
+		public void SendFileInfo(){		
 			if(fileList.isEmpty()){
 				return;
 			}
-			
 			File currentFile = fileList.get(0);
-			
-			FileinfoPacket fileInfoPacket = new FileinfoPacket(currentFile);			
-			
-			send(fileInfoPacket);		
+			FileinfoPacket fileInfoPacket = new FileinfoPacket(currentFile);
+			mListener.onSendFileInfo(currentFile);
+			try {
+				send(fileInfoPacket);
+			} catch (IOException e) {
+				e.printStackTrace();
+				mListener.onInterrupt();
+			}		
 		}
-		
 		
 		public void SendFileData(){
 			new SendFileDataThread().start();		
 		}
-		
 		
 		/**
 		 *Send to host that first File data of file list
@@ -196,14 +205,17 @@ public class FileTransReceiver extends PacketSender{
 						send(new Packet(PacketHeader.OpCode.FILEDATA_RECEIVED, buffer, iCurrentSendSize));
 						
 						sentFileSize += iCurrentSendSize;						
-					}					
-					SendFileInfo();
+					}
+					mListener.onFileSent(file);
 					
+					SendFileInfo();
 				}catch(FileNotFoundException e){
 					e.printStackTrace();
+					mListener.onInterrupt();
 				}catch(IOException e){
 					DeleteFileList();
 					e.printStackTrace();
+					mListener.onInterrupt();
 				}finally{
 					try{
 						in.close();				
@@ -217,7 +229,6 @@ public class FileTransReceiver extends PacketSender{
 			if(fileList==null)
 				return;
 			fileList.clear();		
-			fileList = null;
 		}
 	}	
 }
