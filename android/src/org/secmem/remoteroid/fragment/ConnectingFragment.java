@@ -35,6 +35,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -77,6 +78,10 @@ public class ConnectingFragment extends Fragment {
 		}
 		
 	};
+	
+	public ConnectingFragment(){
+		
+	}
 	
 	public ConnectingFragment(String ipAddr, String password){
 		mIpAddr = ipAddr;
@@ -154,11 +159,17 @@ public class ConnectingFragment extends Fragment {
 			String action = intent.getAction();
 			
 			if(RemoteroidIntent.ACTION_CONNECTED.equals(action)){
+				getActivity().unbindService(mConnection);
+				Toast.makeText(getActivity(), "Connected to server.", Toast.LENGTH_SHORT).show();
 				// Connected show ConnectedFragment.
-				getFragmentManager().beginTransaction().replace(R.id.container, new ConnectedFragment()).commit();
+				FragmentManager mng = getFragmentManager();
+				mng.beginTransaction().replace(R.id.container, new ConnectedFragment()).commit();
 			}else{
+				getActivity().unbindService(mConnection);
+				Toast.makeText(getActivity(), "Failed to connect server.", Toast.LENGTH_SHORT).show();
 				// Failed to connect. return to AuthenticateFragment.
-				getFragmentManager().beginTransaction().replace(R.id.container, new AuthenticateFragment()).commit();
+				FragmentManager mng = getFragmentManager();
+				mng.beginTransaction().replace(R.id.container, new AuthenticateFragment()).commit();
 			}
 		}
 		

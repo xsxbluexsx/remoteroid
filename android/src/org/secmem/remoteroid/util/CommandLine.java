@@ -180,6 +180,7 @@ public class CommandLine {
         try{
                 // Check Busybox
                 file = new File(context.getFilesDir().getAbsolutePath()+"/busybox");
+                System.out.println("bbpath="+file.getAbsolutePath()+" exists="+file.exists());
                 if(!file.exists())
                         return false;
                 
@@ -226,7 +227,12 @@ public class CommandLine {
         execAsRoot("chmod 700 /data/data/org.secmem.remoteroid/files/busybox");
         
         // Mount /system as r/w
-        execAsRoot("mount -orw,remount /system");
+        if(Build.VERSION.SDK_INT < 11){
+        	execAsRoot("mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system");
+        }else{
+        	execAsRoot("mount -orw,remount /system");
+        }
+        
         
         // Step 1. Extract driver files from resources
         // Copy IDC(Input Device Configuration)
@@ -245,11 +251,17 @@ public class CommandLine {
         // Step 2. Move driver files into appropriate path
         ArrayList<String> cmdList = new ArrayList<String>();
         
-        cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.idc /system/usr/idc/remoteroid.idc");
+        cmdList.add("/data/data/org.secmem.remoteroid/files/busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.idc /system/usr/idc/remoteroid.idc");
         //cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.kcm.bin /system/usr/keychars/remoteroid.kcm.bin");
         //cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.kcm /system/usr/keychars/remoteroid.kcm");
         //cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.kl /system/usr/keylayout/remoteroid.kl");
-        cmdList.add("mount -oro,remount /system"); // Mount /system as r/o
+        
+        if(Build.VERSION.SDK_INT < 11){
+        	cmdList.add("mount -o ro,remount -t yaffs2 /dev/block/mtdblock3 /system");
+        }else{
+        	cmdList.add("mount -oro,remount /system");
+        }
+         // Mount /system as r/o
         execAsRoot(cmdList);
 	}
 
