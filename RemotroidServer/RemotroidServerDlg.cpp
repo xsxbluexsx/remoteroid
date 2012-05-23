@@ -137,6 +137,7 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	// TODO: Add extra initialization here
 
 	//스크린 윈도우 위치 및 스타일 설정
+
 	screen.CreateEx(WS_EX_TOPMOST
 		, _T("STATIC"), NULL, WS_CHILD|WS_VISIBLE|SS_NOTIFY, CRect(LEFT, TOP, RIGHT, BOTTOM), this, 1234);
 	screen.SetFocus();	
@@ -216,7 +217,7 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 		EndDialog(IDCANCEL);
 		return TRUE;
 	}
-
+	
 	pAcceptThread = AfxBeginThread(AcceptFunc, this);	
 	pAcceptThread->m_bAutoDelete = FALSE;
 
@@ -288,6 +289,8 @@ UINT CRemotroidServerDlg::AcceptFunc(LPVOID pParam)
 	}
 	AfxMessageBox(_T("sdfsd"));
 	CMyClient *pClient = new CMyClient(ClientSocket);
+	pClient->SetNoDelay(TRUE);
+
 	pDlg->SetClientSocket(pClient);
 	pDlg->pRecvThread = AfxBeginThread(RecvFunc, pDlg);
 	pDlg->pRecvThread->m_bAutoDelete = FALSE;
@@ -349,6 +352,8 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 	char bPacket[MAXSIZE];
 	CRecvFile& recvFileClass = pDlg->recvFileClass;	
 	CTextProgressCtrl& prgressBar = pDlg->m_progressCtrl;
+
+	pClient->SendPacket(OP_REQDEVICEINFO, NULL, 0);
 	
 	while (TRUE)
 	{
@@ -371,7 +376,7 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 				if(recvFileClass.RecvFileInfo(data) != INVALID_HANDLE_VALUE)
 				{
 					//파일은 수신 받을 준비가 되면 req 요청을 전송한다
-					pClient->SendPacket(OP_REQFILEDATA, 0, 0);
+					pClient->SendPacket(OP_REQFILEDATA, NULL, 0);
 				}
 				break;
 			case OP_SENDFILEDATA:
@@ -389,11 +394,14 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 			case OP_READYSEND:
 				pDlg->SendMessage(WM_READYRECVFILE, 0, 0);
 				break;
+			case OP_SENDDEVICEINFO:
+				pDlg->screen.SendMessage(WM_RECVDEVICEINFO, 0, (LPARAM)data);
+				break;
 			}
 		}
 	}
-
-	recvFileClass.CloseFileHandle();
+	
+	recvFileClass.CloseFileHandle();		
 	pDlg->fileSender.DeleteFileList();
 
 	delete pClient;	
@@ -425,12 +433,12 @@ CMyClient * CRemotroidServerDlg::GetClientSocket(void)
 
 
 void CRemotroidServerDlg::OnDestroy()
-{
-	CDialogEx::OnDestroy();	
-	// TODO: Add your message handler code here	
+{	
+	// TODO: Add your message handler code here		
 	m_isClickedEndBtn = TRUE;
 	EndAccept();
 	EndConnect();	
+	CDialogEx::OnDestroy();	
 }
 
 
@@ -508,7 +516,20 @@ void CRemotroidServerDlg::EndAccept(void)
 	}
 
 	closesocket(m_ServerSocket);
-	WaitForSingleObject(pAcceptThread->m_hThread, 100);
+
+	while (TRUE)
+	{
+		DWORD dwResult = WaitForSingleObject(pAcceptThread->m_hThread, 100);
+		if(dwResult !=WAIT_TIMEOUT)
+			break;
+		MSG msg;
+		while (::PeekMessage(&msg, NULL, NULL, NULL,PM_REMOVE))
+		{
+			::TranslateMessage(&msg);
+			::DispatchMessage(&msg);
+		}
+	}
+	
 	delete pAcceptThread;
 	pAcceptThread = NULL;
 }
@@ -517,9 +538,22 @@ void CRemotroidServerDlg::EndConnect(void)
 {
 	if(pRecvThread == NULL)
 		return;
-
+	
 	m_pClient->CloseSocket();
-	WaitForSingleObject(pRecvThread->m_hThread, 100);
+
+	while(TRUE)
+	{
+		DWORD dwResult = WaitForSingleObject(pRecvThread->m_hThread, 100);
+		if(dwResult !=WAIT_TIMEOUT)
+			break;
+		MSG msg;
+		while (::PeekMessage(&msg, NULL, NULL, NULL,PM_REMOVE))
+		{
+			::TranslateMessage(&msg);
+			::DispatchMessage(&msg);
+		}
+	}
+	
 	delete pRecvThread;
 	pRecvThread = NULL;
 }
@@ -528,7 +562,7 @@ void CRemotroidServerDlg::EndConnect(void)
 //클라이언트 접속 종료로 인한 recv 쓰레드 종료시 호출
 LRESULT CRemotroidServerDlg::OnEndRecv(WPARAM wParam, LPARAM lParam)
 {
-	WaitForSingleObject(pRecvThread->m_hThread, 100);	
+	WaitForSingleObject(pRecvThread->m_hThread, 500);	
 	delete pRecvThread;
 	pRecvThread = NULL;
 
@@ -539,7 +573,7 @@ LRESULT CRemotroidServerDlg::OnEndRecv(WPARAM wParam, LPARAM lParam)
 
 LRESULT CRemotroidServerDlg::OnEndAccept(WPARAM wParam, LPARAM lParam)
 {
-	WaitForSingleObject(pAcceptThread->m_hThread, 100);
+	WaitForSingleObject(pAcceptThread->m_hThread, 500);
 	delete pAcceptThread;
 	pAcceptThread = NULL;
 	return LRESULT();
@@ -693,18 +727,24 @@ void CRemotroidServerDlg::OnLButtonUp(UINT nFlags, CPoint point)
 void CRemotroidServerDlg::OnClickedBtnBack()
 {
 	// TODO: Add your control notification handler code here
+	CVitualEventPacket event(BACKBUTTON);
+	m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
 }
 
 
 void CRemotroidServerDlg::OnClickedBtnHome()
 {
 	// TODO: Add your control notification handler code here
+	CVitualEventPacket event(HOMEBUTTON);
+	m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
 }
 
 
 void CRemotroidServerDlg::OnClickedBtnMenu()
 {
 	// TODO: Add your control notification handler code here
+	CVitualEventPacket event(MENUBUTTON);
+	m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
 }
 
 

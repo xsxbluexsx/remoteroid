@@ -12,6 +12,7 @@
 #include "recvfile.h"
 #include "MyBitmapBtn.h"
 #include "TextProgressCtrl.h"
+#include "VitualEventPacket.h"
 
 
 // CRemotroidServerDlg dialog

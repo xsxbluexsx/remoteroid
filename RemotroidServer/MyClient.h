@@ -15,5 +15,6 @@ public:
 	bool GetPacket(char * packet);
 	int SendPacket(int iOPCode, const char * data, int iDataLen);
 	void CloseSocket(void);
+	void SetNoDelay(BOOL bOp);
 };
 

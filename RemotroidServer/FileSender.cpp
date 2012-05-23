@@ -13,8 +13,9 @@ CFileSender::CFileSender()
 
 
 CFileSender::~CFileSender(void)
-{		
-	DeleteFileList();
+{	
+	
+	DeleteFileList();	
 }
 
 void CFileSender::SetClient(CMyClient *pClient)
@@ -110,16 +111,16 @@ UINT CFileSender::SendFileThread(LPVOID pParam)
 	while(totalFileSize > sendedFileSize)
 	{
 		int iCurrentSendSize = (totalFileSize-sendedFileSize) > MAXDATASIZE ? MAXDATASIZE : totalFileSize-sendedFileSize;		
+
 		pFile->Read(pDlg->buffer, iCurrentSendSize);
 		if(pDlg->SendPacket(OP_SENDFILEDATA, pDlg->buffer, iCurrentSendSize) == SOCKET_ERROR)
-		{
-			pDlg->m_progressCtrl->ShowWindow(SW_HIDE);
-			return 0;		
+		{				
+			delete pFile;			
+			pDlg->m_progressCtrl->ShowWindow(SW_HIDE);						
+			return 0;
 		}
-
 		sendedFileSize += iCurrentSendSize;
-		
-		int percent = (int)(((float)sendedFileSize/totalFileSize)*100);
+		int percent = (int)(((float)sendedFileSize/totalFileSize)*100);		
 		pDlg->m_progressCtrl->SetPos(percent);
 	}
 	pDlg->m_progressCtrl->ShowWindow(SW_HIDE);
@@ -134,19 +135,31 @@ UINT CFileSender::SendFileThread(LPVOID pParam)
 void CFileSender::DeleteFileList(void)
 {
 	if(pSendFileThread != NULL)
-	{
-		WaitForSingleObject(pSendFileThread->m_hThread, 100);
-		delete pSendFileThread;
+	{			
+		while(TRUE)
+		{
+			DWORD dwResult = WaitForSingleObject(pSendFileThread->m_hThread, 100);				
+			if(dwResult !=WAIT_TIMEOUT)
+				break;			
+			MSG msg;
+			while (::PeekMessage(&msg, NULL, NULL, NULL,PM_REMOVE))
+			{
+				::TranslateMessage(&msg);
+				::DispatchMessage(&msg);
+			}
+		}		
+		delete pSendFileThread;		
 		pSendFileThread = NULL;
 	}
 
 	POSITION pos = sendFileList.GetHeadPosition();
+	
 	while(pos)
-	{
-		CFile *pFile = (CFile *)sendFileList.GetNext(pos);		
-		delete pFile;		
-	}
-	sendFileList.RemoveAll();
+	{	
+		CFile *pFile = (CFile *)sendFileList.GetNext(pos);			
+		delete pFile;				
+	}	
+	sendFileList.RemoveAll();	
 	isSending = FALSE;
 	return;
 }
