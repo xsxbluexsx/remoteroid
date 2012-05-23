@@ -1,8 +1,5 @@
 package org.secmem.remoteroid.network;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
 
 /**
  * This class combine eventCode, xPosition, yPosition, keyCode from packet
@@ -15,22 +12,34 @@ public class EventPacket {
 	public static final int TOUCHUP = 2;
 	public static final int KEYDOWN = 3;
 	public static final int KEYUP = 4;
+	public static final int BACKBUTTON = 5;
+	public static final int HOMEBUTTON = 6;
+	public static final int MENUBUTTON = 7;
 	
 	public static final int EVENTCODE_SIZE = 1;
-	public static final int XPOSITION_SIZE = 4;
-	public static final int YPOSITION_SIZE = 4;
-	public static final int KEYCODE_SIZE = 4;
-	public static final int MAXEVENT_SIZE = EVENTCODE_SIZE+XPOSITION_SIZE+YPOSITION_SIZE;
+	public static final int DATA_SIZE = 4;
+	public static final int XPOSITION_SIZE = DATA_SIZE;
+	public static final int YPOSITION_SIZE = DATA_SIZE;
+	public static final int KEYCODE_SIZE = DATA_SIZE;	
 	
 	private int eventCode;
 	private int xPosition;
 	private int yPosition;
 	private int keyCode;
 	
-	//Host is Little endian, but JVM is Big endian
-	//ByteBuffer support Little endian
-	private static ByteBuffer buffer = ByteBuffer.allocate(MAXEVENT_SIZE);	
 	
+	
+	private static byte[] eventValueBuf = new byte[DATA_SIZE];
+		
+	private static int ByteToInt(byte [] data){
+		int result = 0;
+		for(int i=0; i<data.length; i++){
+			if(data[i] == ' ')
+				continue;
+			result = result * 10 + (data[i]-'0');
+		}
+		return result;
+	}
 	
 	protected EventPacket(){			
 	}
@@ -66,34 +75,32 @@ public class EventPacket {
 	public int GetKeyCode(){
 		return keyCode;
 	}	
-
 	
 	//Parsing EventPacket from packet
 	public static EventPacket parse(Packet packet){
-		EventPacket eventPacket = new EventPacket();
-
-		//host is little endian
-		buffer.order(ByteOrder.LITTLE_ENDIAN);		
+		EventPacket eventPacket = new EventPacket();		
 		
-		buffer.put(packet.getPayload(), 0, MAXEVENT_SIZE);
-		buffer.rewind();
+		byte[] payload = packet.getPayload();	
 		
-		eventPacket.SetEventCode(buffer.get());
+		//Event data are written in ASKII Code
+		eventPacket.SetEventCode(payload[0]-'0');
 		
+		//X,Y position or Keycode set when eventcode is SETCOORDINATES,TOUCHDOWN,KEYDOWN,KEYUP
+		//others are only eventcode
 		switch(eventPacket.GetEventCode()){		
 		case SETCOORDINATES:		
 		case TOUCHDOWN:
-			eventPacket.SetXPosition(buffer.getInt());
-			eventPacket.SetYPosition(buffer.getInt());
+			System.arraycopy(payload, EVENTCODE_SIZE, eventValueBuf, 0, XPOSITION_SIZE);
+			eventPacket.SetXPosition(ByteToInt(eventValueBuf));
+			System.arraycopy(payload, EVENTCODE_SIZE+XPOSITION_SIZE, eventValueBuf, 0, YPOSITION_SIZE);
+			eventPacket.SetYPosition(ByteToInt(eventValueBuf));
 			break;		
 		case KEYDOWN:
-		case KEYUP:
-			eventPacket.SetKeyCode(buffer.getInt());
-			break;		
-		}
-		buffer.rewind();
+		case KEYUP:			
+			System.arraycopy(payload, EVENTCODE_SIZE, eventValueBuf, 0, KEYCODE_SIZE);
+			eventPacket.SetKeyCode(ByteToInt(eventValueBuf));
+			break;				
+		}						
 		return eventPacket;
-	}
-
-	
+	}	
 }

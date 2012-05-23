@@ -31,8 +31,6 @@ public class PacketReceiver extends Thread{
 	}
 	
 	private int readPacketDataFromStream() throws IOException{
-//		int currentRead = Packet.MAX_LENGTH*2-bufferOffset <  Packet.MAX_LENGTH ? 
-//				Packet.MAX_LENGTH*2-bufferOffset : Packet.MAX_LENGTH;				
 		
 		int readLen = recvStream.read(buffer, bufferOffset, Packet.MAX_LENGTH);			
 			

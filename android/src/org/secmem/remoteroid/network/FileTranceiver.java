@@ -212,8 +212,7 @@ public class FileTranceiver extends PacketSender{
 				}catch(FileNotFoundException e){
 					e.printStackTrace();
 					mListener.onInterrupt();
-				}catch(IOException e){
-					DeleteFileList();
+				}catch(IOException e){					
 					e.printStackTrace();
 					mListener.onInterrupt();
 				}finally{

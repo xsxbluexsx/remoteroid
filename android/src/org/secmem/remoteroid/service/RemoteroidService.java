@@ -19,28 +19,23 @@
 
 package org.secmem.remoteroid.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.*;
+import java.util.*;
 
-import org.secmem.remoteroid.IRemoteroid;
-import org.secmem.remoteroid.data.RDSmsMessage;
-import org.secmem.remoteroid.intent.RemoteroidIntent;
-import org.secmem.remoteroid.natives.InputHandler;
-import org.secmem.remoteroid.network.FileTransmissionListener;
-import org.secmem.remoteroid.network.Transmitter;
-import org.secmem.remoteroid.network.VirtualEventListener;
-import org.secmem.remoteroid.receiver.SmsReceiver;
+import org.secmem.remoteroid.*;
+import org.secmem.remoteroid.data.*;
+import org.secmem.remoteroid.intent.*;
+import org.secmem.remoteroid.natives.*;
+import org.secmem.remoteroid.network.*;
+import org.secmem.remoteroid.receiver.*;
 
-import android.app.PendingIntent;
-import android.app.Service;
-import android.app.admin.DevicePolicyManager;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.IBinder;
-import android.os.RemoteException;
-import android.telephony.SmsManager;
+import android.app.*;
+import android.app.admin.*;
+import android.content.*;
+import android.net.*;
+import android.os.*;
+import android.telephony.*;
+import android.util.*;
 
 /**
  * A base service to communicate with PC.
@@ -181,20 +176,21 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	public void onSetCoordinates(int xPosition, int yPosition) {
 		if(mInputHandler.isDeviceOpened())
 			mInputHandler.touchSetPtr(xPosition, yPosition);
+		
 	}
 
 
 	@Override
 	public void onTouchDown() {
 		if(mInputHandler.isDeviceOpened())
-			mInputHandler.touchDown();
+			mInputHandler.touchDown();		
 	}
 
 
 	@Override
 	public void onTouchUp() {
 		if(mInputHandler.isDeviceOpened())
-			mInputHandler.touchUp();
+			mInputHandler.touchUp();		
 	}
 
 
@@ -242,6 +238,27 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 
 	@Override
 	public void onInterrupt() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onMenuBtnClick() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onHomeBtnClick() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onBackBtnClick() {
 		// TODO Auto-generated method stub
 		
 	}

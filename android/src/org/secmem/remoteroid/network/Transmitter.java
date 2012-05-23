@@ -91,18 +91,26 @@ public class Transmitter implements PacketListener{
 			e.printStackTrace();
 		}
 	}
+	
+	
+	//width, heigth resolutuin send to host 
+	private void sendDeviceInfo(){
+		try{
+			fileTransReceiver.send(new DeviceInfoPacket(480, 800));
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void onPacketReceived(Packet packet) {
-		switch(packet.getOpcode()){
-		
-		case OpCode.FILEINFO_RECEIVED:						
-			//fileListener.onReceiveFileInfo();
+		switch(packet.getOpcode()){		
+
+		case OpCode.FILEINFO_RECEIVED:		
 			fileTransReceiver.receiveFileInfo(packet);
 			break;
 			
 		case OpCode.FILEDATA_RECEIVED:
-			//fileListener.onReceiveFileData();
 			fileTransReceiver.receiveFileData(packet);
 			break;
 			
@@ -116,10 +124,12 @@ public class Transmitter implements PacketListener{
 		case OpCode.EVENT_RECEIVED:
 			parseVirtualEventPacket(packet);
 			break;
-			
+		case OpCode.DEVICEINFO_REQUESTED:
+			sendDeviceInfo();
+			break;
 		}
 	}
-
+		
 	@Override
 	public void onInterrupt() {
 		//If server was closed, throw an IOException	
@@ -127,6 +137,8 @@ public class Transmitter implements PacketListener{
 		fileTransReceiver.closeFile();
 		disconnect();
 	}
+	
+	
 	
 	private void parseVirtualEventPacket(Packet packet){
 		EventPacket eventPacket = EventPacket.parse(packet);
