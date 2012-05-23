@@ -78,6 +78,17 @@
         <activity android:name=".dialog.CategoryDialog"
             android:theme="@style/CustomTheme">
         </activity>
+        <service
+			android:name=".ime.HardKeyboard"
+			android:permission="android.permission.BIND_INPUT_METHOD">
+			<intent-filter>
+				<action
+					android:name="android.view.InputMethod" />
+			</intent-filter>
+			<meta-data
+				android:name="android.view.im"
+				android:resource="@xml/remoteroid_ime" />
+		</service>
         <service android:name=".service.FrameBufferService"></service>
         
     </application>
