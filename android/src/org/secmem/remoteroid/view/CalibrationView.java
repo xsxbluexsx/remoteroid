@@ -65,7 +65,7 @@ public class CalibrationView extends View implements OnTouchListener{
 	private void init(){
 		setOnTouchListener(this);
 		if(!isInEditMode()){
-			mInputHandler = new InputHandler();
+			mInputHandler = new InputHandler(getContext());
 			WindowManager windowManager = (WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
 			Display display = windowManager.getDefaultDisplay();
 			displayWidth = display.getWidth();
@@ -75,10 +75,6 @@ public class CalibrationView extends View implements OnTouchListener{
 
 	@Override
 	public boolean onTouch(View view, MotionEvent event) {
-		System.out.println("onTouch, act="+event.getAction()+" x="+event.getX()+" y="+event.getY());
-		System.out.println("onTouch, calReqested="+isCalibrateRequested);
-		
-			System.out.println("inner");
 			int centerInWidth = displayWidth/2;
 			int centerInHeight = displayHeight/2;
 			

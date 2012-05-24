@@ -30,6 +30,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.provider.Settings.Secure;
@@ -189,6 +190,30 @@ public class Util {
 		}
 		
 		
+	}
+	
+	public static class Screen{
+		private static final String SCALE_FACTOR_X = "scale_factor_x";
+		private static final String SCALE_FACTOR_Y = "scale_factor_y";
+		
+		public static void setScalingFactor(Context context, float xScaleFactor, float yScaleFactor){
+			Editor editor = getPrefEditor(context);
+			editor.putFloat(SCALE_FACTOR_X, xScaleFactor);
+			editor.putFloat(SCALE_FACTOR_Y, yScaleFactor);
+			editor.commit();
+		}
+		
+		public static float getXScalingFactor(Context context){
+			return getPref(context).getFloat(SCALE_FACTOR_X, 1.0f);
+		}
+		
+		public static float getYScalingFactor(Context context){
+			return getPref(context).getFloat(SCALE_FACTOR_Y, 1.0f);
+		}
+		
+		public static void resetScalingFactor(Context context){
+			setScalingFactor(context, 1.f, 1.f);
+		}
 	}
 
 	
