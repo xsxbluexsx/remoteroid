@@ -19,27 +19,48 @@
 
 package org.secmem.remoteroid.fragment;
 
+import org.secmem.remoteroid.R;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.ImageView;
 
 public class ConnectedFragment extends Fragment {
+	
+	private Button btnDisconnect;
+	private ImageView ivCircuitBoard;
 	
 	public ConnectedFragment(){
 		
 	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		return super.onCreateView(inflater, container, savedInstanceState);
+		return inflater.inflate(R.layout.fragment_connected, null);
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onViewCreated(view, savedInstanceState);
+		btnDisconnect = (Button)view.findViewById(R.id.disconnect);
+		ivCircuitBoard = (ImageView)view.findViewById(R.id.circuit_board);
+		ivCircuitBoard.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.blink_short));
+		
+		btnDisconnect.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 	}
 }

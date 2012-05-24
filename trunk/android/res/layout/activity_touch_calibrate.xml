@@ -6,18 +6,10 @@
 
 
 
-    <org.secmem.remoteroid.view.CalibrationView
-        android1:id="@+id/touch_calibrate_calibration_view"
-        android1:layout_width="fill_parent"
-        android1:layout_height="fill_parent" android1:clickable="false"/>
-    
-    <Button
-        android:id="@+id/touch_calibrate_calibrate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/calibrate" />
+    <View
+        android:id="@+id/touch_calibrate_calibration_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" android:clickable="false"/>
 
     <TextView
         android:id="@+id/touch_calibrate_msg"
@@ -26,7 +18,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:padding="10dp"
-        android:text="@string/press_calibrate_to_start_calibration_do_not_touch_screen_while_calibrate_is_in_progress"
+        android:text="@string/press_calibrate_to_start_calibration_do_not_touch_screen_while_calibration_is_in_progress"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ImageView
@@ -38,5 +30,13 @@
         android:contentDescription="@string/calibration_pointer"
         android:src="@android:drawable/radiobutton_off_background"
         android:visibility="gone" />
+
+    <ProgressBar
+        android1:id="@+id/touch_calibrate_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android1:layout_width="wrap_content"
+        android1:layout_height="wrap_content"
+        android1:layout_centerHorizontal="true"
+        android1:layout_centerVertical="true" android1:visibility="gone"/>
 
 </RelativeLayout>

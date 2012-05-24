@@ -91,6 +91,7 @@
 		</service>
         <service android:name=".service.FrameBufferService"></service>
         <activity android:name=".activity.TouchCalibrationActivity"></activity>
+        <service android:name=".service.CalibrationService"></service>
         
     </application>
 
