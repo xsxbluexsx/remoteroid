@@ -47,6 +47,7 @@ public final class RemoteroidIntent {
 	 */
 	public static final String ACTION_INTERRUPTED = "org.secmem.remoteroid.intent.action.INTERRUPTED";
 	
+	public static final String ACTION_DEVICE_OPEN_FAILED = "org.secmem.remoteroid.intent.action.DEVICE_OPEN_FAILED";
 	/**
 	 * Key for extra data contains phone number.
 	 * @see RemoteroidIntent#ACTION_SMS_SENT

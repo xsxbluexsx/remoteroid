@@ -37,11 +37,18 @@ public class InputHandler {
 	private float xScaleFactor;
 	private float yScaleFactor;
 	
+	private boolean isScaleEnabled = false;
+	
 	public InputHandler(Context context){
 		this.context = context;
 		
 		xScaleFactor = Util.Screen.getXScalingFactor(context);
 		yScaleFactor = Util.Screen.getYScalingFactor(context);
+		
+		if(xScaleFactor==1.f && yScaleFactor==1.f)
+			isScaleEnabled = false;
+		else
+			isScaleEnabled = true;
 	}
 	
 	public boolean isDeviceOpened(){
@@ -147,7 +154,10 @@ public class InputHandler {
 	 * @param y y coordinate that user has touched
 	 */
 	public void touchSetPointer(int x, int y){
-		touchSetPtr((int)((float)x*xScaleFactor),(int)((float)y*yScaleFactor));
+		if(isScaleEnabled)
+			touchSetPtr((int)((float)x*xScaleFactor),(int)((float)y*yScaleFactor));
+		else
+			touchSetPtr(x, y);
 	}
 	
 	

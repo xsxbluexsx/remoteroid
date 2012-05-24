@@ -38,6 +38,10 @@ public class Main extends SherlockFragmentActivity {
 	private Fragment mAuthFragment;
 	private Fragment mDriverFragment;
 	
+	private static final int AUTH_FRAG = 0;
+	private static final int DRIVER_FRAG = 1;
+	private int lastFrag;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,19 +49,44 @@ public class Main extends SherlockFragmentActivity {
         getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
         mAuthFragment = new AuthenticateFragment();
         mDriverFragment = new DriverInstallationFragment();
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, mAuthFragment).commit();
+        
+      //Check driver existence
+        if(!CommandLine.isDriverExists(getApplicationContext())){
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, mDriverFragment).commit();
+                lastFrag = AUTH_FRAG;
+        }else{
+        	getSupportFragmentManager().beginTransaction().replace(R.id.container, mAuthFragment).commit();
+        	lastFrag = DRIVER_FRAG;
+        }
     }
     
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		//Check driver existence
-        if(!CommandLine.isDriverExists(getApplicationContext())){
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, mDriverFragment).commit();
-        }
+		
+		
 	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putInt("lastFrag", lastFrag);
+		super.onSaveInstanceState(outState);
+		
+	}
+
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		lastFrag = savedInstanceState.getInt("lastFrag");
+		if(lastFrag==AUTH_FRAG)
+			getSupportFragmentManager().beginTransaction().replace(R.id.container, mDriverFragment).commit();
+		else
+			getSupportFragmentManager().beginTransaction().replace(R.id.container, mAuthFragment).commit();
+			
+	}
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
