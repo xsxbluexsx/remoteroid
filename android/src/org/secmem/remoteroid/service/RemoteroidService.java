@@ -19,23 +19,29 @@
 
 package org.secmem.remoteroid.service;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
-import org.secmem.remoteroid.*;
-import org.secmem.remoteroid.data.*;
-import org.secmem.remoteroid.intent.*;
-import org.secmem.remoteroid.natives.*;
-import org.secmem.remoteroid.network.*;
-import org.secmem.remoteroid.receiver.*;
+import org.secmem.remoteroid.IRemoteroid;
+import org.secmem.remoteroid.data.RDSmsMessage;
+import org.secmem.remoteroid.intent.RemoteroidIntent;
+import org.secmem.remoteroid.natives.InputHandler;
+import org.secmem.remoteroid.network.FileTransmissionListener;
+import org.secmem.remoteroid.network.Tranceiver;
+import org.secmem.remoteroid.network.VirtualEventListener;
+import org.secmem.remoteroid.receiver.SmsReceiver;
 
-import android.app.*;
-import android.app.admin.*;
-import android.content.*;
-import android.net.*;
-import android.os.*;
-import android.telephony.*;
-import android.util.*;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.app.admin.DevicePolicyManager;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.telephony.SmsManager;
+
 
 /**
  * A base service to communicate with PC.
@@ -43,7 +49,7 @@ import android.util.*;
  *
  */
 public class RemoteroidService extends Service implements FileTransmissionListener, VirtualEventListener{
-	private Transmitter mTransmitter;
+	private Tranceiver mTransmitter;
 	private InputHandler mInputHandler;
 	
 	private IBinder mBinder = new IRemoteroid.Stub() {
@@ -119,7 +125,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		mTransmitter = new Transmitter();
+		mTransmitter = new Tranceiver();
 		mTransmitter.setFileTransmissionListener(this);
 		mTransmitter.setVirtualEventListener(this);
 		
@@ -206,6 +212,12 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		if(mInputHandler.isDeviceOpened())
 			mInputHandler.keyUp(keyCode);
 	}
+	
+	@Override
+	public void onKeyStroke(int keyCode) {
+		if(mInputHandler.isDeviceOpened())
+			mInputHandler.keyStroke(keyCode);
+	}
 
 
 	@Override
@@ -243,24 +255,8 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	}
 
 
-	@Override
-	public void onMenuBtnClick() {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 
-	@Override
-	public void onHomeBtnClick() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void onBackBtnClick() {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

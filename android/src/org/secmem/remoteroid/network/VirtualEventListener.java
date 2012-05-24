@@ -29,7 +29,7 @@ public interface VirtualEventListener {
 	 * @param keyCode A Keycode that user has pressed up
 	 */
 	public void onKeyUp(int keyCode);
-	public void onMenuBtnClick();
-	public void onHomeBtnClick();
-	public void onBackBtnClick();
+	
+	public void onKeyStroke(int keyCode);
+
 }
