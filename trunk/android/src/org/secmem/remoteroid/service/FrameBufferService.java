@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.secmem.remoteroid.fragment.ConnectingFragment;
 import org.secmem.remoteroid.natives.FrameHandler;
-import org.secmem.remoteroid.network.Transmitter;
+import org.secmem.remoteroid.network.Tranceiver;
 
 import android.app.Service;
 import android.content.Intent;
@@ -19,7 +19,7 @@ public class FrameBufferService extends Service {
 	private Process p=null;
 	
 	private FrameHandler fHandler;
-	private Transmitter transmitter;
+	private Tranceiver transmitter;
 	
 	int count=0;
 	@Override
@@ -45,7 +45,7 @@ public class FrameBufferService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.i("qq","onStartCommand");
 		
-		transmitter = new Transmitter();
+		transmitter = new Tranceiver();
 		Intent bIntent = new Intent("connecting_fragment_connect");
 		
 		try {

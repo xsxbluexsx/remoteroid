@@ -12,9 +12,9 @@ public class EventPacket {
 	public static final int TOUCHUP = 2;
 	public static final int KEYDOWN = 3;
 	public static final int KEYUP = 4;
-	public static final int BACKBUTTON = 5;
-	public static final int HOMEBUTTON = 6;
-	public static final int MENUBUTTON = 7;
+	public static final int BACK = 5;
+	public static final int HOME = 6;
+	public static final int MENU = 7;
 	
 	public static final int EVENTCODE_SIZE = 1;
 	public static final int DATA_SIZE = 4;

@@ -8,9 +8,10 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import org.secmem.remoteroid.data.NativeKeyCode;
 import org.secmem.remoteroid.network.PacketHeader.OpCode;
 
-public class Transmitter implements PacketListener{
+public class Tranceiver implements PacketListener{
 	private static final int PORT = 50000;
 	
 	private Socket socket;
@@ -24,7 +25,7 @@ public class Transmitter implements PacketListener{
 	private FileTransmissionListener mFileTransListener;
 	private VirtualEventListener mVirtEventListener;
 	
-	public Transmitter(){		
+	public Tranceiver(){		
 	}
 	
 	/**
@@ -160,6 +161,14 @@ public class Transmitter implements PacketListener{
 		case EventPacket.KEYUP:
 			mVirtEventListener.onKeyUp(eventPacket.GetKeyCode());
 			break;
+		case EventPacket.BACK:
+			mVirtEventListener.onKeyStroke(NativeKeyCode.KEY_BACK);
+			break;
+		case EventPacket.MENU:
+			mVirtEventListener.onKeyStroke(NativeKeyCode.KEY_MENU);
+			break;
+		case EventPacket.HOME:
+			mVirtEventListener.onKeyStroke(NativeKeyCode.KEY_HOME);
 		}
 	}
 
