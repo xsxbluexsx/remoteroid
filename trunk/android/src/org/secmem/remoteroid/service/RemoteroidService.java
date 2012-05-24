@@ -129,7 +129,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		mTransmitter.setFileTransmissionListener(this);
 		mTransmitter.setVirtualEventListener(this);
 		
-		mInputHandler = new InputHandler();
+		mInputHandler = new InputHandler(this);
 	}
 
 
@@ -181,7 +181,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	@Override
 	public void onSetCoordinates(int xPosition, int yPosition) {
 		if(mInputHandler.isDeviceOpened())
-			mInputHandler.touchSetPtr(xPosition, yPosition);
+			mInputHandler.touchSetPointer(xPosition, yPosition);
 		
 	}
 

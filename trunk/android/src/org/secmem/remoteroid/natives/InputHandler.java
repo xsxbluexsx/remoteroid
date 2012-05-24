@@ -20,6 +20,9 @@
 package org.secmem.remoteroid.natives;
 
 import org.secmem.remoteroid.util.CommandLine;
+import org.secmem.remoteroid.util.Util;
+
+import android.content.Context;
 
 /**
  * Contains methods related to event injection.
@@ -29,6 +32,17 @@ import org.secmem.remoteroid.util.CommandLine;
 public class InputHandler {
 	
 	private boolean isDeviceOpened = false;
+	private Context context;
+	
+	private float xScaleFactor;
+	private float yScaleFactor;
+	
+	public InputHandler(Context context){
+		this.context = context;
+		
+		xScaleFactor = Util.Screen.getXScalingFactor(context);
+		yScaleFactor = Util.Screen.getYScalingFactor(context);
+	}
 	
 	public boolean isDeviceOpened(){
 		return isDeviceOpened;
@@ -132,7 +146,12 @@ public class InputHandler {
 	 * @param x x coordinate that user has touched
 	 * @param y y coordinate that user has touched
 	 */
-	public native void touchSetPtr(int x, int y);
+	public void touchSetPointer(int x, int y){
+		touchSetPtr((int)((float)x*xScaleFactor),(int)((float)y*yScaleFactor));
+	}
+	
+	
+	private native void touchSetPtr(int x, int y);
 	
 	/**
 	 * Injects 'touch once' event, touching specific coordinate once.<br/>

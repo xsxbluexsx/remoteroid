@@ -1,6 +1,7 @@
 package org.secmem.remoteroid.activity;
 
 import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.util.Util;
 import org.secmem.remoteroid.view.CalibrationView;
 import org.secmem.remoteroid.view.CalibrationView.OnCalibrateListener;
 
@@ -96,6 +97,7 @@ public class TouchCalibrationActivity extends Activity implements OnCalibrateLis
 		txtMessage.setText(R.string.calibration_completed);
 		btnCalibrate.setText(android.R.string.ok);
 		btnCalibrate.setEnabled(true);
+		Util.Screen.setScalingFactor(getApplicationContext(), xScale, yScale);
 		Toast.makeText(getApplicationContext(), R.string.calibration_completed, Toast.LENGTH_SHORT).show();
 		finish();
 	}
