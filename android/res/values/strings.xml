@@ -73,4 +73,10 @@
     <string name="ime_mode_kor">Korean</string>
     <string name="ime_mode_eng">English</string>
     <string name="connection_cancelled">Connection cancelled.</string>
+    <string name="calibrate">Calibrate</string>
+    <string name="press_calibrate_to_start_calibration_do_not_touch_screen_while_calibrate_is_in_progress">Press \'Calibrate\' to start calibration. Do not touch screen while calibrate is in progress.</string>
+    <string name="calibrate_in_progress">Calibrate in progress</string>
+    <string name="calibration_completed">Calibration completed</string>
+    <string name="calibration_failed">Calibration failed.</string>
+    <string name="calibration_pointer">Calibration pointer</string>
 </resources>

@@ -90,6 +90,7 @@
 				android:resource="@xml/remoteroid_ime" />
 		</service>
         <service android:name=".service.FrameBufferService"></service>
+        <activity android:name=".activity.TouchCalibrationActivity"></activity>
         
     </application>
 

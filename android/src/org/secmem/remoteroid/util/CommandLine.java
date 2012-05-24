@@ -180,7 +180,6 @@ public class CommandLine {
         try{
                 // Check Busybox
                 file = new File(context.getFilesDir().getAbsolutePath()+"/busybox");
-                System.out.println("bbpath="+file.getAbsolutePath()+" exists="+file.exists());
                 if(!file.exists())
                         return false;
                 
