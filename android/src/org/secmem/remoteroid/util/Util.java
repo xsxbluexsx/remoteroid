@@ -176,6 +176,8 @@ public class Util {
 	public static class Screen{
 		private static final String SCALE_FACTOR_X = "scale_factor_x";
 		private static final String SCALE_FACTOR_Y = "scale_factor_y";
+		private static final String OFFSET_X = "offset_x";
+		private static final String OFFSET_Y = "offset_y";
 		
 		public static void setScalingFactor(Context context, float xScaleFactor, float yScaleFactor){
 			System.out.println("x="+xScaleFactor+" y="+yScaleFactor);
@@ -190,6 +192,19 @@ public class Util {
 			editor.commit();
 		}
 		
+		public static void setOffset(Context context, int xOffset, int yOffset){
+			System.out.println("offset x ="+xOffset+" y="+yOffset);
+			/*if(xScaleFactor-1.f < 0.01f)
+				xScaleFactor = 1.f;
+			if(yScaleFactor-1.f < 0.01f)
+				yScaleFactor = 1.f;*/
+			
+			Editor editor = getPrefEditor(context);
+			editor.putInt(OFFSET_X, xOffset);
+			editor.putInt(OFFSET_Y, yOffset);
+			editor.commit();
+		}
+		
 		public static float getXScalingFactor(Context context){
 			return getPref(context).getFloat(SCALE_FACTOR_X, 1.0f);
 		}
@@ -198,8 +213,20 @@ public class Util {
 			return getPref(context).getFloat(SCALE_FACTOR_Y, 1.0f);
 		}
 		
+		public static int getXOffset(Context context){
+			return getPref(context).getInt(OFFSET_X, 0);
+		}
+		
+		public static int getYOffset(Context context){
+			return getPref(context).getInt(OFFSET_Y, 0);
+		}
+		
 		public static void resetScalingFactor(Context context){
 			setScalingFactor(context, 1.f, 1.f);
+		}
+		
+		public static void resetOffset(Context context){
+			setOffset(context, 0, 0);
 		}
 	}
 

@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -95,8 +96,8 @@ public class TouchCalibrationActivity extends Activity{
 				mProgress.setVisibility(View.VISIBLE); // Show progress bar
 				startService(
 						new Intent(TouchCalibrationActivity.this, CalibrationService.class)
-							.putExtra("x", displayWidth/2)
-							.putExtra("y", displayHeight/2));
+							.putExtra("width", displayWidth)
+							.putExtra("height", displayHeight));
 				break;
 			case MSG_COUNT:
 				if(count>=0){
@@ -117,6 +118,10 @@ public class TouchCalibrationActivity extends Activity{
 			mTouchHandler.removeMessages(MSG_START);
 		}
 	}
+	
+	private static Point[] calPoints = new Point[3];
+	private static int touchCnt = 0;
+	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if(event.getAction()==MotionEvent.ACTION_DOWN){
@@ -127,16 +132,37 @@ public class TouchCalibrationActivity extends Activity{
 				finish();
 				return true;
 			}
-			int centerInWidth = displayWidth/2;
-			int centerInHeight = displayHeight/2;
 			
-			float receivedCenterInWidth = event.getX();
-			float receivedCenterInHeight = event.getY();
+			// Save first, second touch input (0,0), (width, 0)
+			if(touchCnt<2){
+				calPoints[touchCnt].x = (int)event.getX();
+				calPoints[touchCnt].y = (int)event.getY();
+				touchCnt++;
+				return true;
+			}
 			
-			// Save scaling factor on preferences
-			Util.Screen.setScalingFactor(getApplicationContext(), 
-					((float)centerInWidth)/receivedCenterInWidth, 
-					((float)centerInHeight)/receivedCenterInHeight);
+			// Save last touch pointer (0, height)
+			calPoints[touchCnt].x = (int)event.getX();
+			calPoints[touchCnt].y = (int)event.getY();
+			
+			// We got all pointer that needed to calibration.
+			// First, calculate actual pointer area based on pointer that we received
+			int actualWidth = calPoints[1].x - calPoints[0].x;
+			int actualHeight = calPoints[2].y - calPoints[0].y;
+			
+			// Second, calculate scaling factor for each axis
+			float xScaleFactor = displayWidth / (float)actualWidth;
+			float yScaleFactor = displayHeight / (float)actualHeight;
+			
+			// Third, calculate offset for each axis
+			int xOffset = 0 - calPoints[0].x;
+			int yOffset = 0 - calPoints[0].y;
+			
+			// We calculated all metrics which is needed for calibration.
+			// Now, store data into SharedPreferences.
+			
+			Util.Screen.setScalingFactor(getApplicationContext(), xScaleFactor, yScaleFactor);
+			Util.Screen.setOffset(getApplicationContext(), xOffset, yOffset);
 			
 			mIsCalibrating = false;
 

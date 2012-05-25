@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import org.secmem.remoteroid.R;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
 
 /**
@@ -219,8 +218,9 @@ public class CommandLine {
         copyRawResourceIntoFile(context, R.raw.remoteroid_idc, context.getFilesDir().getAbsolutePath()+"/remoteroid.idc");
        
         // Step 2. Move driver files into appropriate path
-        ArrayList<String> cmdList = new ArrayList<String>();
         
+        ArrayList<String> cmdList = new ArrayList<String>();
+        cmdList.add("mkdir /system/usr/idc"); // For devices who don' have /system/usr/idc directory
         cmdList.add("/data/data/org.secmem.remoteroid/files/busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.idc /system/usr/idc/remoteroid.idc");
        
        // if(Build.VERSION.SDK_INT < 11){
