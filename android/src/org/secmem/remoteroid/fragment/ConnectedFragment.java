@@ -36,8 +36,14 @@ public class ConnectedFragment extends Fragment {
 	private Button btnDisconnect;
 	private ImageView ivCircuitBoard;
 	
+	private ConnectionStateListener mListener;
+	
 	public ConnectedFragment(){
 		
+	}
+	
+	public ConnectedFragment(ConnectionStateListener listener){
+		mListener = listener;
 	}
 	
 	@Override
@@ -57,8 +63,7 @@ public class ConnectedFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
+				mListener.onDisconnectRequested();
 			}
 			
 		});

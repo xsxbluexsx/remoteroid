@@ -23,6 +23,16 @@ public class DriverInstallationFragment extends Fragment {
 	private Button btnConfirm;
 	private boolean installCompleted = false;
 	
+	private ConnectionStateListener mListener;
+	
+	public DriverInstallationFragment(){
+		
+	}
+	
+	public DriverInstallationFragment(ConnectionStateListener listener){
+		mListener = listener;
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -46,8 +56,7 @@ public class DriverInstallationFragment extends Fragment {
 					new InstallDriverTask().execute();
 					
 				}else{
-					// Proceed to authenticate fragment
-					getFragmentManager().beginTransaction().replace(R.id.container, new AuthenticateFragment()).commit();
+					mListener.onDriverInstalled();
 				}
 				
 			}

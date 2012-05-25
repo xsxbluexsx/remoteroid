@@ -48,8 +48,13 @@ public class AuthenticateFragment extends Fragment {
 	private boolean isIpValid=false;
 	private boolean isPwValid=false;
 	
+	private ConnectionStateListener mListener;
+	
 	public AuthenticateFragment(){
 		
+	}
+	public AuthenticateFragment(ConnectionStateListener listener){
+		this.mListener = listener;
 	}
 
 	@Override
@@ -121,7 +126,7 @@ public class AuthenticateFragment extends Fragment {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-//				Util.Connection.setAutoConnect(getActivity(), isChecked);
+				Util.Connection.setAutoConnect(getActivity(), isChecked);
 			}
 			
 		});
@@ -131,9 +136,7 @@ public class AuthenticateFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				getFragmentManager().beginTransaction().replace(R.id.container, 
-						new ConnectingFragment(mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString()))
-						.commit();
+				mListener.onConnectRequested(mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString());
 				
 			}
 		});
