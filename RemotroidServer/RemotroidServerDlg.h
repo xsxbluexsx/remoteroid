@@ -13,6 +13,7 @@
 #include "MyBitmapBtn.h"
 #include "TextProgressCtrl.h"
 #include "VitualEventPacket.h"
+#include "KeyCodeGen.h"
 
 
 // CRemotroidServerDlg dialog
@@ -48,6 +49,7 @@ private:
 	CMyClient *m_pClient;
 	CFileSender fileSender;
 	CScreen screen;
+	CKeyCodeGen keyCodeGen;
 
 public:
 	static UINT AcceptFunc(LPVOID pParam);	
@@ -102,4 +104,5 @@ public:
 	afx_msg void OnClickedBtnMenu();	
 	afx_msg void OnBnClickedButton1();
 	CTextProgressCtrl m_progressCtrl;
+	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 };

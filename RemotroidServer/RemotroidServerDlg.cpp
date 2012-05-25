@@ -1,6 +1,3 @@
-m_pClient
-drawJpg
-
 // RemotroidServerDlg.cpp : implementation file
 //
 
@@ -100,6 +97,7 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_HOME, &CRemotroidServerDlg::OnClickedBtnHome)
 	ON_BN_CLICKED(IDC_BTN_MENU, &CRemotroidServerDlg::OnClickedBtnMenu)	
 	ON_BN_CLICKED(IDC_BUTTON1, &CRemotroidServerDlg::OnBnClickedButton1)
+	ON_WM_KEYUP()
 END_MESSAGE_MAP()
 
 
@@ -320,6 +318,7 @@ UINT CRemotroidServerDlg::UDPRecvFunc(LPVOID pParam)
 		{
 			break;
 		}
+
 		int iOPCode = CUtil::GetOpCode(packet);
 		int iPacketSize = CUtil::GetPacketSize(packet);
 
@@ -352,8 +351,6 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 	char bPacket[MAXSIZE];
 	CRecvFile& recvFileClass = pDlg->recvFileClass;	
 	CTextProgressCtrl& prgressBar = pDlg->m_progressCtrl;
-
-	pClient->SendPacket(OP_REQDEVICEINFO, NULL, 0);
 	
 	while (TRUE)
 	{
@@ -598,7 +595,7 @@ void CRemotroidServerDlg::OnMouseMove(UINT nFlags, CPoint point)
 
 	if(!PtInRect(&screenRect, point) && m_isReadyRecv == FALSE)
 	{
-		PostMessage( WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM( point.x, point.y));
+		//PostMessage( WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM( point.x, point.y));
 	}
 	CImageDlg::OnMouseMove(nFlags, point);
 }
@@ -620,20 +617,34 @@ HBRUSH CRemotroidServerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 
 
-void CRemotroidServerDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+void CRemotroidServerDlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	// TODO: Add your message handler code here and/or call default
-	CString str = _T("");
-	str.Format(_T("%c"), nChar);
-	MessageBox(str);
-	CImageDlg::OnKeyDown(nChar, nRepCnt, nFlags);
+	int keyCode;
+	if( (m_pClient != NULL) && ((keyCode=keyCodeGen.GetKeyCode(nChar)) != INVALID_KEYCODE) )
+	{
+		CVitualEventPacket event(KEYUP, keyCode);
+		m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
+	}	
+}
+
+
+void CRemotroidServerDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: Add your message handler code here and/or call default	
+	int keyCode;
+	if( (m_pClient != NULL) && ((keyCode=keyCodeGen.GetKeyCode(nChar)) != INVALID_KEYCODE) )
+	{
+		CVitualEventPacket event(KEYDOWN, keyCodeGen.GetKeyCode(nChar));
+		m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);	
+	}	
 }
 
 
 BOOL CRemotroidServerDlg::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: Add your specialized code here and/or call the base class
-	if(pMsg->message == WM_CHAR)
+	if((pMsg->message == WM_KEYDOWN) || (pMsg->message == WM_KEYUP))
 	{
 		SendMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
 	}
@@ -727,6 +738,9 @@ void CRemotroidServerDlg::OnLButtonUp(UINT nFlags, CPoint point)
 void CRemotroidServerDlg::OnClickedBtnBack()
 {
 	// TODO: Add your control notification handler code here
+	if(m_pClient == NULL)
+		return;
+
 	CVitualEventPacket event(BACKBUTTON);
 	m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
 }
@@ -735,6 +749,9 @@ void CRemotroidServerDlg::OnClickedBtnBack()
 void CRemotroidServerDlg::OnClickedBtnHome()
 {
 	// TODO: Add your control notification handler code here
+	if(m_pClient == NULL)
+		return;
+
 	CVitualEventPacket event(HOMEBUTTON);
 	m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
 }
@@ -743,6 +760,9 @@ void CRemotroidServerDlg::OnClickedBtnHome()
 void CRemotroidServerDlg::OnClickedBtnMenu()
 {
 	// TODO: Add your control notification handler code here
+	if(m_pClient == NULL)
+		return;
+
 	CVitualEventPacket event(MENUBUTTON);
 	m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
 }
@@ -754,3 +774,4 @@ void CRemotroidServerDlg::OnBnClickedButton1()
 	// TODO: Add your control notification handler code here
 	
 }
+

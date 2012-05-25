@@ -120,6 +120,8 @@
     <ClInclude Include="DrawJpg.h" />
     <ClInclude Include="FileSender.h" />
     <ClInclude Include="ImageDlg.h" />
+    <ClInclude Include="input.h" />
+    <ClInclude Include="KeyCodeGen.h" />
     <ClInclude Include="MyBitmapBtn.h" />
     <ClInclude Include="MyClient.h" />
     <ClInclude Include="packetdefine.h" />
@@ -138,6 +140,7 @@
     <ClCompile Include="DrawJpg.cpp" />
     <ClCompile Include="FileSender.cpp" />
     <ClCompile Include="ImageDlg.cpp" />
+    <ClCompile Include="KeyCodeGen.cpp" />
     <ClCompile Include="MyBitmapBtn.cpp" />
     <ClCompile Include="MyClient.cpp" />
     <ClCompile Include="RecvFile.cpp" />

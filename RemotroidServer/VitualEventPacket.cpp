@@ -59,7 +59,7 @@ char* CVitualEventPacket::KeyDownUp()
 	wsprintfA(bKeyCode, "%4d", m_keyCode);
 
 	memcpy(buffer, bEventCode, EVENTCODE_SIZE);
-	memcpy(buffer, bKeyCode, KEYCODE_SIZE);	
+	memcpy(buffer+EVENTCODE_SIZE, bKeyCode, KEYCODE_SIZE);	
 
 // 	memcpy(buffer, &m_EventCode, sizeof(m_EventCode));
 // 	memcpy(buffer+EVENTCODE_SIZE, &m_keyCode, sizeof(m_keyCode));
