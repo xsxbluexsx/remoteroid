@@ -200,17 +200,6 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 			}
 		}
 		
-		Thread mThread = new Thread(){
-
-			@Override
-			public void run() {
-				while(flag){
-				}
-			}
-		};
-		mThread.setDaemon(true);
-		mThread.start();
-		
 		return super.onStartCommand(intent, flags, startId);
 	}
 

@@ -96,6 +96,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	public static ExplorerAdapter adapter;
 	
 	private boolean isTimer=false;
+	private boolean isBound=false;
 	
 	private ProgressDialog mProgress;
 	private IRemoteroid mRemoteroid;
@@ -350,8 +351,15 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		
 		@Override
 		public void onLongclick() {
-				if(fileInfo.size()!=0){
+				if(fileInfo.size()!=0 && !isBound){
 					bindService(new Intent(ExplorerActivity.this, RemoteroidService.class), conn, Context.BIND_AUTO_CREATE);
+					isBound=true;
+				}
+				else if(isBound){
+					try {
+						mRemoteroid.onSendFile(fileInfo);
+					} catch (RemoteException e) {
+					}
 				}
 		}
 	};
