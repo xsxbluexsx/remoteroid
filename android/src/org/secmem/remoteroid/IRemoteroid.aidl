@@ -1,4 +1,5 @@
 package org.secmem.remoteroid;
+import java.util.List;
 
 interface IRemoteroid{
 	String getConnectionStatus();
@@ -8,4 +9,5 @@ interface IRemoteroid{
 	void onReceiveCall(String displayedName, String number, long when);
 	void onReceiveSMS(String displayedName, String number, String body, long when);
 	void onSMSSent(String displayedName, String phoneNumber, long when);
+	void onSendFile(in List<String> pathlist);
 }
