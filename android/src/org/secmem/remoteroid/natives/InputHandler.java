@@ -153,12 +153,9 @@ public class InputHandler {
 	 * @param y y coordinate that user has touched
 	 */
 	public void touchSetPointer(int x, int y){
-		System.out.println("Raw event: x="+x+", y="+y);
 		// Calculate calibrated coordinates
-		int calX = (int)(x+xOffset+x*xScaleFactor);
-		int calY = (int)(y+yOffset+y*yScaleFactor);
-		
-		System.out.println("Calibrated : x="+calX+", y="+calY);
+		int calX = (int)((x + xOffset)*xScaleFactor);
+		int calY = (int)((y + yOffset)*yScaleFactor);
 		touchSetPtr(calX, calY);
 	}
 	
