@@ -341,7 +341,6 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	private OnPathChangedListener onPathChanged = new OnPathChangedListener() {
 		public void onChanged(String path) {
 			pathTv.setText(path);
-			Log.i("qq","path = "+path);
 			
 		}
 	};

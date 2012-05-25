@@ -15,13 +15,9 @@ public class CommunicateInfo{
 		String result="";
 		
 		if(ExplorerActivity.dataList==null || ExplorerActivity.dataList.getPath()==null || ExplorerActivity.dataList.getPath().equals("") || ExplorerActivity.adapter.getType()== ExplorerActivity.ADAPTER_TYPE_CATEGORY){
-			Log.i("asd","null path = "+Environment.getExternalStorageDirectory().getAbsolutePath()+"/Remoteroid/");
 			return Environment.getExternalStorageDirectory().getAbsolutePath()+"/Remoteroid/";
 		}
-		
-		
 		result = ExplorerActivity.dataList.getPath();
-		Log.i("asd","result = "+result);
 		return result;
 	}
 

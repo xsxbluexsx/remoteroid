@@ -73,7 +73,6 @@ public class FrameBufferService extends Service {
 				
 				while(flag){
 					ByteArrayOutputStream frameStream = fHandler.getFrameStream();
-					
 					// sendScreen(frameStream);
 				}
 				
