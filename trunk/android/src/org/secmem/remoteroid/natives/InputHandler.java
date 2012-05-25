@@ -36,8 +36,8 @@ public class InputHandler {
 	
 	private float xScaleFactor;
 	private float yScaleFactor;
-	
-	private boolean isScaleEnabled = false;
+	private int xOffset;
+	private int yOffset;
 	
 	public InputHandler(Context context){
 		this.context = context;
@@ -45,10 +45,9 @@ public class InputHandler {
 		xScaleFactor = Util.Screen.getXScalingFactor(context);
 		yScaleFactor = Util.Screen.getYScalingFactor(context);
 		
-		if(xScaleFactor==1.f && yScaleFactor==1.f)
-			isScaleEnabled = false;
-		else
-			isScaleEnabled = true;
+		xOffset = Util.Screen.getXOffset(context);
+		yOffset = Util.Screen.getYOffset(context);
+
 	}
 	
 	public boolean isDeviceOpened(){
@@ -155,10 +154,12 @@ public class InputHandler {
 	 */
 	public void touchSetPointer(int x, int y){
 		System.out.println("Raw event: x="+x+", y="+y);
-		if(isScaleEnabled)
-			touchSetPtr((int)((float)x*xScaleFactor),(int)((float)y*yScaleFactor));
-		else
-			touchSetPtr(x, y);
+		// Calculate calibrated coordinates
+		int calX = (int)(x+xOffset+x*xScaleFactor);
+		int calY = (int)(y+yOffset+y*yScaleFactor);
+		
+		System.out.println("Calibrated : x="+calX+", y="+calY);
+		touchSetPtr(calX, calY);
 	}
 	
 	
