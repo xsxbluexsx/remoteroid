@@ -154,6 +154,7 @@ public class InputHandler {
 	 * @param y y coordinate that user has touched
 	 */
 	public void touchSetPointer(int x, int y){
+		System.out.println("Raw event: x="+x+", y="+y);
 		if(isScaleEnabled)
 			touchSetPtr((int)((float)x*xScaleFactor),(int)((float)y*yScaleFactor));
 		else

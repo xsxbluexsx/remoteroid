@@ -39,6 +39,7 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.telephony.SmsManager;
+import android.util.*;
 
 
 /**
@@ -98,6 +99,9 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 				// Start connection and receive events from server
 				mTransmitter.connect(ipAddress);
 				
+				//Send devices resolution to host for coordinate transformation;
+				mTransmitter.sendDeviceInfo(getApplicationContext().getResources().getDisplayMetrics());
+				
 				// Open input device
 				mInputHandler.open();
 				
@@ -134,7 +138,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		super.onCreate();
 		mTransmitter = new Tranceiver();
 		mTransmitter.setFileTransmissionListener(this);
-		mTransmitter.setVirtualEventListener(this);
+		mTransmitter.setVirtualEventListener(this);		
 		
 		mInputHandler = new InputHandler(this);
 	}
@@ -196,6 +200,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	public void onTouchDown() {
 		if(mInputHandler.isDeviceOpened())
 			mInputHandler.touchDown();		
+		
 	}
 
 
