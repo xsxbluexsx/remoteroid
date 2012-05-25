@@ -104,20 +104,15 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mRemoteroid = IRemoteroid.Stub.asInterface(service);
-			try{
-				ServiceState status = ServiceState.valueOf(mRemoteroid.getConnectionStatus());
-				switch(status){
-				case IDLE:
-					break;
-					
-				case CONNECTING:
-					break;
-					
-				case CONNECTED:
-						mRemoteroid.onSendFile(fileInfo);
-					break;
+			try {
+				if(mRemoteroid.isTransmitterConnected()){
+					Log.i("qq","Connection True");
+					mRemoteroid.onSendFile(fileInfo);
 				}
-			}catch(RemoteException e){
+				else{
+					Log.i("qq","Connection False");
+				}
+			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		}
