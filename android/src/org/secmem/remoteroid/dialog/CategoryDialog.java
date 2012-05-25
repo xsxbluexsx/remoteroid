@@ -89,7 +89,6 @@ public class CategoryDialog extends Activity implements OnClickListener, OnItemC
 	
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Log.i("qq","position = "+position);
 		String result = adapter.getItem(position);
 		
 		Intent intent = new Intent();
