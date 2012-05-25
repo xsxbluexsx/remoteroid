@@ -178,10 +178,11 @@ public class Util {
 		private static final String SCALE_FACTOR_Y = "scale_factor_y";
 		
 		public static void setScalingFactor(Context context, float xScaleFactor, float yScaleFactor){
-			if(xScaleFactor-1.f < 0.01f)
+			System.out.println("x="+xScaleFactor+" y="+yScaleFactor);
+			/*if(xScaleFactor-1.f < 0.01f)
 				xScaleFactor = 1.f;
 			if(yScaleFactor-1.f < 0.01f)
-				yScaleFactor = 1.f;
+				yScaleFactor = 1.f;*/
 			
 			Editor editor = getPrefEditor(context);
 			editor.putFloat(SCALE_FACTOR_X, xScaleFactor);

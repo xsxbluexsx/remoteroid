@@ -11,8 +11,11 @@ import java.util.ArrayList;
 import org.secmem.remoteroid.data.NativeKeyCode;
 import org.secmem.remoteroid.network.PacketHeader.OpCode;
 
+import android.util.*;
+
 public class Tranceiver implements PacketListener{
 	private static final int PORT = 50000;
+	private static final int UDP_PORT = 50001;
 	
 	private Socket socket;
 	private OutputStream sendStream;
@@ -23,7 +26,8 @@ public class Tranceiver implements PacketListener{
 
 	// Event listeners
 	private FileTransmissionListener mFileTransListener;
-	private VirtualEventListener mVirtEventListener;
+	private VirtualEventListener mVirtEventListener;	
+	 
 	
 	public Tranceiver(){		
 	}
@@ -65,6 +69,8 @@ public class Tranceiver implements PacketListener{
 		packetReceiver = new PacketReceiver(recvStream);
 		packetReceiver.setPacketListener(this);
 		packetReceiver.start();
+		
+		
 	}
 	
 	/**
@@ -94,10 +100,10 @@ public class Tranceiver implements PacketListener{
 	}
 	
 	
-	//width, heigth resolutuin send to host 
-	private void sendDeviceInfo(){
+	//width, heigth resolution send to host 
+	public void sendDeviceInfo(DisplayMetrics dm){
 		try{
-			fileTransReceiver.send(new DeviceInfoPacket(480, 800));
+			fileTransReceiver.send(new DeviceInfoPacket(dm));
 		}catch(IOException e){
 			e.printStackTrace();
 		}
@@ -124,10 +130,7 @@ public class Tranceiver implements PacketListener{
 			break;
 		case OpCode.EVENT_RECEIVED:
 			parseVirtualEventPacket(packet);
-			break;
-		case OpCode.DEVICEINFO_REQUESTED:
-			sendDeviceInfo();
-			break;
+			break;	
 		}
 	}
 		

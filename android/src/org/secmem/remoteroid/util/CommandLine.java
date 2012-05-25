@@ -207,11 +207,11 @@ public class CommandLine {
         execAsRoot("chmod 700 /data/data/org.secmem.remoteroid/files/busybox");
         
         // Mount /system as r/w
-        if(Build.VERSION.SDK_INT < 11){
+       // if(Build.VERSION.SDK_INT < 11){
         	execAsRoot("mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system");
-        }else{
+        ///}else{
         	execAsRoot("mount -orw,remount /system");
-        }
+        //}
         
         
         // Step 1. Extract driver files from resources
@@ -223,11 +223,11 @@ public class CommandLine {
         
         cmdList.add("/data/data/org.secmem.remoteroid/files/busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.idc /system/usr/idc/remoteroid.idc");
        
-        if(Build.VERSION.SDK_INT < 11){
+       // if(Build.VERSION.SDK_INT < 11){
         	cmdList.add("mount -o ro,remount -t yaffs2 /dev/block/mtdblock3 /system");
-        }else{
+       // }else{
         	cmdList.add("mount -oro,remount /system");
-        }
+        //}
          // Mount /system as r/o
         execAsRoot(cmdList);
 	}
