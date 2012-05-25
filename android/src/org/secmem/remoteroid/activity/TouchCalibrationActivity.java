@@ -72,6 +72,10 @@ public class TouchCalibrationActivity extends Activity{
 	@Override
 	protected void onStop() {
 		super.onStop();
+		if(count>=0){
+			mTouchHandler.removeMessages(MSG_COUNT);
+			mTouchHandler.removeMessages(MSG_START);
+		}
 		unregisterReceiver(DeviceReceiver);
 	}
 
@@ -96,7 +100,7 @@ public class TouchCalibrationActivity extends Activity{
 				break;
 			case MSG_COUNT:
 				if(count>=0){
-					mTvMessage.setText(String.format(getString(R.string.calibration_starts_in_s_seconds), count--));
+					mTvMessage.setText(String.format(getResources().getQuantityString(R.plurals.calibration_starts_in_s_seconds, count), count--));
 					mTouchHandler.sendEmptyMessageDelayed(MSG_COUNT, 1000);
 				}else
 					mTouchHandler.sendEmptyMessage(MSG_START);
@@ -117,6 +121,12 @@ public class TouchCalibrationActivity extends Activity{
 	public boolean onTouchEvent(MotionEvent event) {
 		if(event.getAction()==MotionEvent.ACTION_DOWN){
 			
+			if(count>=0){
+				// Calibration cancelled
+				Toast.makeText(getApplicationContext(), R.string.calibration_failed, Toast.LENGTH_SHORT).show();
+				finish();
+				return true;
+			}
 			int centerInWidth = displayWidth/2;
 			int centerInHeight = displayHeight/2;
 			

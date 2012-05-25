@@ -1,11 +1,13 @@
 package org.secmem.remoteroid.util;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import org.secmem.remoteroid.R;
@@ -34,13 +36,14 @@ public class CommandLine {
 	      
 	      DataOutputStream outStream = new DataOutputStream(suProcess.getOutputStream());
 	      DataInputStream inStream = new DataInputStream(suProcess.getInputStream());
+	      BufferedReader inReader = new BufferedReader(new InputStreamReader(inStream));
 	      
 	      if (null != outStream && null != inStream){
 	        // Getting the id of the current user to check if this is root
 	        outStream.writeBytes("id\n");
 	        outStream.flush();
 
-	        String currUid = inStream.readLine();
+	        String currUid = inReader.readLine();
 	        boolean exitSu = false;
 	        
 	        if (currUid==null){
@@ -187,24 +190,6 @@ public class CommandLine {
                 file = new File("/system/usr/idc/remoteroid.idc");
                 if(!file.exists())
                         return false;
-                /*
-                if(Build.VERSION.SDK_INT < 11){
-	                // Check kcm.bin
-	                file = new File("/system/usr/keychars/remoteroid.kcm.bin");
-	                if(!file.exists())
-	                        return false;
-                }else{
-	                // Check kcm
-	                file = new File("/system/usr/keychars/remoteroid.kcm");
-	                if(!file.exists())
-	                        return false;
-                }
-                
-                // Check KeyLayout
-                file = new File("/system/usr/keylayout/remoteroid.kl");
-                if(!file.exists())
-                        return false;*/
-                
         }catch(Exception e){
                 return false;
         }
@@ -215,10 +200,6 @@ public class CommandLine {
         
         if(!isRootAccessAvailable())
                 throw new SecurityException();
-        
-        // Step 0. Install and configure Busybox
-        // See here : http://benno.id.au/blog/2007/11/14/android-busybox
-        
         // Extract busybox from resources
         copyRawResourceIntoFile(context, R.raw.busybox, context.getFilesDir().getAbsolutePath()+"/busybox");
         
@@ -236,25 +217,12 @@ public class CommandLine {
         // Step 1. Extract driver files from resources
         // Copy IDC(Input Device Configuration)
         copyRawResourceIntoFile(context, R.raw.remoteroid_idc, context.getFilesDir().getAbsolutePath()+"/remoteroid.idc");
-        /*
-        if(Build.VERSION.SDK_INT < 11){
-        	// Copy kcm.bin
-        	copyRawResourceIntoFile(context, R.raw.remoteroid_kb, context.getFilesDir().getAbsolutePath()+"/remoteroid.kcm.bin");
-        }else{
-        	// Copy kcm (new standard since honeycomb)
-        	copyRawResourceIntoFile(context, R.raw.remoteroid_kcm, context.getFilesDir().getAbsolutePath()+"/remoteroid.kcm");
-        }
-        // Copy KeyLayout
-        copyRawResourceIntoFile(context, R.raw.remoteroid_kl, context.getFilesDir().getAbsolutePath()+"/remoteroid.kl");
-*/
+       
         // Step 2. Move driver files into appropriate path
         ArrayList<String> cmdList = new ArrayList<String>();
         
         cmdList.add("/data/data/org.secmem.remoteroid/files/busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.idc /system/usr/idc/remoteroid.idc");
-        //cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.kcm.bin /system/usr/keychars/remoteroid.kcm.bin");
-        //cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.kcm /system/usr/keychars/remoteroid.kcm");
-        //cmdList.add("/data/data/org.secmem.remoteroid/files/busybox busybox cp /data/data/org.secmem.remoteroid/files/remoteroid.kl /system/usr/keylayout/remoteroid.kl");
-        
+       
         if(Build.VERSION.SDK_INT < 11){
         	cmdList.add("mount -o ro,remount -t yaffs2 /dev/block/mtdblock3 /system");
         }else{

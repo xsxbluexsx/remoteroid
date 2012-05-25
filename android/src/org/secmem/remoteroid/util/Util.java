@@ -25,8 +25,6 @@ import org.secmem.remoteroid.service.RemoteroidService;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -47,7 +45,6 @@ public class Util {
 		 * @see org.secmem.remoteroid.service.NotificationReceiverService NotificationReceiverService
 		 */
 		private static final String ACC_SERVICE_NAME = "org.secmem.remoteroid/org.secmem.remoteroid.service.NotificationReceiverService";
-		private static final ComponentName DEVICE_ADMIN_NAME = ComponentName.unflattenFromString("org.secmem.remoteroid/org.secmem.remoteroid.receiver.RemoteroidDeviceAdminReceiver");
 		
 		/**
 		 * Determine whether Notification receiver service enabled or not.
@@ -68,28 +65,12 @@ public class Util {
 			return false;
 		}
 		
-		public static boolean isDeviceAdminEnabled(Context context){
-			DevicePolicyManager mDpm = (DevicePolicyManager)context.getSystemService(Context.DEVICE_POLICY_SERVICE);
-			return mDpm.isAdminActive(DEVICE_ADMIN_NAME);
-			/*
-				context.startActivity(new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
-					.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "This permision will be used to lock your phone from your computer.")
-					.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, DEVICE_ADMIN_NAME));
-			}*/
-		}
-		
 		/**
 		 * Launch Accessibility settings activity.
 		 * @param context Application or Activity's context
 		 */
 		public static void launchAccessibilitySettings(Context context){
 			context.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-		}
-		
-		public static void launchDeviceAdminAccessRequest(Context context){
-			context.startActivity(new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
-			.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "This permision will be used to lock your phone from your computer.")
-			.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, DEVICE_ADMIN_NAME));
 		}
 		
 		/**

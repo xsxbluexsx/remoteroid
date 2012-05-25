@@ -39,4 +39,12 @@
         android1:layout_centerHorizontal="true"
         android1:layout_centerVertical="true" android1:visibility="gone"/>
 
+    <TextView
+        android1:layout_width="wrap_content"
+        android1:layout_height="wrap_content"
+        android1:layout_alignParentBottom="true"
+        android1:layout_centerHorizontal="true"
+        android1:text="@string/do_not_touch_screen_while_calibration_is_in_progress"
+        android1:textAppearance="?android:attr/textAppearanceMedium" android1:gravity="center" android1:padding="10dp"/>
+
 </RelativeLayout>
