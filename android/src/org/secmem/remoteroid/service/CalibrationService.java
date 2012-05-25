@@ -38,7 +38,7 @@ public class CalibrationService extends Service {
 		// Send sequence of calibration message.
 		mTouchHandler.sendMessage(Message.obtain(mTouchHandler, 0, 0, 0));
 		mTouchHandler.sendMessageDelayed(Message.obtain(mTouchHandler, 0, width, 0), 1000);
-		mTouchHandler.sendMessageDelayed(Message.obtain(mTouchHandler, 1, 0, height), 2000);
+		mTouchHandler.sendMessageDelayed(Message.obtain(mTouchHandler, MSG_FINAL, 0, height), 2000);
 		
 		return super.onStartCommand(intent, flags, startId);
 	}
@@ -49,8 +49,6 @@ public class CalibrationService extends Service {
 
 		@Override
 		public void handleMessage(Message msg) {
-			System.out.println("sending event, x="+msg.arg1+", y="+msg.arg2);
-			
 			mHandler.touchOnce(msg.arg1, msg.arg2);
 			
 			if(msg.what==MSG_FINAL){
