@@ -140,7 +140,6 @@ public class TouchCalibrationActivity extends Activity{
 			if(touchCnt<2){
 				calPoints[touchCnt].x = (int)event.getX();
 				calPoints[touchCnt].y = (int)event.getY();
-				System.out.println(calPoints[touchCnt].toString());
 				touchCnt++;
 				return true;
 			}
@@ -163,7 +162,6 @@ public class TouchCalibrationActivity extends Activity{
 			
 			// We calculated all metrics which is needed for calibration.
 			// Now, store data into SharedPreferences.
-			
 			Util.Screen.setScalingFactor(getApplicationContext(), xScaleFactor, yScaleFactor);
 			Util.Screen.setOffset(getApplicationContext(), xOffset, yOffset);
 			

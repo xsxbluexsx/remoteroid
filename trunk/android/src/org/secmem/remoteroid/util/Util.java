@@ -180,12 +180,6 @@ public class Util {
 		private static final String OFFSET_Y = "offset_y";
 		
 		public static void setScalingFactor(Context context, float xScaleFactor, float yScaleFactor){
-			System.out.println("x="+xScaleFactor+" y="+yScaleFactor);
-			/*if(xScaleFactor-1.f < 0.01f)
-				xScaleFactor = 1.f;
-			if(yScaleFactor-1.f < 0.01f)
-				yScaleFactor = 1.f;*/
-			
 			Editor editor = getPrefEditor(context);
 			editor.putFloat(SCALE_FACTOR_X, xScaleFactor);
 			editor.putFloat(SCALE_FACTOR_Y, yScaleFactor);
@@ -193,12 +187,6 @@ public class Util {
 		}
 		
 		public static void setOffset(Context context, int xOffset, int yOffset){
-			System.out.println("offset x ="+xOffset+" y="+yOffset);
-			/*if(xScaleFactor-1.f < 0.01f)
-				xScaleFactor = 1.f;
-			if(yScaleFactor-1.f < 0.01f)
-				yScaleFactor = 1.f;*/
-			
 			Editor editor = getPrefEditor(context);
 			editor.putInt(OFFSET_X, xOffset);
 			editor.putInt(OFFSET_Y, yOffset);

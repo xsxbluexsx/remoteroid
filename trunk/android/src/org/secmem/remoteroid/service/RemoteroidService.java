@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.secmem.remoteroid.IRemoteroid;
+import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.activity.Main;
 import org.secmem.remoteroid.data.RDSmsMessage;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
 import org.secmem.remoteroid.natives.InputHandler;
@@ -33,13 +35,18 @@ import org.secmem.remoteroid.network.Tranceiver;
 import org.secmem.remoteroid.network.VirtualEventListener;
 import org.secmem.remoteroid.receiver.SmsReceiver;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.telephony.PhoneStateListener;
 import android.telephony.SmsManager;
+import android.telephony.TelephonyManager;
 
 
 /**
@@ -102,18 +109,32 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 				// Open input device
 				mInputHandler.open();
 				
+				// Listen incoming calls
+				TelephonyManager telManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+				telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_CALL_STATE);
+				
 				// TODO Start fetch frame buffer and send it to server
 				
 				sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTED).putExtra("ip", ipAddress));
+				
+				showConnectionNotification(ipAddress);
+				
 				mState = ServiceState.CONNECTED;
 			} catch (IOException e) {
 				e.printStackTrace();
 				sendBroadcast(new Intent(RemoteroidIntent.ACTION_INTERRUPTED));
+				dismissNotification();
+				mState = ServiceState.IDLE;
 			}
 		}
 
 		@Override
 		public void disconnect() throws RemoteException {
+			TelephonyManager telManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+			telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_NONE);
+			
+			dismissNotification();
+			
 			mInputHandler.close();
 			mTransmitter.disconnect();
 			mState = ServiceState.IDLE;
@@ -147,6 +168,18 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		mTransmitter.setVirtualEventListener(this);
 		mInputHandler = new InputHandler(this);
 	}
+	
+	private PhoneStateListener mPhoneListener = new PhoneStateListener(){
+
+		@Override
+		public void onCallStateChanged(int state, String incomingNumber) {
+			if(state==TelephonyManager.CALL_STATE_RINGING){
+				// TODO Call received
+				
+			}
+		}
+		
+	};
 
 
 	@Override
@@ -166,8 +199,8 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 
 	@Override
 	public void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
+		
 	}
 
 
@@ -175,6 +208,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	 * Place a phone call.
 	 * @param phoneNumber a Phone number
 	 */
+	@SuppressWarnings("unused")
 	private void callPhone(String phoneNumber){
 		startActivity(new Intent(Intent.ACTION_CALL).setData(Uri.parse("tel:"+phoneNumber)));
 	}
@@ -184,12 +218,34 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	 * @param phoneNumber a Phone number
 	 * @param body SMS body text
 	 */
+	@SuppressWarnings("unused")
 	private void sendSMS(String phoneNumber, String body){
 		if(!phoneNumber.matches("^\\d+$"))
 			throw new NumberFormatException("Invalid phone number format.");
 		SmsManager mng = SmsManager.getDefault();
 		PendingIntent sentIntent = PendingIntent.getBroadcast(this, 0, new Intent(RemoteroidIntent.ACTION_SMS_SENT), 0);
 		mng.sendTextMessage(phoneNumber, null, body, sentIntent, null);
+	}
+	
+	private static final int NOTIFICATION_ID = 2012;
+	
+	@SuppressWarnings("deprecation")
+	private void showConnectionNotification(String ipAddress){
+		Notification notification = new Notification();
+		PendingIntent intent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(this, Main.class), 0);
+		notification.icon = R.drawable.ic_launcher;
+		notification.tickerText = String.format("Connected to %s", ipAddress);
+		notification.when = System.currentTimeMillis();
+		notification.setLatestEventInfo(getApplicationContext(), "Remoteroid", String.format("Connected to %s", ipAddress), intent);
+		
+		notification.flags |= Notification.FLAG_ONGOING_EVENT;
+		NotificationManager notifManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+		notifManager.notify(NOTIFICATION_ID, notification);
+	}
+	
+	private void dismissNotification(){
+		NotificationManager notifManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+		notifManager.cancel(NOTIFICATION_ID);
 	}
 
 
