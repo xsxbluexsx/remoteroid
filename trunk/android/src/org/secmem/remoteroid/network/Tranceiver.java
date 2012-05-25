@@ -13,7 +13,7 @@ import org.secmem.remoteroid.network.PacketHeader.OpCode;
 
 import android.util.*;
 
-public class Tranceiver implements PacketListener{
+public class Tranceiver  implements PacketListener{
 	private static final int PORT = 50000;
 	private static final int UDP_PORT = 50001;
 	
@@ -26,8 +26,7 @@ public class Tranceiver implements PacketListener{
 
 	// Event listeners
 	private FileTransmissionListener mFileTransListener;
-	private VirtualEventListener mVirtEventListener;	
-	 
+	private VirtualEventListener mVirtEventListener;
 	
 	public Tranceiver(){		
 	}
@@ -69,8 +68,6 @@ public class Tranceiver implements PacketListener{
 		packetReceiver = new PacketReceiver(recvStream);
 		packetReceiver.setPacketListener(this);
 		packetReceiver.start();
-		
-		
 	}
 	
 	/**

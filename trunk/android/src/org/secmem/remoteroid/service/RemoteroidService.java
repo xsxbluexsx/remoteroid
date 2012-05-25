@@ -144,7 +144,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 
 		@Override
 		public void onSendFile(List<String> pathlist) throws RemoteException {
-			ArrayList<File> fileList = getsetFileList(pathlist);
+			ArrayList<File> fileList = getFileList(pathlist);
 			mTransmitter.sendFile(fileList);
 		}
 
@@ -325,7 +325,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		
 	}
 	
-	private ArrayList<File> getsetFileList(List<String> pathlist) {
+	private ArrayList<File> getFileList(List<String> pathlist) {
 		ArrayList<File> result = new ArrayList<File>();
 		for(int i = 0 ; i<pathlist.size() ; i++){
 			result.add(new File(pathlist.get(i)));
