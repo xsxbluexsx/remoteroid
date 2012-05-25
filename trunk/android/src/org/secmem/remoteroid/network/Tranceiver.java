@@ -93,6 +93,18 @@ public class Tranceiver  implements PacketListener{
 			fileTransReceiver.sendFileList(fileList);
 		}catch(IOException e){
 			e.printStackTrace();
+			onInterrupt();
+		}
+	}
+	
+	//Send notification to Host
+	public void sendNotification(String str){
+		try{
+			fileTransReceiver.send(
+					new Packet(PacketHeader.OpCode.NOTIFICATION_SEND, str.getBytes(), str.getBytes().length));
+		}catch(IOException e){
+			e.printStackTrace();
+			onInterrupt();
 		}
 	}
 	
@@ -103,6 +115,7 @@ public class Tranceiver  implements PacketListener{
 			fileTransReceiver.send(new DeviceInfoPacket(dm));
 		}catch(IOException e){
 			e.printStackTrace();
+			onInterrupt();
 		}
 	}
 
@@ -125,7 +138,7 @@ public class Tranceiver  implements PacketListener{
 		case OpCode.FILEINFO_REQUESTED:
 			fileTransReceiver.sendFileInfo();
 			break;
-		case OpCode.EVENT_RECEIVED:
+		case OpCode.EVENT_RECEIVED:			
 			parseVirtualEventPacket(packet);
 			break;	
 		}
