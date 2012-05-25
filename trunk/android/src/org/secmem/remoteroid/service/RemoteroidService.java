@@ -22,6 +22,7 @@ package org.secmem.remoteroid.service;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.secmem.remoteroid.IRemoteroid;
 import org.secmem.remoteroid.data.RDSmsMessage;
@@ -39,7 +40,6 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.telephony.SmsManager;
-import android.util.*;
 
 
 /**
@@ -99,9 +99,6 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 				// Start connection and receive events from server
 				mTransmitter.connect(ipAddress);
 				
-				//Send devices resolution to host for coordinate transformation;
-				mTransmitter.sendDeviceInfo(getApplicationContext().getResources().getDisplayMetrics());
-				
 				// Open input device
 				mInputHandler.open();
 				
@@ -122,6 +119,15 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 			mState = ServiceState.IDLE;
 			sendBroadcast(new Intent(RemoteroidIntent.ACTION_DISCONNECTED));
 		}
+
+
+		@Override
+		public void onSendFile(List<String> pathlist) throws RemoteException {
+			ArrayList<File> fileList = getsetFileList(pathlist);
+			mTransmitter.sendFile(fileList);
+		}
+
+
 	};
 
 	@Override
@@ -138,8 +144,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		super.onCreate();
 		mTransmitter = new Tranceiver();
 		mTransmitter.setFileTransmissionListener(this);
-		mTransmitter.setVirtualEventListener(this);		
-		
+		mTransmitter.setVirtualEventListener(this);
 		mInputHandler = new InputHandler(this);
 	}
 
@@ -200,7 +205,6 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	public void onTouchDown() {
 		if(mInputHandler.isDeviceOpened())
 			mInputHandler.touchDown();		
-		
 	}
 
 
@@ -213,8 +217,8 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 
 	@Override
 	public void onKeyDown(int keyCode) {
-		if(mInputHandler.isDeviceOpened())			
-			mInputHandler.keyDown(keyCode);				
+		if(mInputHandler.isDeviceOpened())
+			mInputHandler.keyDown(keyCode);
 	}
 
 
@@ -264,10 +268,16 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		// TODO Auto-generated method stub
 		
 	}
-
-
 	
-
-
+	private ArrayList<File> getsetFileList(List<String> pathlist) {
+		ArrayList<File> result = new ArrayList<File>();
+		for(int i = 0 ; i<pathlist.size() ; i++){
+			result.add(new File(pathlist.get(i)));
+		}
+		
+		return result;
+	}
+	
+		
 
 }

@@ -30,6 +30,7 @@ import org.secmem.remoteroid.data.CategoryList;
 import org.secmem.remoteroid.data.CommunicateInfo;
 import org.secmem.remoteroid.data.ExplorerType;
 import org.secmem.remoteroid.data.FileList;
+import org.secmem.remoteroid.expinterface.OnFileLongClickListener;
 import org.secmem.remoteroid.network.*;
 import org.secmem.remoteroid.util.HongUtil;
 
@@ -56,6 +57,9 @@ import android.widget.TextView;
 public class ExplorerAdapter extends BaseAdapter{
 	
 	private static int threadCount=0;
+	private static final BitmapFactory.Options sBitmapOptionsCache = new BitmapFactory.Options();
+    private static final Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
+	
 	private Context context;
 	private int layout;
 	private int type;
@@ -65,15 +69,14 @@ public class ExplorerAdapter extends BaseAdapter{
 	private DataList dataList;
 	private ArrayList<CategoryList> categoryList = new ArrayList<CategoryList>();
 	
-	private static final BitmapFactory.Options sBitmapOptionsCache = new BitmapFactory.Options();
-    private static final Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
+	private OnFileLongClickListener onFileLongClick=null;
 	
-	public ExplorerAdapter(Context context, int layout, DataList dataList, int type) {
+	public ExplorerAdapter(Context context, int layout, DataList dataList, int type, OnFileLongClickListener onFileLongClick) {
 		this.context = context;
 		this.layout = layout;
 		this.dataList = dataList;
 		this.type = type;
-		
+		this.onFileLongClick = onFileLongClick;
 	}
 
 	@Override
@@ -289,9 +292,7 @@ public class ExplorerAdapter extends BaseAdapter{
 			@Override
 			public boolean onLongClick(View v) {
 				if(ExplorerActivity.fileInfo.size()!=0){
-					//Transmitter.getInstance().sendFile(CommunicateInfo.getSelectFileList());
-					// TODO transferring file should be handled on RemoteroidService.
-					// Bind to RemoteroidService and communicate with service using AIDL.
+					onFileLongClick.onLongclick();
 				}
 				
 				
@@ -325,7 +326,7 @@ public class ExplorerAdapter extends BaseAdapter{
 							
 							else{
 								fl.setFileSelected(true);
-								ExplorerActivity.fileInfo.add(f);
+								ExplorerActivity.fileInfo.add(f.getAbsolutePath());
 								holder.titleHolder.setTextColor(Color.GREEN);
 							}
 						}
@@ -342,12 +343,11 @@ public class ExplorerAdapter extends BaseAdapter{
 					}
 					else{
 						category.setFileSelected(true);
-						ExplorerActivity.fileInfo.add(f);
+						ExplorerActivity.fileInfo.add(f.getAbsolutePath());
 						holder.titleHolder.setTextColor(Color.GREEN);
 					}
 				}
 				printFileInfo();
-				CommunicateInfo.getSelectFileList();
 			}
 		});
 		
@@ -356,7 +356,7 @@ public class ExplorerAdapter extends BaseAdapter{
 	
 	private void printFileInfo() {
 		for (int i = 0; i < ExplorerActivity.fileInfo.size(); i++) {
-			Log.i("fileinfo",i + "= "+ExplorerActivity.fileInfo.get(i).getAbsolutePath());
+			Log.i("fileinfo",i + "= "+ExplorerActivity.fileInfo.get(i));
 		}
 	}
 	
@@ -588,7 +588,7 @@ public class ExplorerAdapter extends BaseAdapter{
 	private int getFilePos(File f){
 		int result=0;
 		for(int i = 0 ; i < ExplorerActivity.fileInfo.size() ; i++){
-			if(ExplorerActivity.fileInfo.get(i).getAbsolutePath().equals(f.getAbsolutePath())){
+			if(ExplorerActivity.fileInfo.get(i).equals(f.getAbsolutePath())){
 				return i;
 			}
 		}

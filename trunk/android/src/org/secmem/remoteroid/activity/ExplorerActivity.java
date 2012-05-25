@@ -21,25 +21,34 @@ package org.secmem.remoteroid.activity;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.secmem.remoteroid.IRemoteroid;
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.adapter.DataList;
 import org.secmem.remoteroid.adapter.ExplorerAdapter;
 import org.secmem.remoteroid.data.CategoryList;
 import org.secmem.remoteroid.dialog.CategoryDialog;
+import org.secmem.remoteroid.expinterface.OnFileLongClickListener;
 import org.secmem.remoteroid.expinterface.OnFileSelectedListener;
 import org.secmem.remoteroid.expinterface.OnPathChangedListener;
+import org.secmem.remoteroid.service.RemoteroidService;
+import org.secmem.remoteroid.service.RemoteroidService.ServiceState;
 import org.secmem.remoteroid.util.HongUtil;
 
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
+import android.os.RemoteException;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -61,7 +70,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	public static ArrayList<CategoryList> searchList = new ArrayList<CategoryList>();
 	public static boolean isSearched=false;
 	
-	public static ArrayList<File> fileInfo = new ArrayList<File>();
+	public static List<String> fileInfo = new ArrayList<String>();
 	public static DataList dataList;
 	
 	private static int CODE_CATEGORY = 1;
@@ -81,13 +90,44 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	
 	private TextView pathTv;
 	
-	public static GridView gridview;
+	private GridView gridview;
 	
-	private ExplorerAdapter adapter;
+	public static ExplorerAdapter adapter;
 	
 	private boolean isTimer=false;
 	
 	private ProgressDialog mProgress;
+	private IRemoteroid mRemoteroid;
+	private ServiceConnection conn = new ServiceConnection(){
+
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			mRemoteroid = IRemoteroid.Stub.asInterface(service);
+			try{
+				ServiceState status = ServiceState.valueOf(mRemoteroid.getConnectionStatus());
+				switch(status){
+				case IDLE:
+					break;
+					
+				case CONNECTING:
+					break;
+					
+				case CONNECTED:
+						mRemoteroid.onSendFile(fileInfo);
+					break;
+				}
+			}catch(RemoteException e){
+				e.printStackTrace();
+			}
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			mRemoteroid = null;
+		}
+		
+	};
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +155,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		
 		dataList.setPath("/mnt/sdcard");
 		
-		adapter = new ExplorerAdapter(this, R.layout.grid_explorer_row, dataList, ADAPTER_TYPE_EXPLORER);
+		adapter = new ExplorerAdapter(this, R.layout.grid_explorer_row, dataList, ADAPTER_TYPE_EXPLORER, onFileLongClick);
 		
 		LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(ExplorerActivity.this, R.anim.layout_wave_scale);
 		gridview.setLayoutAnimation(gridAnimation);
@@ -308,7 +348,16 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
     private OnFileSelectedListener onFileSelected = new OnFileSelectedListener() {
 
 		public void onSelected(String path, String fileName) {
-			// TODO
+		}
+	};
+	
+	private OnFileLongClickListener onFileLongClick = new OnFileLongClickListener() {
+		
+		@Override
+		public void onLongclick() {
+				if(fileInfo.size()!=0){
+					bindService(new Intent(ExplorerActivity.this, RemoteroidService.class), conn, Context.BIND_AUTO_CREATE);
+				}
 		}
 	};
 	
