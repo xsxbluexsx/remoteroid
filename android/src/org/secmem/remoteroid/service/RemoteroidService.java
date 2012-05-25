@@ -149,6 +149,12 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		}
 
 
+		@Override
+		public boolean isTransmitterConnected() throws RemoteException {
+			return mTransmitter.isConnected();
+		}
+
+
 	};
 
 	@Override

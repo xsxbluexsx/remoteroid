@@ -10,4 +10,5 @@ interface IRemoteroid{
 	void onReceiveSMS(String displayedName, String number, String body, long when);
 	void onSMSSent(String displayedName, String phoneNumber, long when);
 	void onSendFile(in List<String> pathlist);
+	boolean isTransmitterConnected();
 }
