@@ -59,6 +59,11 @@ public class SmsReceiver extends BroadcastReceiver {
 		    	
 		    	rdMsgs.add(rdMsg);
 		    }
+		    // In broadcast receiver, you cannot send broadcast or bind to service.
+		    // To send SMS data to Remoteroid by avoiding limitations as described,
+		    // I just decided to pass data with startService.
+		    // SMS data sent from this broadcast will processed on RemoteroidService's
+		    // onStartCommand() method.
 		    context.startService(new Intent(context, RemoteroidService.class)
 		    	.putParcelableArrayListExtra(EXTRA_MSGS, rdMsgs));
 		 }

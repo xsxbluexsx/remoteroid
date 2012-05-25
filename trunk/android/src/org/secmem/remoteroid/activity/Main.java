@@ -42,6 +42,8 @@ public class Main extends SherlockFragmentActivity {
 	private static final int DRIVER_FRAG = 1;
 	private int lastFrag;
 	
+	private boolean isDriverInstalled = false;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,8 +52,10 @@ public class Main extends SherlockFragmentActivity {
         mAuthFragment = new AuthenticateFragment();
         mDriverFragment = new DriverInstallationFragment();
         
+        isDriverInstalled = CommandLine.isDriverExists(getApplicationContext());
+        
       //Check driver existence
-        if(!CommandLine.isDriverExists(getApplicationContext())){
+        if(!isDriverInstalled){
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, mDriverFragment).commit();
                 lastFrag = AUTH_FRAG;
         }else{
@@ -94,6 +98,14 @@ public class Main extends SherlockFragmentActivity {
 		inflater.inflate(R.menu.main, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		if(!isDriverInstalled)
+			menu.removeItem(R.id.menu_main_calibrate);
+		return super.onPrepareOptionsMenu(menu);
+	}
+
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

@@ -36,18 +36,16 @@ import com.actionbarsherlock.view.MenuItem;
 public class ConfigurationChecker extends SherlockActivity {
 	
 	private Button btnEnableAccService;
-	private Button btnEnableDevAdmin;
-	
 	private boolean isAccEnabled;
-	private boolean isDAEnabled;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_configuration_checker);
 		
+		getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_red));
+		
 		btnEnableAccService = (Button)findViewById(R.id.btn_acc_service);
-		btnEnableDevAdmin = (Button)findViewById(R.id.btn_device_admin);
 		
 		btnEnableAccService.setOnClickListener(new OnClickListener(){
 
@@ -58,14 +56,6 @@ public class ConfigurationChecker extends SherlockActivity {
 			
 		});
 		
-		btnEnableDevAdmin.setOnClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				Util.Services.launchDeviceAdminAccessRequest(ConfigurationChecker.this);
-			}
-			
-		});
 	}
 	
 	@Override
@@ -73,18 +63,11 @@ public class ConfigurationChecker extends SherlockActivity {
 		super.onResume();
 		
 		isAccEnabled = Util.Services.isAccessibilityServiceEnabled(this);
-		isDAEnabled = Util.Services.isDeviceAdminEnabled(this);
 		
 		if(isAccEnabled){
 			btnEnableAccService.setEnabled(false);
 			btnEnableAccService.setText(R.string.enabled);
-		}
-		
-		if(isDAEnabled){
-			btnEnableDevAdmin.setEnabled(false);
-			btnEnableDevAdmin.setText(R.string.enabled);
-		}
-		
+		}		
 		invalidateOptionsMenu(); // Update 'Done' menu availability
 	}
 
@@ -97,14 +80,14 @@ public class ConfigurationChecker extends SherlockActivity {
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		menu.getItem(0).setEnabled(isAccEnabled && isDAEnabled);
+		menu.getItem(0).setEnabled(isAccEnabled);
 		return super.onPrepareOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
-		case R.id.done:
+		case R.id.proceed:
 			finish();
 			startActivity(new Intent(this, Main.class));
 			return true;

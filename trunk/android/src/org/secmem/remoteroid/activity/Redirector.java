@@ -30,7 +30,7 @@ public class Redirector extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
-	    if(!Util.Services.isAccessibilityServiceEnabled(this) || !Util.Services.isDeviceAdminEnabled(this)){
+	    if(!Util.Services.isAccessibilityServiceEnabled(this)){
 	    	startActivity(new Intent(this, ConfigurationChecker.class));
 	    }else{
 	    	startActivity(new Intent(this, Main.class));

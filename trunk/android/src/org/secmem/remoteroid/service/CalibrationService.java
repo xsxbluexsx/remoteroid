@@ -22,6 +22,7 @@ public class CalibrationService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+
 		mHandler = new InputHandler(this);
 	}
 

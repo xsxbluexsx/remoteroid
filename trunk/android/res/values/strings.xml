@@ -30,10 +30,7 @@
         <item >e</item>
         <item >s</item>
     </string-array>
-        <string name="notification_type_summary">Select notification type to be notified</string>
-        <string name="welcome">Welcome</string>
-        <string name="you_should_complete_following_configurations_before_use_remoteroid">You should complete following configurations before use Remoteroid.</string>
-        <string name="configurations">Configurations</string>
+        <string name="notification_type_summary">Select notification type to be notified</string>        
         <string name="enable">Enable</string>
         <string name="enabled">Enabled</string>
         <string name="file_explorer">File explorer</string>
@@ -82,4 +79,15 @@
     <string name="connected">Connected</string>
     <string name="disconnect">Disconnect</string>
     <string name="calibration_starts_in_s_seconds">Calibration starts in %s seconds</string>
+    <string name="proceed">Proceed</string>
+    <string name="get_notified">Get notified</string>
+    <string name="install_driver">Install Driver</string>
+    <string name="remoteroid_driver_description">Remoteroid driver description</string>
+    <plurals name="calibration_starts_in_s_seconds">
+        <item quantity="zero">Calibration starts in %d second</item>
+        <item quantity="one">Calibration starts in %d second</item>
+        <item quantity="other">Calibration starts in %d seconds</item>
+    </plurals>
+        <string name="do_not_touch_screen_while_calibration_is_in_progress">Do not touch screen while calibration is in progress.</string>
+        <string name="enable_remotroid_service_to_check_notifications_on_your_pc">Enable Remotroid service to check notifications on your PC.</string>
 </resources>
