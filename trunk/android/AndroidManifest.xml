@@ -42,7 +42,8 @@
         <activity android:name=".activity.PackageSelector" android:label="@string/select_package"></activity>
         <service android:name=".service.RemoteroidService"></service>
         <activity android:name=".activity.ExplorerActivity" android:label="@string/file_explorer"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:taskAffinity="org.secmem.remoteroid.activity.ExplorerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

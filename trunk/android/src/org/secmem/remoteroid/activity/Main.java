@@ -309,8 +309,8 @@ public class Main extends SherlockFragmentActivity implements ConnectionStateLis
 	@Override
 	protected void onStop() {
 		super.onStop();
-		if(mRemoteroidSvc!=null)
-			unbindService(conn);
+//		if(mRemoteroidSvc!=null)
+//			unbindService(conn);
 	}
 	
 	

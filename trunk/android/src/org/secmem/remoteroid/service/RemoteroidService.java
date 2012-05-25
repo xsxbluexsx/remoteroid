@@ -44,6 +44,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.telephony.PhoneStateListener;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
@@ -60,6 +61,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	private Tranceiver mTransmitter;
 	private InputHandler mInputHandler;
 	private ServiceState mState = ServiceState.IDLE;
+	private boolean flag = true;
 	
 	private IBinder mBinder = new IRemoteroid.Stub() {
 		
@@ -180,7 +182,6 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		@Override
 		public void onCallStateChanged(int state, String incomingNumber) {
 			if(state==TelephonyManager.CALL_STATE_RINGING){
-				// TODO Call received
 				
 			}
 		}
@@ -199,6 +200,17 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 			}
 		}
 		
+		Thread mThread = new Thread(){
+
+			@Override
+			public void run() {
+				while(flag){
+				}
+			}
+		};
+		mThread.setDaemon(true);
+		mThread.start();
+		
 		return super.onStartCommand(intent, flags, startId);
 	}
 
@@ -206,7 +218,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		
+		flag=false;
 	}
 
 
