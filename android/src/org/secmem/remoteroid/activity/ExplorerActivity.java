@@ -51,6 +51,7 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.provider.MediaStore;
+import android.text.Annotation;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -383,7 +384,6 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 				
 				@SuppressWarnings("deprecation")
 				Cursor imageCursor = managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
-				
 				HongUtil.getPhoto(imageCursor);
 			}
 			
