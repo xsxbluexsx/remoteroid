@@ -28,6 +28,7 @@ public class PacketHeader {
 		public static final int FILEINFO_REQUESTED = 7;
 		public static final int EVENT_RECEIVED = 8;		
 		public static final int DEVICEINFO_SEND = 9;
+		public static final int NOTIFICATION_SEND = 10;
 	}
 	
 	/**
