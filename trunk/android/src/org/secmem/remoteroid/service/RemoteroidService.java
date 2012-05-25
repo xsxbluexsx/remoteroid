@@ -213,8 +213,8 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 
 	@Override
 	public void onKeyDown(int keyCode) {
-		if(mInputHandler.isDeviceOpened())
-			mInputHandler.keyDown(keyCode);
+		if(mInputHandler.isDeviceOpened())			
+			mInputHandler.keyDown(keyCode);				
 	}
 
 

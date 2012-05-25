@@ -49,6 +49,9 @@ public class TouchCalibrationActivity extends Activity{
 	    mProgress = (ProgressBar)findViewById(R.id.touch_calibrate_progress);
 	    
 	    if(savedInstanceState==null){
+	    	for(int i=0; i<3; i++){
+	    		calPoints[i] = new Point();
+	    	}
 			Display display = getWindowManager().getDefaultDisplay();
 			displayWidth = display.getWidth();
 			displayHeight = display.getHeight();
@@ -137,10 +140,10 @@ public class TouchCalibrationActivity extends Activity{
 			if(touchCnt<2){
 				calPoints[touchCnt].x = (int)event.getX();
 				calPoints[touchCnt].y = (int)event.getY();
+				System.out.println(calPoints[touchCnt].toString());
 				touchCnt++;
 				return true;
 			}
-			
 			// Save last touch pointer (0, height)
 			calPoints[touchCnt].x = (int)event.getX();
 			calPoints[touchCnt].y = (int)event.getY();
