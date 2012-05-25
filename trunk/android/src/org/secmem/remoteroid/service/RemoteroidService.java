@@ -34,8 +34,6 @@ import org.secmem.remoteroid.receiver.SmsReceiver;
 
 import android.app.PendingIntent;
 import android.app.Service;
-import android.app.admin.DevicePolicyManager;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.IBinder;
@@ -49,8 +47,11 @@ import android.telephony.SmsManager;
  *
  */
 public class RemoteroidService extends Service implements FileTransmissionListener, VirtualEventListener{
+	public enum ServiceState{IDLE, CONNECTING, CONNECTED};
+	
 	private Tranceiver mTransmitter;
 	private InputHandler mInputHandler;
+	private ServiceState mState = ServiceState.IDLE;
 	
 	private IBinder mBinder = new IRemoteroid.Stub() {
 		
@@ -84,14 +85,15 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		}
 
 		@Override
-		public boolean getConnectionStatus() throws RemoteException {
-			return mTransmitter.isConnected();
+		public String getConnectionStatus() throws RemoteException {
+			return mState.name();
 		}
 
 		@Override
 		public void connect(String ipAddress, String password)
 				throws RemoteException {
 			try {
+				mState = ServiceState.CONNECTING;
 				
 				// Start connection and receive events from server
 				mTransmitter.connect(ipAddress);
@@ -101,7 +103,8 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 				
 				// TODO Start fetch frame buffer and send it to server
 				
-				sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTED));
+				sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTED).putExtra("ip", ipAddress));
+				mState = ServiceState.CONNECTED;
 			} catch (IOException e) {
 				e.printStackTrace();
 				sendBroadcast(new Intent(RemoteroidIntent.ACTION_INTERRUPTED));
@@ -112,6 +115,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		public void disconnect() throws RemoteException {
 			mInputHandler.close();
 			mTransmitter.disconnect();
+			mState = ServiceState.IDLE;
 			sendBroadcast(new Intent(RemoteroidIntent.ACTION_DISCONNECTED));
 		}
 	};
@@ -121,6 +125,9 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		return mBinder;
 	}
 	
+	public ServiceState getConnectionState(){
+		return mState;
+	}
 	
 	@Override
 	public void onCreate() {
@@ -148,6 +155,13 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	}
 
 
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+	}
+
+
 	/**
 	 * Place a phone call.
 	 * @param phoneNumber a Phone number
@@ -167,14 +181,6 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		SmsManager mng = SmsManager.getDefault();
 		PendingIntent sentIntent = PendingIntent.getBroadcast(this, 0, new Intent(RemoteroidIntent.ACTION_SMS_SENT), 0);
 		mng.sendTextMessage(phoneNumber, null, body, sentIntent, null);
-	}
-	
-	/**
-	 * Lock device right now.
-	 */
-	private void lockNow(){
-		DevicePolicyManager mDpm = (DevicePolicyManager)getSystemService(Context.DEVICE_POLICY_SERVICE);
-		mDpm.lockNow();
 	}
 
 
