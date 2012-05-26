@@ -66,9 +66,19 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	private IBinder mBinder = new IRemoteroid.Stub() {
 		
 		@Override
-		public void onNotificationCatched(String notificationText, long when)
+		public void onNotificationCatched(final String notificationText, long when)
 				throws RemoteException {
-			// TODO Notification hooked and notification data has been delivered. Now this data should be sent to PC.
+			if(mTransmitter!=null && mTransmitter.isConnected()){
+				new AsyncTask<Void, Void, Void>(){
+	
+					@Override
+					protected Void doInBackground(Void... params) {
+						mTransmitter.sendNotification(notificationText);
+						return null;
+					}
+					
+				}.execute();
+			}
 			
 		}
 		
@@ -96,10 +106,6 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 
 		@Override
 		public String getConnectionStatus() throws RemoteException {
-			if(mState.equals(ServiceState.CONNECTED)){
-				if(mTransmitter!=null && !mTransmitter.isConnected())
-					mState=ServiceState.IDLE;
-			}
 			return mState.name();
 		}
 
@@ -121,6 +127,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 						// Open input device
 						return mInputHandler.open();
 					} catch (IOException e) {
+						mState = ServiceState.IDLE;
 						sendBroadcast(new Intent(RemoteroidIntent.ACTION_INTERRUPTED));
 						dismissNotification();
 						e.printStackTrace();
@@ -200,9 +207,6 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	}
 	
 	public ServiceState getConnectionState(){
-		if(mState.equals(ServiceState.CONNECTED)&&mTransmitter.isConnected()){
-			mState = ServiceState.CONNECTED;
-		}
 		return mState;
 	}
 	
