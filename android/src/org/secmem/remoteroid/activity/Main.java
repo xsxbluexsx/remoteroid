@@ -256,20 +256,10 @@ public class Main extends SherlockFragmentActivity implements
 	}
 
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		if (!isDriverInstalled)
-			menu.removeItem(R.id.menu_main_calibrate);
-		return super.onPrepareOptionsMenu(menu);
-	}
-
-	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_main_preferences:
 			startActivity(new Intent(this, NotificationReceiverSettings.class));
-			return true;
-		case R.id.menu_main_calibrate:
-			startActivity(new Intent(this, TouchCalibrationActivity.class));
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

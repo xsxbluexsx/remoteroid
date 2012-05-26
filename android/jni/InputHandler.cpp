@@ -102,21 +102,7 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchUp(J
  * Signature: (II)V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchSetPtr(JNIEnv *env, jobject thiz, jint x, jint y){
-	//sendNativeEvent(dev, EV_ABS, ABS_X, x);
-	//sendNativeEvent(dev, EV_ABS, ABS_Y, y);
-	//sendNativeEvent(dev, EV_SYN, SYN_REPORT, 0);
 	sendNativeEvent(inputFd, EV_ABS, ABS_X, x);
 	sendNativeEvent(inputFd, EV_ABS, ABS_Y, y);
 	sendNativeEvent(inputFd, EV_SYN, SYN_REPORT, 0);
-}
-
-/*
- * Class:     org_secmem_remoteroid_natives_InputHandler
- * Method:    touchOnce
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchOnce(JNIEnv *env, jobject thiz, jint x, jint y){
-	Java_org_secmem_remoteroid_natives_InputHandler_touchSetPtr(env, thiz, x, y);
-	Java_org_secmem_remoteroid_natives_InputHandler_touchDown(env, thiz);
-	Java_org_secmem_remoteroid_natives_InputHandler_touchUp(env, thiz);
 }
