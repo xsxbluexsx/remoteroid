@@ -64,7 +64,7 @@ public class FrameBufferService extends Service {
 					stopSelf();
 			}
 		}
-		fHandler = new FrameHandler(getApplicationContext());
+//		fHandler = new FrameHandler(getApplicationContext());
 		suPermission();
 		
 		Thread thread = new Thread(){

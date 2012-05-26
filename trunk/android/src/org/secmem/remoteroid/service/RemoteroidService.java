@@ -51,6 +51,7 @@ import android.os.SystemClock;
 import android.telephony.PhoneStateListener;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
+import android.util.*;
 
 
 /**
@@ -64,7 +65,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	private Tranceiver mTransmitter;
 	private InputHandler mInputHandler;
 	private ServiceState mState = ServiceState.IDLE;
-	private FrameHandler frameHandler;
+//	private FrameHandler frameHandler  = new FrameHandler(getApplicationContext());
 	
 	private boolean flag = true;
 	
@@ -124,12 +125,8 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 				// Listen incoming calls
 				TelephonyManager telManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 				telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_CALL_STATE);
-				
 				// TODO Start fetch frame buffer and send it to server
-				frameHandler = new FrameHandler(getApplicationContext());
-				
 				sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTED).putExtra("ip", ipAddress));
-				
 				showConnectionNotification(ipAddress);
 				
 				mState = ServiceState.CONNECTED;
@@ -359,7 +356,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 			@Override
 			public void run() {
 				while(frameFlag){
-					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
+//					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
 					
 					// sendScreen(frameStream.size() , frameStream.toByteArray());
 					

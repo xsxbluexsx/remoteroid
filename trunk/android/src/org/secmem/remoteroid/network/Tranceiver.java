@@ -23,6 +23,7 @@ public class Tranceiver  implements PacketListener{
 	
 	private PacketReceiver packetReceiver;	
 	private FileTranceiver fileTransReceiver;
+	private FrameUdpSender frameUdpSender;
 
 	// Event listeners
 	private FileTransmissionListener mFileTransListener;
@@ -68,10 +69,14 @@ public class Tranceiver  implements PacketListener{
 		
 		fileTransReceiver = new FileTranceiver(sendStream, mFileTransListener);
 		
+		//Connect udp socket
+		frameUdpSender = new FrameUdpSender(ipAddr);
+		frameUdpSender.connectUdpSocket();
+		
 		// Create and start packet receiver
 		packetReceiver = new PacketReceiver(recvStream);
 		packetReceiver.setPacketListener(this);
-		packetReceiver.start();
+		packetReceiver.start();		
 	}
 	
 	/**
@@ -106,6 +111,17 @@ public class Tranceiver  implements PacketListener{
 		try{
 			fileTransReceiver.send(
 					new Packet(PacketHeader.OpCode.NOTIFICATION_SEND, str.getBytes(), str.getBytes().length));
+		}catch(IOException e){
+			e.printStackTrace();
+			onInterrupt();
+		}
+	}
+	
+	
+	//Send frameBuffer to host by udp
+	public void sendFrameBuffer(byte[] jpgData){
+		try{
+			frameUdpSender.sendFrameBuffer(jpgData);
 		}catch(IOException e){
 			e.printStackTrace();
 			onInterrupt();
