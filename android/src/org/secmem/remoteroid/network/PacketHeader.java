@@ -23,6 +23,8 @@ public class PacketHeader {
 		public static final int INVALID = -1;
 		public static final int FILEINFO_RECEIVED = 1;
 		public static final int FILEDATA_RECEIVED = 2;
+		public static final int JPGINFO_SEND = 3;
+		public static final int JPGDATA_SEND = 2;
 		public static final int FILEDATA_REQUESTED = 5;
 		public static final int READY_TO_SEND = 6;
 		public static final int FILEINFO_REQUESTED = 7;
