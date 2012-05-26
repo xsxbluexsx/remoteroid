@@ -97,6 +97,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
+    <None Include="res\alram.wav" />
     <None Include="res\backbutton.bmp" />
     <None Include="res\backbutton_click.bmp" />
     <None Include="res\backbutton_over.bmp" />

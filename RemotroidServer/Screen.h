@@ -55,6 +55,9 @@ private:
 	int height;
 
 	inline void CoordinateTransform(CPoint& point);
+	BOOL m_bTrack;
+public:
+	afx_msg void OnMouseLeave();
 };
 
 

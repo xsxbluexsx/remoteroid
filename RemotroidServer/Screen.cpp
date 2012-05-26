@@ -17,6 +17,7 @@ CScreen::CScreen()
 , heightResolution(0)
 , width(0)
 , height(0)
+, m_bTrack(FALSE)
 {	
 }
 
@@ -34,6 +35,7 @@ BEGIN_MESSAGE_MAP(CScreen, CStatic)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()		
+	ON_WM_MOUSELEAVE()
 END_MESSAGE_MAP()
  
 
@@ -122,8 +124,21 @@ void CScreen::OnLButtonUp(UINT nFlags, CPoint point)
 	// TODO: Add your message handler code here and/or call default
 	if(pClient == NULL)
 		return;
+	
+	if(m_bTrack)
+	{
+		TRACE("cancel\n");
+		TRACKMOUSEEVENT MouseEvent;
+		memset(&MouseEvent, 0, sizeof(0));
+		MouseEvent.cbSize = sizeof(MouseEvent);
+		MouseEvent.dwFlags = TME_CANCEL|TME_LEAVE;
+		MouseEvent.hwndTrack = m_hWnd;
 
-	CoordinateTransform(point);
+		::_TrackMouseEvent(&MouseEvent);
+		m_bTrack = FALSE;		
+	}
+		
+		
 	CVitualEventPacket event(TOUCHUP);
 	pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);	
 
@@ -146,6 +161,19 @@ void CScreen::OnMouseMove(UINT nFlags, CPoint point)
 		if(pClient == NULL)
 			return;
 
+		if(m_bTrack == FALSE)
+		{
+			//////마우스 추적 시작
+			TRACE("start tracl\n");
+			TRACKMOUSEEVENT MouseEvent;
+			memset(&MouseEvent, 0, sizeof(0));
+			MouseEvent.cbSize = sizeof(MouseEvent);
+			MouseEvent.dwFlags = TME_LEAVE;
+			MouseEvent.hwndTrack = m_hWnd;
+			MouseEvent.dwHoverTime = 0;
+			m_bTrack = ::_TrackMouseEvent(&MouseEvent);
+		}
+
 		CoordinateTransform(point);
 		CVitualEventPacket event(SETCOORDINATES, point.x, point.y);		
 		
@@ -153,6 +181,35 @@ void CScreen::OnMouseMove(UINT nFlags, CPoint point)
 	}	
 	CStatic::OnMouseMove(nFlags, point);
 }
+
+
+
+//마우스가 벗어나면 Up 이벤트 전송해야 한다
+void CScreen::OnMouseLeave()
+{
+	// TODO: Add your message handler code here and/or call default		
+	if(pClient == NULL)
+		return;
+
+	if(m_bTrack)
+	{
+		TRACE("leave\n");
+		TRACKMOUSEEVENT MouseEvent;
+		memset(&MouseEvent, 0, sizeof(0));
+		MouseEvent.cbSize = sizeof(MouseEvent);
+		MouseEvent.dwFlags = TME_CANCEL|TME_LEAVE;
+		MouseEvent.hwndTrack = m_hWnd;
+
+		::_TrackMouseEvent(&MouseEvent);
+		m_bTrack = FALSE;
+
+		CVitualEventPacket event(TOUCHUP);
+		pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);	
+	}	
+}
+
+
+
 
 
 BOOL CScreen::PreCreateWindow(CREATESTRUCT& cs)
@@ -167,5 +224,4 @@ BOOL CScreen::PreCreateWindow(CREATESTRUCT& cs)
 	cs.lpszClass = AfxRegisterWndClass(wc.style, wc.hCursor, wc.hbrBackground, wc.hIcon);	
 	return CStatic::PreCreateWindow(cs);
 }
-
 

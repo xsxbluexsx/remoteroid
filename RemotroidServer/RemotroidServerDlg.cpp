@@ -792,7 +792,8 @@ void CRemotroidServerDlg::OnClickedBtnMenu()
 
 void CRemotroidServerDlg::OnBnClickedButton1()
 {
-	// TODO: Add your control notification handler code here		
+	// TODO: Add your control notification handler code here
+	
 }
 
 
@@ -808,6 +809,9 @@ LRESULT CRemotroidServerDlg::OnCreatePopupDlg(WPARAM wParam, LPARAM lParam)
 	delete notiText;
 	CPopupDlg::numOfDlg++;	
 	m_popDlgMgr.InsertPopDlg(pDlg);
+
+	//알림 소리 재생
+	PlaySound((LPCTSTR)MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_ASYNC|SND_RESOURCE);
 
 	pDlg->Create(IDD_POPUPDLG, this);
 	pDlg->ShowWindow(SW_HIDE);		

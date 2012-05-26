@@ -80,6 +80,9 @@
     <None Include="res\remoteroid_logo_wnd.bmp">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\alram.wav">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RemotroidServer.h">
