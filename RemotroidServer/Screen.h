@@ -58,6 +58,8 @@ private:
 	BOOL m_bTrack;
 public:
 	afx_msg void OnMouseLeave();
+	void SetJpgInfo(char *data);
+	void RecvJpgData(char * data, int iPacketSize);
 };
 
 
