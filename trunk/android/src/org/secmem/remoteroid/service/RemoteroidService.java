@@ -183,6 +183,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		mTransmitter = new Tranceiver();
 		mTransmitter.setFileTransmissionListener(this);
 		mTransmitter.setVirtualEventListener(this);
+		mTransmitter.setFrameBufferListener(this);
 		mInputHandler = new InputHandler(this);
 	}
 	

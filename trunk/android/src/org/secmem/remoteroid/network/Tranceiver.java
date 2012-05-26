@@ -27,6 +27,7 @@ public class Tranceiver  implements PacketListener{
 	// Event listeners
 	private FileTransmissionListener mFileTransListener;
 	private VirtualEventListener mVirtEventListener;
+	private FrameBufferRequestListener mFrameBufferListener;
 	
 	public Tranceiver(){		
 	}
@@ -45,6 +46,9 @@ public class Tranceiver  implements PacketListener{
 	
 	public void setVirtualEventListener(VirtualEventListener listener){
 		mVirtEventListener = listener;
+	}
+	public void setFrameBufferListener(FrameBufferRequestListener listener){
+		mFrameBufferListener = listener;
 	}
 	
 	/**
