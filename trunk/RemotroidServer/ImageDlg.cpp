@@ -68,7 +68,7 @@ BOOL CImageDlg::OnInitDialog()
 			xform.eM22 = (FLOAT) 1; 
 			xform.eM12 = (FLOAT) 0.0;       
 			xform.eM21 = (FLOAT) 0.0;             
-			xform.eDx  = (FLOAT) 2;             
+			xform.eDx  = (FLOAT) 0;             
 			xform.eDy  = (FLOAT) 0; 
 			
 			rgn = ExtCreateRegion(&xform, sizeof
