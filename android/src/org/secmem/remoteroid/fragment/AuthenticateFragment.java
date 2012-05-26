@@ -136,7 +136,6 @@ public class AuthenticateFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				System.out.println("auth_click");
 				mListener.onConnectRequested(mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString());
 				
 			}
