@@ -106,7 +106,10 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 				mState = ServiceState.CONNECTING;
 				
 				// Start connection and receive events from server
-				mTransmitter.connect(ipAddress);
+				mTransmitter.connect(ipAddress);				
+
+				//Send devices resolution to host for coordinate transformation;
+				mTransmitter.sendDeviceInfo(getApplicationContext().getResources().getDisplayMetrics());
 				
 				// Open input device
 				mInputHandler.open();
