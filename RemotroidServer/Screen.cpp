@@ -168,3 +168,4 @@ BOOL CScreen::PreCreateWindow(CREATESTRUCT& cs)
 	return CStatic::PreCreateWindow(cs);
 }
 
+

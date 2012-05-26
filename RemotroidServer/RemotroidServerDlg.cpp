@@ -58,7 +58,7 @@ CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
 	, m_isClickedEndBtn(FALSE)
 	, pAcceptThread(NULL)
 	, pUdpRecvThread(NULL)
-	, m_isReadyRecv(FALSE)
+	, m_isReadyRecv(FALSE)	
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	
@@ -85,7 +85,10 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_MESSAGE(WM_RECVJPGDATA, OnRecvJpgData)
 	ON_MESSAGE(WM_MYENDRECV, OnEndRecv)
 	ON_MESSAGE(WM_MYENDACCEPT, OnEndAccept)
-	ON_MESSAGE(WM_READYRECVFILE, OnReadyRecvFile)
+	ON_MESSAGE(WM_READYRECVFILE, OnReadyRecvFile)	
+	ON_MESSAGE(WM_CREATEPOPUPDLG, OnCreatePopupDlg)
+	ON_MESSAGE(WM_CLOSEPOPDLG, OnClosePopDlg)
+	
 	
 	ON_WM_MOUSEMOVE()
 	ON_WM_CTLCOLOR()
@@ -133,13 +136,14 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
-
 	//스크린 윈도우 위치 및 스타일 설정
 
+	//ShowWindow(SW_HIDE);
+	
 	screen.CreateEx(WS_EX_TOPMOST
 		, _T("STATIC"), NULL, WS_CHILD|WS_VISIBLE|SS_NOTIFY, CRect(LEFT, TOP, RIGHT, BOTTOM), this, 1234);
 	screen.SetFocus();	
-	
+
 	m_progressCtrl.MoveWindow(LEFT, TOP-10, WIDTH, 10);
 	m_progressCtrl.ShowWindow(SW_HIDE);
 	m_progressCtrl.SetBarBkColor(RGB(56,58,60));
@@ -154,7 +158,7 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	m_MenuButton.MoveWindow(60, 710, BUTTONWIDTH, BUTTONHEIGHT);
 	m_HomeButton.MoveWindow(60+BUTTONWIDTH, 710, BUTTONWIDTH, BUTTONHEIGHT);
 	m_BackButton.MoveWindow(60+BUTTONWIDTH*2, 710, BUTTONWIDTH, BUTTONHEIGHT);
-	
+
 
 	m_HomeButton.LoadBitmaps(IDB_BITMAP_HOME, IDB_BITMAP_HOME_CLICK);
 	m_HomeButton.SetHoverBitmapID(IDB_BITMAP_HOME_OVER);
@@ -162,7 +166,6 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	m_BackButton.SetHoverBitmapID(IDB_BITMAP_BACK_OVER);
 	m_MenuButton.LoadBitmaps(IDB_BITMAP_MENU, IDB_BITMAP_MENU_CLICK);
 	m_MenuButton.SetHoverBitmapID(IDB_BITMAP_MENU_OVER);
-
 
 
 	m_UDPServerSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -218,6 +221,13 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	
 	pAcceptThread = AfxBeginThread(AcceptFunc, this);	
 	pAcceptThread->m_bAutoDelete = FALSE;
+	
+
+	CRect systemRc, rc;
+	::SystemParametersInfo(SPI_GETWORKAREA, 0, &systemRc, 0);
+	GetClientRect(&rc);	
+	
+	
 
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }
@@ -394,6 +404,9 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 			case OP_SENDDEVICEINFO:
 				pDlg->screen.SendMessage(WM_RECVDEVICEINFO, 0, (LPARAM)data);
 				break;
+			case OP_SENDNOTIFICATION:
+				pDlg->SendMessage(WM_CREATEPOPUPDLG, iPacketSize, (LPARAM)data);
+				break;
 			}
 		}
 	}
@@ -435,6 +448,7 @@ void CRemotroidServerDlg::OnDestroy()
 	m_isClickedEndBtn = TRUE;
 	EndAccept();
 	EndConnect();	
+
 	CDialogEx::OnDestroy();	
 }
 
@@ -442,7 +456,7 @@ void CRemotroidServerDlg::OnDestroy()
 void CRemotroidServerDlg::OnBnClickedOk()
 {
 	// TODO: Add your control notification handler code here	
-	CDialogEx::OnOK();
+//	CDialogEx::OnOK();
 }
 
 
@@ -583,7 +597,6 @@ LRESULT CRemotroidServerDlg::OnEndAccept(WPARAM wParam, LPARAM lParam)
 
 
 
-
 //다이얼로그 이동을 위한..
 void CRemotroidServerDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
@@ -592,10 +605,13 @@ void CRemotroidServerDlg::OnMouseMove(UINT nFlags, CPoint point)
 	CRect screenRect;
 	screen.GetWindowRect(&screenRect);
 	ScreenToClient(&screenRect);
+	CRect moveRect;
+	GetClientRect(&moveRect);
+	moveRect.bottom = screenRect.top - 20;
 
-	if(!PtInRect(&screenRect, point) && m_isReadyRecv == FALSE)
+	if(PtInRect(&moveRect, point) && m_isReadyRecv == FALSE)
 	{
-		//PostMessage( WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM( point.x, point.y));
+		PostMessage( WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM( point.x, point.y));
 	}
 	CImageDlg::OnMouseMove(nFlags, point);
 }
@@ -631,7 +647,7 @@ void CRemotroidServerDlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CRemotroidServerDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	// TODO: Add your message handler code here and/or call default	
+	// TODO: Add your message handler code here and/or call default		
 	int keyCode;
 	if( (m_pClient != NULL) && ((keyCode=keyCodeGen.GetKeyCode(nChar)) != INVALID_KEYCODE) )
 	{
@@ -738,9 +754,10 @@ void CRemotroidServerDlg::OnLButtonUp(UINT nFlags, CPoint point)
 void CRemotroidServerDlg::OnClickedBtnBack()
 {
 	// TODO: Add your control notification handler code here
+	SetFocus();
+
 	if(m_pClient == NULL)
 		return;
-
 	CVitualEventPacket event(BACKBUTTON);
 	m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
 }
@@ -749,6 +766,8 @@ void CRemotroidServerDlg::OnClickedBtnBack()
 void CRemotroidServerDlg::OnClickedBtnHome()
 {
 	// TODO: Add your control notification handler code here
+	SetFocus();
+
 	if(m_pClient == NULL)
 		return;
 
@@ -760,6 +779,8 @@ void CRemotroidServerDlg::OnClickedBtnHome()
 void CRemotroidServerDlg::OnClickedBtnMenu()
 {
 	// TODO: Add your control notification handler code here
+	SetFocus();
+
 	if(m_pClient == NULL)
 		return;
 
@@ -771,7 +792,36 @@ void CRemotroidServerDlg::OnClickedBtnMenu()
 
 void CRemotroidServerDlg::OnBnClickedButton1()
 {
-	// TODO: Add your control notification handler code here
-	
+	// TODO: Add your control notification handler code here		
 }
 
+
+LRESULT CRemotroidServerDlg::OnCreatePopupDlg(WPARAM wParam, LPARAM lParam)
+{
+	char *data = (char*)lParam;
+	int payloadSize = wParam-HEADERSIZE;
+	TCHAR *notiText = new TCHAR[payloadSize+1];
+	CUtil::UtfToUni(notiText, data);
+
+	CPopupDlg* pDlg = new CPopupDlg;
+	pDlg->m_strNoti = notiText;
+	delete notiText;
+	CPopupDlg::numOfDlg++;	
+	m_popDlgMgr.InsertPopDlg(pDlg);
+
+	pDlg->Create(IDD_POPUPDLG, this);
+	pDlg->ShowWindow(SW_HIDE);		
+	pDlg->SetLayeredWindowAttributes(0, 200, LWA_ALPHA);
+	pDlg->AnimateWindow(300, AW_SLIDE | AW_VER_NEGATIVE);		
+	
+	return LRESULT();
+}
+
+
+//팝업 윈도우가 종료될 때 나머지 윈도우의 위치를 아래로 내리기 위해
+LRESULT CRemotroidServerDlg::OnClosePopDlg(WPARAM wParam, LPARAM lParam)
+{
+	CPopupDlg *pDlg = (CPopupDlg *)wParam;
+	m_popDlgMgr.RemoveAndMove(pDlg);
+	return LRESULT();
+}

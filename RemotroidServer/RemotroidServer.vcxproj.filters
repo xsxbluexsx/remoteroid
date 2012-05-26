@@ -65,6 +65,21 @@
     <None Include="res\menubutton_over.bmp">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\popupdlg.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\bitmap2.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\XBtn.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\XBtn_hover.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\remoteroid_logo_wnd.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RemotroidServer.h">
@@ -124,6 +139,15 @@
     <ClInclude Include="KeyCodeGen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PopupDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Splash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PopupDlgMgr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RemotroidServer.cpp">
@@ -166,6 +190,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KeyCodeGen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PopupDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Splash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PopupDlgMgr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

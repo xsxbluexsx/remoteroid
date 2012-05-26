@@ -14,6 +14,8 @@
 #include "TextProgressCtrl.h"
 #include "VitualEventPacket.h"
 #include "KeyCodeGen.h"
+#include "PopupDlg.h"
+#include "PopupDlgMgr.h"
 
 
 // CRemotroidServerDlg dialog
@@ -87,6 +89,7 @@ private:
 	SOCKET m_UDPServerSocket;
 	BOOL m_isReadyRecv;	
 	CRecvFile recvFileClass;
+	CPopupDlgMgr m_popDlgMgr;
 	
 
 private:
@@ -105,4 +108,8 @@ public:
 	afx_msg void OnBnClickedButton1();
 	CTextProgressCtrl m_progressCtrl;
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
+	LRESULT OnAnimation(WPARAM wParam, LPARAM lParam);
+	LRESULT OnCreatePopupDlg(WPARAM wParam, LPARAM lParam);	
+
+	LRESULT OnClosePopDlg(WPARAM wParam, LPARAM lParam);
 };
