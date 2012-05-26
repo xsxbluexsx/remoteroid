@@ -52,10 +52,10 @@ public class Main extends SherlockFragmentActivity implements
 		ConnectionStateListener {
 
 	// Fragments should be in static
-	private static Fragment mAuthFragment;
-	private static Fragment mConnectingFragment;
-	private static Fragment mConnectedFragment;
-	private static Fragment mDriverFragment;
+	private Fragment mAuthFragment;
+	private Fragment mConnectingFragment;
+	private Fragment mConnectedFragment;
+	private Fragment mDriverFragment;
 	
 	private IRemoteroid mRemoteroidSvc;
 	private ServiceConnection conn = new ServiceConnection() {
@@ -165,12 +165,12 @@ public class Main extends SherlockFragmentActivity implements
         getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
         
         // instantiate fragments on first run
-        if(savedInstanceState==null){
+        //if(savedInstanceState==null){
         	mAuthFragment = new AuthenticateFragment(this);
         	mConnectingFragment = new ConnectingFragment(this);
         	mConnectedFragment = new ConnectedFragment(this);
         	mDriverFragment = new DriverInstallationFragment(this);
-        }
+        //}
         isDriverInstalled = CommandLine.isDriverExists(getApplicationContext());     
     }
     
@@ -287,7 +287,6 @@ public class Main extends SherlockFragmentActivity implements
 
 	@Override
 	public void onConnectRequested(String ipAddress, String password) {
-		System.out.println("why?");
 		showFragment(mConnectingFragment);
 	
 		try {

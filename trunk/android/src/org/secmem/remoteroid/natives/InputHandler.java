@@ -19,6 +19,7 @@
 
 package org.secmem.remoteroid.natives;
 
+import org.secmem.remoteroid.BuildConfig;
 import org.secmem.remoteroid.util.CommandLine;
 
 import android.content.Context;
@@ -45,6 +46,7 @@ public class InputHandler {
 	 * We should re-map original coordinate to send event properly.
 	 */
 	private static final int DIMENSION = 4096;
+	private static final int HALF_DIMENSION =2048;
 	
 	@SuppressWarnings("deprecation")
 	public InputHandler(Context context){
@@ -168,10 +170,13 @@ public class InputHandler {
 	 * @param y y coordinate that user has touched
 	 */
 	public void touchSetPointer(int x, int y){
-		x = x*DIMENSION/displayWidth - DIMENSION>>1 +1;
-		y = y*DIMENSION/displayHeight - DIMENSION>>1 +1;
-		Log.d(TAG, String.format("Setting remapped pointer (%d, %d)", x, y));
-		touchSetPtr(x, y);
+		if(BuildConfig.DEBUG)
+			Log.d(TAG, String.format("(%d, %d), w=%d, h=%d", displayWidth, displayHeight, x, y));
+		int newX = x*DIMENSION/displayWidth - HALF_DIMENSION +1;
+		int newY = y*DIMENSION/displayHeight - HALF_DIMENSION +1;
+		if(BuildConfig.DEBUG)
+			Log.d(TAG, String.format("Setting remapped pointer (%d, %d)", newX, newY));
+		touchSetPtr(newX, newY);
 	}
 	
 	private native void touchSetPtr(int x, int y);
