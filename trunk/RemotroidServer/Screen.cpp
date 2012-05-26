@@ -88,6 +88,11 @@ LRESULT CScreen::OnSetJpgInfo(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+void CScreen::SetJpgInfo(char *data)
+{
+	drawJpg.SetJpgInfo(data);
+}
+
 
 LRESULT CScreen::OnRecvJpgData(WPARAM wParam, LPARAM lParam)
 {	
@@ -96,6 +101,14 @@ LRESULT CScreen::OnRecvJpgData(WPARAM wParam, LPARAM lParam)
 	drawJpg.RecvJpgData(data, packetSize);
 	return 0;
 }
+
+
+
+void CScreen::RecvJpgData(char * data, int iPacketSize)
+{
+	drawJpg.RecvJpgData(data, iPacketSize);
+}
+
 
 inline void CScreen::CoordinateTransform(CPoint& point)
 {
@@ -224,4 +237,8 @@ BOOL CScreen::PreCreateWindow(CREATESTRUCT& cs)
 	cs.lpszClass = AfxRegisterWndClass(wc.style, wc.hCursor, wc.hbrBackground, wc.hIcon);	
 	return CStatic::PreCreateWindow(cs);
 }
+
+
+
+
 

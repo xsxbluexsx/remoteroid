@@ -202,6 +202,14 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 		EndDialog(IDCANCEL);
 		return TRUE;
 	}
+	
+
+	int optVal;
+	int optlen = sizeof(optVal);
+	getsockopt(m_UDPServerSocket, SOL_SOCKET, SO_RCVBUF, (char*)&optVal, &optlen);
+
+	optVal = optVal * 2;
+	setsockopt(m_UDPServerSocket, SOL_SOCKET, SO_RCVBUF, (char*)&optVal, sizeof(optVal));
 
 	pUdpRecvThread = AfxBeginThread(UDPRecvFunc, this);
 	//pUdpRecvThread->m_bAutoDelete = FALSE;
@@ -358,13 +366,13 @@ UINT CRemotroidServerDlg::UDPRecvFunc(LPVOID pParam)
 		{
 		case OP_SENDJPGINFO:
 			//pDlg->SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);				
-			//pDlg->screen.SetJpgInfo(data);
-			pDlg->screen.SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);
+			pDlg->screen.SetJpgInfo(data);
+			//pDlg->screen.SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);
 			break;
 		case OP_SENDJPGDATA:
 			//pDlg->SendMessage(WM_RECVJPGDATA, (WPARAM)iPacketSize, (LPARAM)data);
-			//pDlg->screen.RecvJpgData(data, iPacketSize);
-			pDlg->screen.SendMessage(WM_RECVJPGDATA, iPacketSize, (LPARAM)data);
+			pDlg->screen.RecvJpgData(data, iPacketSize);
+			//pDlg->screen.SendMessage(WM_RECVJPGDATA, iPacketSize, (LPARAM)data);
 			break;
 		}
 	}	
