@@ -48,6 +48,9 @@
 #pragma comment(lib, "gdiplus")
 using namespace Gdiplus;
 
+//wav 재생을 위해
+#pragma comment(lib, "winmm")
+#include <mmsystem.h>
 
 
 #ifdef _UNICODE
