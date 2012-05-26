@@ -49,8 +49,8 @@ BOOL CImageDlg::OnInitDialog()
 
 	// TODO:  Add extra initialization here
 	///////////////////////////////
-	//비트맵 모양에 맞춰서 다이얼로그 모양 만들기
-	MoveWindow(0,0,468,846);
+
+	//비트맵 모양에 맞춰서 다이얼로그 모양 만들기	
 
 	hResBack = FindResource(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_RGN1), _T("RGN"));
 	hBackGlobal = LoadResource(AfxGetApp()->m_hInstance, hResBack);
@@ -79,7 +79,7 @@ BOOL CImageDlg::OnInitDialog()
 		}
 	}
 	if(hBackGlobal) ::FreeResource(hBackGlobal);
-	///////////////////////////////	
+	///////////////////////////////			
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

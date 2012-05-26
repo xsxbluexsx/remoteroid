@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "RemotroidServer.h"
 #include "RemotroidServerDlg.h"
+#include "Splash.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -79,6 +80,9 @@ BOOL CRemotroidServerApp::InitInstance()
 	WSADATA wd;
 	memset(&wd,0, sizeof(wd));
 	WSAStartup(MAKEWORD(2,2), &wd);
+
+	CSplash splashDlg;
+	splashDlg.DoModal();
 
 	CRemotroidServerDlg dlg;
 	m_pMainWnd = &dlg;

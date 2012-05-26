@@ -27,7 +27,9 @@ BEGIN_MESSAGE_MAP(CMyBitmapBtn, CBitmapButton)
 	ON_WM_ERASEBKGND()
 	ON_WM_MOUSEMOVE()	
 	ON_WM_CREATE()
-	ON_WM_MOUSELEAVE()
+	ON_WM_MOUSELEAVE()	
+
+	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
 
 
@@ -113,4 +115,13 @@ void CMyBitmapBtn::OnMouseLeave()
 	m_bMouseHover = FALSE;
 	Invalidate(FALSE);
 	CBitmapButton::OnMouseLeave();	
+}
+
+
+
+void CMyBitmapBtn::OnSetFocus(CWnd* pOldWnd)
+{
+	CBitmapButton::OnSetFocus(pOldWnd);
+	
+	// TODO: Add your message handler code here
 }
