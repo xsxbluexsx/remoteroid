@@ -176,7 +176,6 @@ public class Tranceiver  implements PacketListener{
 	
 	private void parseVirtualEventPacket(Packet packet){
 		EventPacket eventPacket = EventPacket.parse(packet);
-		System.out.println("parse event packet = "+eventPacket);
 		
 		switch(eventPacket.GetEventCode()){
 		case EventPacket.SETCOORDINATES:

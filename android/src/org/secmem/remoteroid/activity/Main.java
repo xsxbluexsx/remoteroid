@@ -52,10 +52,10 @@ public class Main extends SherlockFragmentActivity implements
 		ConnectionStateListener {
 
 	// Fragments should be in static
-	private Fragment mAuthFragment;
-	private Fragment mConnectingFragment;
-	private Fragment mConnectedFragment;
-	private Fragment mDriverFragment;
+	private static Fragment mAuthFragment;
+	private static Fragment mConnectingFragment;
+	private static Fragment mConnectedFragment;
+	private static Fragment mDriverFragment;
 	
 	private IRemoteroid mRemoteroidSvc;
 	private ServiceConnection conn = new ServiceConnection() {
@@ -111,33 +111,37 @@ public class Main extends SherlockFragmentActivity implements
    public void showFragment(Fragment fragment){
 
     	if(mAuthFragment.equals(fragment)){
+    		lastFrag = AUTH_FRAG;
     		getSupportFragmentManager().beginTransaction()
     			.show(mAuthFragment)
     			.hide(mConnectingFragment)
     			.hide(mConnectedFragment)
     			.hide(mDriverFragment).commit();
-    		lastFrag = AUTH_FRAG;
+    		
     	}else if(mConnectingFragment.equals(fragment)){
+    		lastFrag = CONNECTING_FRAG;
     		getSupportFragmentManager().beginTransaction()
 				.hide(mAuthFragment)
 				.show(mConnectingFragment)
 				.hide(mConnectedFragment)
 				.hide(mDriverFragment).commit();
-    		lastFrag = CONNECTING_FRAG;
+    		
     	}else if(mConnectedFragment.equals(fragment)){
+    		lastFrag = CONNECTED_FRAG;
     		getSupportFragmentManager().beginTransaction()
 				.hide(mAuthFragment)
 				.hide(mConnectingFragment)
 				.show(mConnectedFragment)
 				.hide(mDriverFragment).commit();
-    		 lastFrag = CONNECTED_FRAG;
+    		 
     	}else{
+    		lastFrag = DRIVER_FRAG;
     		getSupportFragmentManager().beginTransaction()
 				.hide(mAuthFragment)
 				.hide(mConnectingFragment)
 				.hide(mConnectedFragment)
 				.show(mDriverFragment).commit();
-    		lastFrag = DRIVER_FRAG;
+    		
     	}
     }
    
@@ -165,12 +169,12 @@ public class Main extends SherlockFragmentActivity implements
         getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
         
         // instantiate fragments on first run
-        //if(savedInstanceState==null){
+        if(savedInstanceState==null){
         	mAuthFragment = new AuthenticateFragment(this);
         	mConnectingFragment = new ConnectingFragment(this);
         	mConnectedFragment = new ConnectedFragment(this);
         	mDriverFragment = new DriverInstallationFragment(this);
-        //}
+        }
         isDriverInstalled = CommandLine.isDriverExists(getApplicationContext());     
     }
     
@@ -226,7 +230,9 @@ public class Main extends SherlockFragmentActivity implements
 	    filter.addAction(RemoteroidIntent.ACTION_INTERRUPTED);
 	    filter.addAction(RemoteroidIntent.ACTION_DISCONNECTED);
 	    registerReceiver(serviceConnReceiver, filter);
-	    showLastFragment();
+	    
+	    if(!isDriverInstalled)
+	    	showLastFragment();
 	}
 	
 	@Override
@@ -315,7 +321,6 @@ public class Main extends SherlockFragmentActivity implements
 	
 	@Override
 	public void onConnected(String ipAddress) {
-		System.out.println("onConnected()");
 		showFragment(mConnectedFragment);
 	}
 
@@ -327,7 +332,6 @@ public class Main extends SherlockFragmentActivity implements
 	
 	@Override
 	public void onDisconnectRequested() {
-		System.out.println("Disconnected requested");
 		try {
 			mRemoteroidSvc.disconnect();
 		} catch (RemoteException e) {

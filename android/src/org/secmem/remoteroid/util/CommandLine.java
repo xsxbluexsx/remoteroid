@@ -180,19 +180,15 @@ public class CommandLine {
         File file;
         
         try{
-                // Check Busybox
-                file = new File(context.getFilesDir().getAbsolutePath()+"/busybox");
-                if(!file.exists())
-                        return false;
-                
-                // Check IDC
-                file = new File("/system/usr/idc/remoteroid.idc");
-                if(!file.exists())
-                        return false;
+        	// Check IDC
+            file = new File("/system/usr/idc/remoteroid.idc");
+            if(!file.exists())
+            	return false;
+            else
+            	return true;
         }catch(Exception e){
                 return false;
         }
-        return true;
     }
 
     public static void copyInputDrivers(Context context) throws IOException, SecurityException{
