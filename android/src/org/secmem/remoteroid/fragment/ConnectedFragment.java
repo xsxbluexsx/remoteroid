@@ -30,12 +30,18 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class ConnectedFragment extends Fragment {
 	
+	private TextView tvMessage;
+	private ProgressBar prgDisconnectPrg;
 	private Button btnDisconnect;
 	private ImageView ivCircuitBoard;
 	
+	
+	private boolean isDisconnectRequested = false;
 	private ConnectionStateListener mListener;
 	
 	public ConnectedFragment(){
@@ -55,17 +61,42 @@ public class ConnectedFragment extends Fragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		tvMessage = (TextView)view.findViewById(R.id.fragment_connected_msg);
+		prgDisconnectPrg = (ProgressBar)view.findViewById(R.id.fragment_connected_progress);
 		btnDisconnect = (Button)view.findViewById(R.id.disconnect);
 		ivCircuitBoard = (ImageView)view.findViewById(R.id.circuit_board);
-		ivCircuitBoard.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.blink_short));
+		
+		if(savedInstanceState!=null){
+			isDisconnectRequested = savedInstanceState.getBoolean("disconnect_requested");
+		}
+		
+		if(isDisconnectRequested){
+			ivCircuitBoard.setVisibility(View.INVISIBLE);
+			prgDisconnectPrg.setVisibility(View.VISIBLE);
+			tvMessage.setText(R.string.disconnecting);
+			btnDisconnect.setEnabled(false);
+		}else{
+			ivCircuitBoard.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.blink_short));
+		}
 		
 		btnDisconnect.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
+				isDisconnectRequested = true;
+				ivCircuitBoard.setVisibility(View.INVISIBLE);
+				prgDisconnectPrg.setVisibility(View.VISIBLE);
+				tvMessage.setText(R.string.disconnecting);
 				mListener.onDisconnectRequested();
 			}
 			
 		});
 	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putBoolean("disconnect_requested", isDisconnectRequested);
+	}
+	
 }

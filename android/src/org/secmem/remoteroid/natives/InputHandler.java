@@ -19,10 +19,12 @@
 
 package org.secmem.remoteroid.natives;
 
+import org.secmem.remoteroid.BuildConfig;
 import org.secmem.remoteroid.util.CommandLine;
 import org.secmem.remoteroid.util.Util;
 
 import android.content.Context;
+import android.util.Log;
 
 /**
  * Contains methods related to event injection.
@@ -30,6 +32,7 @@ import android.content.Context;
  *
  */
 public class InputHandler {
+	private static final String TAG = "InputHandler";
 	
 	private boolean isDeviceOpened = false;
 	private Context context;
@@ -151,12 +154,23 @@ public class InputHandler {
 	 * When user touches the screen, this method called first to set where user has touched, then {@link #touchDown()} called to notify user has touched screen.
 	 * @param x x coordinate that user has touched
 	 * @param y y coordinate that user has touched
+	 * @param ignoreCalibrations if this has set to true, ignore saved calibration data and will inject raw coordinates.
 	 */
-	public void touchSetPointer(int x, int y){
-		// Calculate calibrated coordinates
-		int calX = (int)((x + xOffset)*xScaleFactor);
-		int calY = (int)((y + yOffset)*yScaleFactor);
-		touchSetPtr(calX, calY);
+	public void touchSetPointer(int x, int y, boolean ignoreCalibrations){
+		if(BuildConfig.DEBUG)
+			Log.d(TAG, String.format("Got raw pointer (%d, %d)", x, y));
+		
+		if(!ignoreCalibrations){
+			// Calculate calibrated coordinates
+			int calX = (int)((x + xOffset)*xScaleFactor);
+			int calY = (int)((y + yOffset)*yScaleFactor);
+			if(BuildConfig.DEBUG)
+				Log.d(TAG, String.format("Pointer calibrated (%d, %d)", calX, calY));
+			touchSetPtr(calX, calY);
+		}else{
+			touchSetPtr(x, y);
+		}
+		
 	}
 	
 	

@@ -12,7 +12,7 @@
         android:gravity="center"
         android:text="@string/connected"
         android:layout_weight="1"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceLarge" android:id="@+id/fragment_connected_msg"/>
 
     <FrameLayout
         android:layout_width="fill_parent"
@@ -31,6 +31,13 @@
             android:layout_height="fill_parent"
             android:scaleType="centerCrop"
             android:src="@drawable/img_authenticate_blue" />
+
+        <ProgressBar
+            android:id="@+id/fragment_connected_progress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_gravity="center" android:visibility="gone"/>
+
     </FrameLayout>
 
     <Button

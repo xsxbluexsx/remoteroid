@@ -19,7 +19,6 @@
 
 package org.secmem.remoteroid.service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.activity.Main;
 import org.secmem.remoteroid.data.RDSmsMessage;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
-import org.secmem.remoteroid.natives.FrameHandler;
 import org.secmem.remoteroid.natives.InputHandler;
 import org.secmem.remoteroid.network.FileTransmissionListener;
 import org.secmem.remoteroid.network.FrameBufferRequestListener;
@@ -45,13 +43,13 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.telephony.PhoneStateListener;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
-import android.util.*;
 
 
 /**
@@ -64,12 +62,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	
 	private Tranceiver mTransmitter;
 	private InputHandler mInputHandler;
-	private ServiceState mState = ServiceState.IDLE;
-//	private FrameHandler frameHandler  = new FrameHandler(getApplicationContext());
-	
-	private boolean flag = true;
-	
-	private boolean frameFlag = false;
+	private static ServiceState mState = ServiceState.IDLE;
 	
 	private IBinder mBinder = new IRemoteroid.Stub() {
 		
@@ -108,34 +101,54 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		}
 
 		@Override
-		public void connect(String ipAddress, String password)
+		public void connect(final String ipAddress, final String password)
 				throws RemoteException {
-			try {
-				mState = ServiceState.CONNECTING;
-				
-				// Start connection and receive events from server
-				mTransmitter.connect(ipAddress);				
+			
+			new AsyncTask<Void, Void, Boolean>(){
 
-				//Send devices resolution to host for coordinate transformation;
-				mTransmitter.sendDeviceInfo(getApplicationContext().getResources().getDisplayMetrics());
+				@Override
+				protected Boolean doInBackground(Void... params) {
+					try {
+						mState = ServiceState.CONNECTING;
+						
+						// Start connection and receive events from server
+						mTransmitter.connect(ipAddress);
+						//Send devices resolution to host for coordinate transformation;
+						mTransmitter.sendDeviceInfo(getApplicationContext().getResources().getDisplayMetrics());
+						// Open input device
+						return mInputHandler.open();
+					} catch (IOException e) {
+						sendBroadcast(new Intent(RemoteroidIntent.ACTION_INTERRUPTED));
+						dismissNotification();
+						e.printStackTrace();
+						return false;
+					}
+				}
 				
-				// Open input device
-				mInputHandler.open();
+				@Override
+				public void onPostExecute(Boolean result){
+					if(result){ // Connected
+						// Listen incoming calls
+						TelephonyManager telManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+						telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_CALL_STATE);
+						
+						// TODO Start fetch frame buffer and send it to server
+						
+						sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTED).putExtra("ip", ipAddress));
+						
+						showConnectionNotification(ipAddress);
+						
+						mState = ServiceState.CONNECTED;
+						
+					}else{ // Connection failed
+						sendBroadcast(new Intent(RemoteroidIntent.ACTION_INTERRUPTED));
+						dismissNotification();
+						mState = ServiceState.IDLE;
+					}
+				}
 				
-				// Listen incoming calls
-				TelephonyManager telManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-				telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_CALL_STATE);
-				// TODO Start fetch frame buffer and send it to server
-				sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTED).putExtra("ip", ipAddress));
-				showConnectionNotification(ipAddress);
-				
-				mState = ServiceState.CONNECTED;
-			} catch (IOException e) {
-				e.printStackTrace();
-				sendBroadcast(new Intent(RemoteroidIntent.ACTION_INTERRUPTED));
-				dismissNotification();
-				mState = ServiceState.IDLE;
-			}
+			}.execute();
+			
 		}
 
 		@Override
@@ -145,10 +158,24 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 			
 			dismissNotification();
 			
-			mInputHandler.close();
-			mTransmitter.disconnect();
-			mState = ServiceState.IDLE;
-			sendBroadcast(new Intent(RemoteroidIntent.ACTION_DISCONNECTED));
+			// Do time-consuming (blocks UI thread, causes activity death) task on here
+			new AsyncTask<Void, Void, Void>(){
+
+				@Override
+				protected Void doInBackground(Void... params) {
+					mInputHandler.close();
+					mTransmitter.disconnect();
+					mState = ServiceState.IDLE;
+					return null;
+				}
+				
+				@Override
+				protected void onPostExecute(Void result){
+					// Sending broadcast for disconnection..
+					sendBroadcast(new Intent(RemoteroidIntent.ACTION_DISCONNECTED));
+				}
+				
+			}.execute();
 		}
 
 
@@ -171,6 +198,9 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	}
 	
 	public ServiceState getConnectionState(){
+		if(mState.equals(ServiceState.CONNECTED)&&mTransmitter.isConnected()){
+			mState = ServiceState.CONNECTED;
+		}
 		return mState;
 	}
 	
@@ -214,7 +244,6 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		flag=false;
 	}
 
 
@@ -248,9 +277,9 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		Notification notification = new Notification();
 		PendingIntent intent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(this, Main.class), 0);
 		notification.icon = R.drawable.ic_launcher;
-		notification.tickerText = String.format("Connected to %s", ipAddress);
+		notification.tickerText = String.format(getString(R.string.connected_to_s), ipAddress);
 		notification.when = System.currentTimeMillis();
-		notification.setLatestEventInfo(getApplicationContext(), "Remoteroid", String.format("Connected to %s", ipAddress), intent);
+		notification.setLatestEventInfo(getApplicationContext(), getString(R.string.app_name), String.format(getString(R.string.connected_to_s), ipAddress), intent);
 		
 		notification.flags |= Notification.FLAG_ONGOING_EVENT;
 		NotificationManager notifManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
@@ -259,14 +288,14 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	
 	private void dismissNotification(){
 		NotificationManager notifManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-		notifManager.cancel(NOTIFICATION_ID);
+		notifManager.cancelAll();
 	}
 
 
 	@Override
 	public void onSetCoordinates(int xPosition, int yPosition) {
 		if(mInputHandler.isDeviceOpened())
-			mInputHandler.touchSetPointer(xPosition, yPosition);
+			mInputHandler.touchSetPointer(xPosition, yPosition, true);
 		
 	}
 
@@ -347,6 +376,8 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		
 		return result;
 	}
+	
+	private boolean frameFlag = false; // Taeho : What is this variable means for?
 
 	@Override
 	public void onStartFrameBuffer() {

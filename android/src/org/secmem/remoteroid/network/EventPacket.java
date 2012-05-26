@@ -102,5 +102,10 @@ public class EventPacket {
 			break;				
 		}						
 		return eventPacket;
-	}	
+	}
+	
+	@Override
+	public String toString(){
+		return "EventPacket x="+xPosition+" y="+yPosition;
+	}
 }

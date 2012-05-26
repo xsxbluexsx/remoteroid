@@ -24,13 +24,6 @@
             android:layout_height="fill_parent"
             android:scaleType="centerCrop"
             android:src="@drawable/img_authenticate" />
-
-        <ImageView
-            android:id="@+id/circuit_board"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/img_authenticate_blue" />
     </FrameLayout>
 
     <Button
