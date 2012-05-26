@@ -315,7 +315,7 @@ UINT CRemotroidServerDlg::AcceptFunc(LPVOID pParam)
 	{		
 		return 0;
 	}
-	//AfxMessageBox(_T("sdfsd"));
+	AfxMessageBox(_T("sdfsd"));
 	CMyClient *pClient = new CMyClient(ClientSocket);
 	pClient->SetNoDelay(TRUE);
 
