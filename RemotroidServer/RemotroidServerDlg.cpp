@@ -46,9 +46,6 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CRemotroidServerDlg dialog
-
-
 
 
 CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
@@ -64,6 +61,11 @@ CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
 	
 }
 
+CRemotroidServerDlg::~CRemotroidServerDlg()
+{
+	m_TrayIcon.RemoveIcon();
+}
+
 void CRemotroidServerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
@@ -71,6 +73,8 @@ void CRemotroidServerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BTN_HOME, m_HomeButton);
 	DDX_Control(pDX, IDC_BTN_MENU, m_MenuButton);	
 	DDX_Control(pDX, IDC_PROGRESS1, m_progressCtrl);
+	DDX_Control(pDX, IDC_BTN_TRAY, m_TrayButton);
+	DDX_Control(pDX, IDC_BTN_CLOSE, m_CloseButton);
 }
 
 BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
@@ -80,14 +84,14 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDOK, &CRemotroidServerDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CRemotroidServerDlg::OnBnClickedCancel)	
-	ON_WM_DROPFILES()
-	ON_MESSAGE(WM_RECVJPGINFO, OnRecvJpgInfo)
-	ON_MESSAGE(WM_RECVJPGDATA, OnRecvJpgData)
+	ON_WM_DROPFILES()	
 	ON_MESSAGE(WM_MYENDRECV, OnEndRecv)
 	ON_MESSAGE(WM_MYENDACCEPT, OnEndAccept)
 	ON_MESSAGE(WM_READYRECVFILE, OnReadyRecvFile)	
 	ON_MESSAGE(WM_CREATEPOPUPDLG, OnCreatePopupDlg)
 	ON_MESSAGE(WM_CLOSEPOPDLG, OnClosePopDlg)
+	ON_MESSAGE(WM_ICON_NOTIFY, OnTrayNotification)
+	ON_MESSAGE(WM_MYDBLCLKTRAY, OnMyDblClkTray)
 	
 	
 	ON_WM_MOUSEMOVE()
@@ -98,9 +102,11 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	
 	ON_BN_CLICKED(IDC_BTN_BACK, &CRemotroidServerDlg::OnClickedBtnBack)
 	ON_BN_CLICKED(IDC_BTN_HOME, &CRemotroidServerDlg::OnClickedBtnHome)
-	ON_BN_CLICKED(IDC_BTN_MENU, &CRemotroidServerDlg::OnClickedBtnMenu)	
-	ON_BN_CLICKED(IDC_BUTTON1, &CRemotroidServerDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BTN_MENU, &CRemotroidServerDlg::OnClickedBtnMenu)		
 	ON_WM_KEYUP()
+	ON_BN_CLICKED(IDC_BTN_TRAY, &CRemotroidServerDlg::OnBnClickedBtnTray)
+	ON_BN_CLICKED(IDC_BTN_CLOSE, &CRemotroidServerDlg::OnBnClickedBtnClose)
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -158,6 +164,14 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	m_MenuButton.MoveWindow(60, 710, BUTTONWIDTH, BUTTONHEIGHT);
 	m_HomeButton.MoveWindow(60+BUTTONWIDTH, 710, BUTTONWIDTH, BUTTONHEIGHT);
 	m_BackButton.MoveWindow(60+BUTTONWIDTH*2, 710, BUTTONWIDTH, BUTTONHEIGHT);
+
+	m_TrayButton.MoveWindow(350, 30, 19, 16);
+	m_CloseButton.MoveWindow(350+19, 30, 19, 16);
+	
+	m_CloseButton.LoadBitmaps(IDB_BITMAP_CLOSE_MAIN);
+	m_CloseButton.SetHoverBitmapID(IDB_BITMAP_HOVER_MAIN);
+	m_TrayButton.LoadBitmaps(IDB_BITMAP_TRAYBTN);
+	m_TrayButton.SetHoverBitmapID(IDB_BITMAP_TRAY_HOVER);
 
 
 	m_HomeButton.LoadBitmaps(IDB_BITMAP_HOME, IDB_BITMAP_HOME_CLICK);
@@ -227,7 +241,13 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	::SystemParametersInfo(SPI_GETWORKAREA, 0, &systemRc, 0);
 	GetClientRect(&rc);	
 	
+
+	//트레이 아이콘 등록
+	if(!m_TrayIcon.Create(this, WM_ICON_NOTIFY, _T("Remoteroid"), NULL, NULL))
+		return -1;
+	m_TrayIcon.SetIcon(IDR_MAINFRAME);
 	
+	SetWindowText(_T("Remoteroid"));
 
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }
@@ -463,6 +483,7 @@ void CRemotroidServerDlg::OnBnClickedOk()
 void CRemotroidServerDlg::OnBnClickedCancel()
 {
 	// TODO: Add your control notification handler code here
+	
 	CDialogEx::OnCancel();
 }
 
@@ -500,22 +521,6 @@ void CRemotroidServerDlg::OnDropFiles(HDROP hDropInfo)
 	CDialogEx::OnDropFiles(hDropInfo);
 }
 
-
-LRESULT CRemotroidServerDlg::OnRecvJpgInfo(WPARAM wParam, LPARAM lParam)
-{
-// 	char *data = (char*)lParam;
-// 	screen.SetJpgInfo(data);
-	return LRESULT();
-}
-
-
-LRESULT CRemotroidServerDlg::OnRecvJpgData(WPARAM wParam, LPARAM lParam)
-{
-// 	int packetSize = wParam;
-// 	char *data = (char *)lParam;
-// 	screen.RecvJpgData(data, packetSize);
-	return LRESULT();
-}
 
 //////////////////////////////////////////////////////////////////
 ////쓰레드 정상 종료를 위한 함수들
@@ -660,6 +665,10 @@ void CRemotroidServerDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 BOOL CRemotroidServerDlg::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: Add your specialized code here and/or call the base class
+	//esc 종료 방지
+	if(pMsg->wParam == VK_ESCAPE)
+		return TRUE;
+
 	if((pMsg->message == WM_KEYDOWN) || (pMsg->message == WM_KEYUP))
 	{
 		SendMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
@@ -789,14 +798,6 @@ void CRemotroidServerDlg::OnClickedBtnMenu()
 }
 
 
-
-void CRemotroidServerDlg::OnBnClickedButton1()
-{
-	// TODO: Add your control notification handler code here
-	
-}
-
-
 LRESULT CRemotroidServerDlg::OnCreatePopupDlg(WPARAM wParam, LPARAM lParam)
 {
 	char *data = (char*)lParam;
@@ -828,4 +829,52 @@ LRESULT CRemotroidServerDlg::OnClosePopDlg(WPARAM wParam, LPARAM lParam)
 	CPopupDlg *pDlg = (CPopupDlg *)wParam;
 	m_popDlgMgr.RemoveAndMove(pDlg);
 	return LRESULT();
+}
+
+
+LRESULT CRemotroidServerDlg::OnTrayNotification(WPARAM wParam, LPARAM lParam)
+{
+	return m_TrayIcon.OnTrayNotification(wParam, lParam);
+}
+
+LRESULT CRemotroidServerDlg::OnMyDblClkTray(WPARAM wParam, LPARAM lParam)
+{
+	CUtil::AniMaximiseFromTray(AfxGetMainWnd()->GetSafeHwnd());
+	ShowWindow(SW_RESTORE);
+	return LRESULT();
+}
+
+
+void CRemotroidServerDlg::OnBnClickedBtnTray()
+{
+	// TODO: Add your control notification handler code here
+	CUtil::AniMinimizeToTray(GetSafeHwnd());	
+	ShowWindow(SW_HIDE);
+}
+
+
+void CRemotroidServerDlg::OnBnClickedBtnClose()
+{
+	// TODO: Add your control notification handler code here
+	PostMessage(WM_CLOSE, 0, 0);
+}
+
+
+void CRemotroidServerDlg::OnClose()
+{
+	// TODO: Add your message handler code here and/or call default
+	
+	if(pRecvThread != NULL)
+	{
+		int ret = MessageBox(_T("현재 접속 중입니다\n종료하시겠습니까?"), _T("종료"), MB_YESNO);
+		if(ret == IDNO)		
+			return;		
+	}
+	else
+	{
+		int ret = MessageBox(_T("종료하시겠습니까?"), _T("종료"), MB_YESNO);
+		if(ret == IDNO)
+			return;
+	}
+	CImageDlg::OnClose();
 }

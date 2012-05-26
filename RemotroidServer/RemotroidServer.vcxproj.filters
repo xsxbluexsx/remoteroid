@@ -83,6 +83,18 @@
     <None Include="res\alram.wav">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\XBtn_main.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\XBtn_main_hover.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\traybtn_hover.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\traybtn.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RemotroidServer.h">
@@ -151,6 +163,9 @@
     <ClInclude Include="PopupDlgMgr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TrayIcon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RemotroidServer.cpp">
@@ -202,6 +217,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PopupDlgMgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TrayIcon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

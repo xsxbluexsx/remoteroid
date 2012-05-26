@@ -118,8 +118,12 @@
     <None Include="res\remoteroid_logo_wnd.bmp" />
     <None Include="res\RemotroidServer.ico" />
     <None Include="res\RemotroidServer.rc2" />
+    <None Include="res\traybtn.bmp" />
+    <None Include="res\traybtn_hover.bmp" />
     <None Include="res\XBtn.bmp" />
     <None Include="res\XBtn_hover.bmp" />
+    <None Include="res\XBtn_main.bmp" />
+    <None Include="res\XBtn_main_hover.bmp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMyMemDC.h" />
@@ -142,6 +146,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TextProgressCtrl.h" />
+    <ClInclude Include="TrayIcon.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="VitualEventPacket.h" />
   </ItemGroup>
@@ -164,6 +169,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TextProgressCtrl.cpp" />
+    <ClCompile Include="TrayIcon.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="VitualEventPacket.cpp" />
   </ItemGroup>

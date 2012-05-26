@@ -42,3 +42,47 @@ void CUtil::UtfToUni(TCHAR * uni, char * utf)
 	int nLen = MultiByteToWideChar(CP_UTF8, 0, utf, strlen(utf)+1, NULL, NULL);
 	MultiByteToWideChar(CP_UTF8, 0, utf, strlen(utf)+1, uni, nLen);
 }
+
+//트래이로 이동하는 애니메이션
+void CUtil::AniMinimizeToTray(HWND hwnd)
+{
+	RECT rectTo, rectFrom;
+	::GetWindowRect(hwnd, &rectFrom);
+
+	GetTrayWndRect(&rectTo);
+	DrawAnimatedRects(hwnd, IDANI_CAPTION, &rectFrom, &rectTo);
+}
+
+
+void CUtil::GetTrayWndRect(RECT * pRect)
+{
+	HWND hwndTaskBar=::FindWindow(_T("Shell_TrayWnd"), NULL);
+	if (hwndTaskBar){
+		HWND hwndTray=::FindWindowEx(hwndTaskBar, NULL, _T("TrayNotifyWnd"), NULL);
+		if (hwndTray)
+			::GetWindowRect(hwndTray, pRect);
+		else{
+			//tray부분을 못찾으면 task바의 구석탱이를 그렇다고 믿게 하자.
+			::GetWindowRect(hwndTaskBar, pRect);
+			pRect->left=pRect->right-20;
+			pRect->top=pRect->bottom-20;
+		}
+	}
+	else{
+		//task바를 못찾으면 그냥 화면 하단부
+		int nWidth = GetSystemMetrics(SM_CXSCREEN);
+		int nHeight = GetSystemMetrics(SM_CYSCREEN);
+		SetRect(pRect, nWidth-40, nHeight-20, nWidth, nHeight);
+	}
+}
+
+
+void CUtil::AniMaximiseFromTray(HWND hwnd)
+{
+	RECT rectFrom;
+	GetTrayWndRect(&rectFrom);
+	WINDOWPLACEMENT wndpl;
+	::GetWindowPlacement(hwnd, &wndpl);    //최소화된 상태에서 죽으면 GetWindowRect로 안됨
+
+	DrawAnimatedRects(hwnd, IDANI_CAPTION, &rectFrom, &wndpl.rcNormalPosition);
+}

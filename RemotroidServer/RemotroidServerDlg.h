@@ -16,6 +16,8 @@
 #include "KeyCodeGen.h"
 #include "PopupDlg.h"
 #include "PopupDlgMgr.h"
+#include "TrayIcon.h"
+
 
 
 // CRemotroidServerDlg dialog
@@ -24,6 +26,7 @@ class CRemotroidServerDlg : public CImageDlg
 // Construction
 public:
 	CRemotroidServerDlg(CWnd* pParent = NULL);	// standard constructor
+	~CRemotroidServerDlg();
 
 // Dialog Data
 	enum { IDD = IDD_REMOTROIDSERVER_DIALOG };
@@ -41,6 +44,8 @@ protected:
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
+	
+	afx_msg LONG OnTrayNotification(UINT wParam, LONG lParam);
 	DECLARE_MESSAGE_MAP()
 
 
@@ -70,9 +75,7 @@ public:
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);	
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	
-	LRESULT OnRecvJpgInfo(WPARAM wParam, LPARAM lParam);
-	LRESULT OnRecvJpgData(WPARAM wParam, LPARAM lParam);
+		
 	LRESULT OnEndAccept(WPARAM wParam, LPARAM lParam);
 	LRESULT OnReadyRecvFile(WPARAM wParam, LPARAM lParam);
 	LRESULT OnEndRecv(WPARAM wParam, LPARAM lParam);
@@ -101,15 +104,23 @@ public:
 	CMyBitmapBtn m_BackButton;
 	CMyBitmapBtn m_HomeButton;
 	CMyBitmapBtn m_MenuButton;
+	CMyBitmapBtn m_TrayButton;
+	CMyBitmapBtn m_CloseButton;
+
+	CTextProgressCtrl m_progressCtrl;
+	CTrayIcon m_TrayIcon;
 	
 	afx_msg void OnClickedBtnBack();
 	afx_msg void OnClickedBtnHome();
 	afx_msg void OnClickedBtnMenu();	
-	afx_msg void OnBnClickedButton1();
-	CTextProgressCtrl m_progressCtrl;
+	
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	LRESULT OnAnimation(WPARAM wParam, LPARAM lParam);
 	LRESULT OnCreatePopupDlg(WPARAM wParam, LPARAM lParam);	
 
-	LRESULT OnClosePopDlg(WPARAM wParam, LPARAM lParam);
+	LRESULT OnClosePopDlg(WPARAM wParam, LPARAM lParam);	
+	LRESULT OnMyDblClkTray(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnBnClickedBtnTray();
+	afx_msg void OnBnClickedBtnClose();
+	afx_msg void OnClose();
 };
