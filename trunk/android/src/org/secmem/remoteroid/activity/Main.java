@@ -56,7 +56,7 @@ public class Main extends SherlockFragmentActivity implements
 	private static Fragment mConnectingFragment;
 	private static Fragment mConnectedFragment;
 	private static Fragment mDriverFragment;
-
+	
 	private IRemoteroid mRemoteroidSvc;
 	private ServiceConnection conn = new ServiceConnection() {
 
@@ -99,90 +99,50 @@ public class Main extends SherlockFragmentActivity implements
 	private int lastFrag;
 
 	private boolean isDriverInstalled = false;
+	
+	public void hideAllFragment(){
+    	getSupportFragmentManager().beginTransaction()
+		.hide(mAuthFragment)
+		.hide(mConnectingFragment)
+		.hide(mConnectedFragment)
+		.hide(mDriverFragment).commit();
+    }
+	    
+   public void showFragment(Fragment fragment){
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		getSupportActionBar().setBackgroundDrawable(
-				this.getResources().getDrawable(R.drawable.bg_red));
-
-		// Add fragments on first run
-		if (savedInstanceState == null) {
-			mAuthFragment = new AuthenticateFragment(this);
-			mConnectingFragment = new ConnectingFragment(this);
-			mConnectedFragment = new ConnectedFragment(this);
-			mDriverFragment = new DriverInstallationFragment(this);
-
-			getSupportFragmentManager().beginTransaction()
-					.add(R.id.container, mAuthFragment)
-					.add(R.id.container, mConnectingFragment)
-					.add(R.id.container, mConnectedFragment)
-					.add(R.id.container, mDriverFragment).commit();
-		}
-
-		hideAllFragment();
-		isDriverInstalled = CommandLine.isDriverExists(getApplicationContext());
-	}
-
-	public void onStart() {
-		super.onStart();
-		// Check driver existence
-		if (!isDriverInstalled) {
-			showFragment(mDriverFragment);
-		} else {
-			bindService(new Intent(this, RemoteroidService.class), conn,
-					Context.BIND_AUTO_CREATE);
-		}
-	}
-
-	public void hideAllFragment() {
-		getSupportFragmentManager().beginTransaction().hide(mAuthFragment)
-				.hide(mConnectingFragment).hide(mConnectedFragment)
+    	if(mAuthFragment.equals(fragment)){
+    		getSupportFragmentManager().beginTransaction()
+    			.show(mAuthFragment)
+    			.hide(mConnectingFragment)
+    			.hide(mConnectedFragment)
+    			.hide(mDriverFragment).commit();
+    		lastFrag = AUTH_FRAG;
+    	}else if(mConnectingFragment.equals(fragment)){
+    		getSupportFragmentManager().beginTransaction()
+				.hide(mAuthFragment)
+				.show(mConnectingFragment)
+				.hide(mConnectedFragment)
 				.hide(mDriverFragment).commit();
-	}
-
-	public void showFragment(Fragment fragment) {
-		if (mAuthFragment.equals(fragment)) {
-			getSupportFragmentManager().beginTransaction().show(mAuthFragment)
-					.hide(mConnectingFragment).hide(mConnectedFragment)
-					.hide(mDriverFragment).commit();
-			lastFrag = AUTH_FRAG;
-		} else if (mConnectingFragment.equals(fragment)) {
-			getSupportFragmentManager().beginTransaction().hide(mAuthFragment)
-					.show(mConnectingFragment).hide(mConnectedFragment)
-					.hide(mDriverFragment).commit();
-			lastFrag = CONNECTING_FRAG;
-		} else if (mConnectedFragment.equals(fragment)) {
-			getSupportFragmentManager().beginTransaction().hide(mAuthFragment)
-					.hide(mConnectingFragment).show(mConnectedFragment)
-					.hide(mDriverFragment).commit();
-			lastFrag = CONNECTED_FRAG;
-		} else {
-			getSupportFragmentManager().beginTransaction().hide(mAuthFragment)
-					.hide(mConnectingFragment).hide(mConnectedFragment)
-					.show(mDriverFragment).commit();
-			lastFrag = DRIVER_FRAG;
-		}
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		outState.putInt("lastFrag", lastFrag);
-		super.onSaveInstanceState(outState);
-	}
-
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		lastFrag = savedInstanceState.getInt("lastFrag");
-		switch (lastFrag) {
+    		lastFrag = CONNECTING_FRAG;
+    	}else if(mConnectedFragment.equals(fragment)){
+    		getSupportFragmentManager().beginTransaction()
+				.hide(mAuthFragment)
+				.hide(mConnectingFragment)
+				.show(mConnectedFragment)
+				.hide(mDriverFragment).commit();
+    		 lastFrag = CONNECTED_FRAG;
+    	}else{
+    		getSupportFragmentManager().beginTransaction()
+				.hide(mAuthFragment)
+				.hide(mConnectingFragment)
+				.hide(mConnectedFragment)
+				.show(mDriverFragment).commit();
+    		lastFrag = DRIVER_FRAG;
+    	}
+    }
+   
+   public void showLastFragment(){
+	   switch(lastFrag){
 		case AUTH_FRAG:
 			showFragment(mAuthFragment);
 			break;
@@ -196,6 +156,96 @@ public class Main extends SherlockFragmentActivity implements
 			showFragment(mDriverFragment);
 			break;
 		}
+   }
+	
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
+        
+        // instantiate fragments on first run
+        if(savedInstanceState==null){
+        	mAuthFragment = new AuthenticateFragment(this);
+        	mConnectingFragment = new ConnectingFragment(this);
+        	mConnectedFragment = new ConnectedFragment(this);
+        	mDriverFragment = new DriverInstallationFragment(this);
+        }
+        isDriverInstalled = CommandLine.isDriverExists(getApplicationContext());     
+    }
+    
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		lastFrag = savedInstanceState.getInt("lastFrag");
+		
+		hideAllFragment();
+		switch(lastFrag){
+		case AUTH_FRAG:
+			showFragment(mAuthFragment);
+			break;
+		case CONNECTING_FRAG:
+			showFragment(mConnectingFragment);
+			break;
+		case CONNECTED_FRAG:
+			showFragment(mConnectedFragment);
+			break;
+		case DRIVER_FRAG:
+			showFragment(mDriverFragment);
+			break;
+		}
+		
+	}
+
+    
+    public void onStart(){
+    	super.onStart();
+    	
+        getSupportFragmentManager().beginTransaction()
+		.add(R.id.container, mAuthFragment)
+		.add(R.id.container, mConnectingFragment)
+		.add(R.id.container, mConnectedFragment)
+		.add(R.id.container, mDriverFragment).commit();
+    
+    	//Check driver existence
+        if(!isDriverInstalled){
+            showFragment(mDriverFragment);
+        }else{
+        	bindService(new Intent(this, RemoteroidService.class), conn, Context.BIND_AUTO_CREATE);
+       	}
+    }
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		// Register receiver to get broadcast from service
+		IntentFilter filter = new IntentFilter();
+	    filter.addAction(RemoteroidIntent.ACTION_CONNECTED);
+	    filter.addAction(RemoteroidIntent.ACTION_CONNECTION_FAILED);
+	    filter.addAction(RemoteroidIntent.ACTION_DEVICE_OPEN_FAILED);
+	    filter.addAction(RemoteroidIntent.ACTION_INTERRUPTED);
+	    filter.addAction(RemoteroidIntent.ACTION_DISCONNECTED);
+	    registerReceiver(serviceConnReceiver, filter);
+	    showLastFragment();
+	}
+	
+	@Override
+	protected void onPause(){
+		super.onPause();
+		unregisterReceiver(serviceConnReceiver);
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		
+		if(mRemoteroidSvc!=null)
+			unbindService(conn);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putInt("lastFrag", lastFrag);
 	}
 
 	@Override
@@ -225,58 +275,44 @@ public class Main extends SherlockFragmentActivity implements
 		return super.onOptionsItemSelected(item);
 	}
 
+	
+	
+	private BroadcastReceiver serviceConnReceiver = new BroadcastReceiver(){
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			
+			if(RemoteroidIntent.ACTION_CONNECTED.equals(action))
+				onConnected(intent.getStringExtra("ip"));
+			else if(RemoteroidIntent.ACTION_DEVICE_OPEN_FAILED.equals(action) || RemoteroidIntent.ACTION_CONNECTION_FAILED.equals(action))
+				onConnectionFailed();
+			else if(RemoteroidIntent.ACTION_DISCONNECTED.equals(action))
+				onDisconnected();
+			else if(RemoteroidIntent.ACTION_INTERRUPTED.equals(action))
+				onConnectionInterrupted();
+        }
+        
+	};
+
 	@Override
 	public void onConnectRequested(String ipAddress, String password) {
-		Toast.makeText(getApplicationContext(), "Connected to server.",
-				Toast.LENGTH_SHORT).show();
-
+		System.out.println("why?");
 		showFragment(mConnectingFragment);
-
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(RemoteroidIntent.ACTION_CONNECTED);
-		filter.addAction(RemoteroidIntent.ACTION_INTERRUPTED);
-		registerReceiver(serviceConnReceiver, filter);
-
+	
 		try {
 			mRemoteroidSvc.connect(ipAddress, password);
 		} catch (RemoteException e) {
 			e.printStackTrace();
-			unregisterReceiver(serviceConnReceiver);
+			
 			showFragment(mAuthFragment);
 		}
 	}
-
-	private BroadcastReceiver serviceConnReceiver = new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-
-			if (RemoteroidIntent.ACTION_CONNECTED.equals(action))
-				onConnected(intent.getStringExtra("ip"));
-			else
-				onConnectionFailed();
-
-			unregisterReceiver(serviceConnReceiver);
-		}
-
-	};
-
-	@Override
-	public void onConnected(String ipAddress) {
-		showFragment(mConnectedFragment);
-	}
-
-	@Override
-	public void onDisconnectRequested() {
-		showFragment(mAuthFragment);
-	}
-
+	
 	@Override
 	public void onConnectionCanceled() {
 		Toast.makeText(getApplicationContext(), R.string.connection_cancelled,
 				Toast.LENGTH_SHORT).show();
-		unregisterReceiver(serviceConnReceiver);
 		showFragment(mAuthFragment);
 	}
 
@@ -287,18 +323,42 @@ public class Main extends SherlockFragmentActivity implements
 		// Failed to connect. return to AuthenticateFragment.
 		showFragment(mAuthFragment);
 	}
+	
+	@Override
+	public void onConnected(String ipAddress) {
+		System.out.println("onConnected()");
+		showFragment(mConnectedFragment);
+	}
 
+	@Override
+	public void onConnectionInterrupted() {
+		Toast.makeText(getApplicationContext(), R.string.connection_with_server_has_interrupted, Toast.LENGTH_SHORT).show();
+		showFragment(mAuthFragment);
+	}
+	
+	@Override
+	public void onDisconnectRequested() {
+		System.out.println("Disconnected requested");
+		try {
+			mRemoteroidSvc.disconnect();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void onDisconnected() {
+		Toast.makeText(getApplicationContext(), R.string.disconnected_from_server, Toast.LENGTH_SHORT).show();
+		showFragment(mAuthFragment);
+	}
+	
 	@Override
 	public void onDriverInstalled() {
 		// Proceed to authenticate fragment
 		showFragment(mAuthFragment);
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		// if(mRemoteroidSvc!=null)
-		// unbindService(conn);
+		
+		// Bind to remoteroid service
+		bindService(new Intent(this, RemoteroidService.class), conn, Context.BIND_AUTO_CREATE);
 	}
 
 }

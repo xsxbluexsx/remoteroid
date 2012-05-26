@@ -20,26 +20,19 @@
 package org.secmem.remoteroid.fragment;
 
 import org.secmem.remoteroid.R;
-import org.secmem.remoteroid.util.HongUtil;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.ImageView;
 
 public class ConnectingFragment extends Fragment {
 	
 	public static boolean isFinished=false;
 	
-	private ImageView mIvCircuit;
 	private Button mBtnCancel;
 	
 	private ConnectionStateListener mListener;
@@ -61,9 +54,8 @@ public class ConnectingFragment extends Fragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		mIvCircuit = (ImageView)view.findViewById(R.id.circuit_board);
+		
 		mBtnCancel = (Button)view.findViewById(R.id.cancel);
-		mIvCircuit.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.blink));
 		
 		mBtnCancel.setOnClickListener(new OnClickListener(){
 
@@ -74,21 +66,5 @@ public class ConnectingFragment extends Fragment {
 			
 		});
 	}
-	
-	private BroadcastReceiver service_BR = new BroadcastReceiver() {
-		
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			
-			if(intent.getAction().equals("connecting_fragment_connect")){
-				if(intent.getBooleanExtra("isConnected", true)){
-					HongUtil.makeToast(getActivity(), "Success");
-				}
-				else{
-					HongUtil.makeToast(getActivity(), "Fail");
-				}
-				getFragmentManager().beginTransaction().replace(R.id.container, new AuthenticateFragment()).commit();
-			}
-		}
-	};
+
 }

@@ -1,5 +1,6 @@
 package org.secmem.remoteroid.activity;
 
+import org.secmem.remoteroid.BuildConfig;
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
 import org.secmem.remoteroid.service.CalibrationService;
@@ -14,6 +15,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,16 +26,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class TouchCalibrationActivity extends Activity{
+	private static final String TAG = "TouchCalibration";
 	
 	private TextView mTvMessage;
 	private ProgressBar mProgress;
 	
 	private boolean mIsCalibrating = false;
 	
-	// When activity restarts, non-static variable's value is discarded.
-	// Put static modifier to variables below to prevent loss of value.
-	private static int displayWidth;
-	private static int displayHeight;
+	private int displayWidth;
+	private int displayHeight;
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -66,11 +67,27 @@ public class TouchCalibrationActivity extends Activity{
 	}
 	
 	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		if(savedInstanceState!=null){
+			count = savedInstanceState.getInt("count");
+			displayWidth = savedInstanceState.getInt("displayWidth");
+			displayHeight = savedInstanceState.getInt("displayHeight");
+		}
+	}
+	
+	@Override
 	protected void onStart() {
 		super.onStart();
 		IntentFilter filter = new IntentFilter();
 	    filter.addAction(RemoteroidIntent.ACTION_DEVICE_OPEN_FAILED);
 	    registerReceiver(DeviceReceiver, filter);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putInt("count", count);
+		outState.putInt("displayWidth", displayWidth);
+		outState.putInt("displayHeight", displayHeight);
 	}
 
 	@Override
@@ -128,7 +145,6 @@ public class TouchCalibrationActivity extends Activity{
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if(event.getAction()==MotionEvent.ACTION_DOWN){
-			
 			if(count>=0){
 				// Calibration cancelled
 				Toast.makeText(getApplicationContext(), R.string.calibration_failed, Toast.LENGTH_SHORT).show();
@@ -140,25 +156,38 @@ public class TouchCalibrationActivity extends Activity{
 			if(touchCnt<2){
 				calPoints[touchCnt].x = (int)event.getX();
 				calPoints[touchCnt].y = (int)event.getY();
+				if(BuildConfig.DEBUG)
+					Log.d(TAG, String.format("Got pointer[%d], x=%d y=%d", touchCnt+1, calPoints[touchCnt].x, calPoints[touchCnt].y));
 				touchCnt++;
 				return true;
 			}
 			// Save last touch pointer (0, height)
 			calPoints[touchCnt].x = (int)event.getX();
 			calPoints[touchCnt].y = (int)event.getY();
+			if(BuildConfig.DEBUG)
+				Log.d(TAG, String.format("Got last pointer, x=%d y=%d", calPoints[touchCnt].x, calPoints[touchCnt].y));
 			
 			// We got all pointer that needed to calibration.
 			// First, calculate actual pointer area based on pointer that we received
 			int actualWidth = calPoints[1].x - calPoints[0].x;
 			int actualHeight = calPoints[2].y - calPoints[0].y;
+			if(BuildConfig.DEBUG)
+				Log.d(TAG, String.format("Actual-input based width:%d, height:%d", actualWidth, actualHeight));
+			
+			if(BuildConfig.DEBUG)
+				Log.d(TAG, String.format("Diaply dimension, width=%d, height=%d", displayWidth, displayHeight));
 			
 			// Second, calculate scaling factor for each axis
 			float xScaleFactor = displayWidth / (float)actualWidth;
 			float yScaleFactor = displayHeight / (float)actualHeight;
+			if(BuildConfig.DEBUG)
+				Log.d(TAG, String.format("Scaling factor for x=%s, y=%s)", xScaleFactor, yScaleFactor));
 			
 			// Third, calculate offset for each axis
 			int xOffset = 0 - calPoints[0].x;
 			int yOffset = 0 - calPoints[0].y;
+			if(BuildConfig.DEBUG)
+				Log.d(TAG, String.format("Offset for x=%d, y=%d", xOffset, yOffset));
 			
 			// We calculated all metrics which is needed for calibration.
 			// Now, store data into SharedPreferences.

@@ -90,4 +90,8 @@
     </plurals>
         <string name="do_not_touch_screen_while_calibration_is_in_progress">Do not touch screen while calibration is in progress.</string>
         <string name="enable_remotroid_service_to_check_notifications_on_your_pc">Enable Remotroid service to check notifications on your PC.</string>
+        <string name="connected_to_s">Connected to %s</string>
+        <string name="disconnected_from_server">Disconnected from server.</string>
+        <string name="connection_with_server_has_interrupted">Connection with server has interrupted.</string>
+        <string name="disconnecting">Disconnecting...</string>
 </resources>

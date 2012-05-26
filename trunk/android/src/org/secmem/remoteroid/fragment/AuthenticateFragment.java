@@ -72,7 +72,7 @@ public class AuthenticateFragment extends Fragment {
 		mCbAutoConn = (CheckBox)view.findViewById(R.id.auto_connect);
 		mBtnConnect = (Button)view.findViewById(R.id.connect);
 		
-		mEdtIpAddr.setText("210.118.74.85");
+		mEdtIpAddr.setText("192.168.0.26");
 		mEdtPassword.setText("aaa");
 		
 		mEdtIpAddr.addTextChangedListener(new TextWatcher(){
@@ -136,6 +136,7 @@ public class AuthenticateFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
+				System.out.println("auth_click");
 				mListener.onConnectRequested(mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString());
 				
 			}

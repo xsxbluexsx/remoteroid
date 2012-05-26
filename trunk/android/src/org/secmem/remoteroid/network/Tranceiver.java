@@ -59,7 +59,7 @@ public class Tranceiver  implements PacketListener{
 	 */
 	public void connect(String ipAddr) throws IOException{
 		socket = new Socket();
-		socket.connect(new InetSocketAddress(ipAddr, PORT));
+		socket.connect(new InetSocketAddress(ipAddr, PORT), 5000); // Set timeout to 5 seconds
 		
 		// Open outputStream
 		sendStream = socket.getOutputStream();
@@ -176,6 +176,7 @@ public class Tranceiver  implements PacketListener{
 	
 	private void parseVirtualEventPacket(Packet packet){
 		EventPacket eventPacket = EventPacket.parse(packet);
+		System.out.println("parse event packet = "+eventPacket);
 		
 		switch(eventPacket.GetEventCode()){
 		case EventPacket.SETCOORDINATES:

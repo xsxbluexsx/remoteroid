@@ -34,6 +34,7 @@ public final class RemoteroidIntent {
 	
 	/**
 	 * An action that successfully connected to server. (Broadcast)
+	 * @see RemoteroidIntent#EXTRA_IP_ADDESS
 	 */
 	public static final String ACTION_CONNECTED = "org.secmem.remoteroid.intent.action.CONNECTED";
 	
@@ -43,12 +44,22 @@ public final class RemoteroidIntent {
 	public static final String ACTION_DISCONNECTED = "org.secmem.remoteroid.intent.action.DISCONNECTED";
 	
 	/**
+	 * An action that client failed to connect to server.
+	 */
+	public static final String ACTION_CONNECTION_FAILED = "org.secmem.remoteroid.intent.action.CONNECTION_FAILED";
+	
+	/**
 	 * An action that there connection was interrupted by some reason.
 	 */
 	public static final String ACTION_INTERRUPTED = "org.secmem.remoteroid.intent.action.INTERRUPTED";
 	
 	public static final String ACTION_DEVICE_OPEN_FAILED = "org.secmem.remoteroid.intent.action.DEVICE_OPEN_FAILED";
 	
+	/**
+	 * Key for extra data contains server's ip address.
+	 * @see RemoteroidIntent#ACTION_CONNECTED
+	 */
+	public static final String EXTRA_IP_ADDESS = "org.secmem.remoteroid.intent.extra.IP_ADDRESS";
 	/**
 	 * Key for extra data contains phone number.
 	 * @see RemoteroidIntent#ACTION_SMS_SENT

@@ -30,15 +30,15 @@ public class CalibrationService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if(!mHandler.open())
 			sendBroadcast(new Intent(RemoteroidIntent.ACTION_DEVICE_OPEN_FAILED));
-		
+		System.out.println("device opened");
 		Bundle extras = intent.getExtras();
 		int width = extras.getInt("width");
 		int height = extras.getInt("height");
 		
 		// Send sequence of calibration message.
-		mTouchHandler.sendMessage(Message.obtain(mTouchHandler, 0, 0, 0));
-		mTouchHandler.sendMessageDelayed(Message.obtain(mTouchHandler, 0, width, 0), 1000);
-		mTouchHandler.sendMessageDelayed(Message.obtain(mTouchHandler, MSG_FINAL, 0, height), 2000);
+		mTouchHandler.sendMessageDelayed(Message.obtain(mTouchHandler, 0, 0, 0), 3000);
+		mTouchHandler.sendMessageDelayed(Message.obtain(mTouchHandler, 0, width, 0), 4000);
+		mTouchHandler.sendMessageDelayed(Message.obtain(mTouchHandler, MSG_FINAL, 0, height), 7000);
 		
 		return super.onStartCommand(intent, flags, startId);
 	}
