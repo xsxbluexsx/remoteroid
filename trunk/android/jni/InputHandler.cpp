@@ -88,6 +88,9 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchDown
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchUp(JNIEnv *env, jobject thiz){
 	sendNativeEvent(inputFd, EV_KEY, BTN_TOUCH, 0);
 	sendNativeEvent(inputFd, EV_SYN, SYN_REPORT, 0);
+	sendNativeEvent(inputFd, EV_ABS, ABS_X, 0);
+		sendNativeEvent(inputFd, EV_ABS, ABS_Y, 0);
+		sendNativeEvent(inputFd, EV_SYN, SYN_REPORT, 0);
 }
 
 /*
