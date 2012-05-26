@@ -96,6 +96,10 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 
 		@Override
 		public String getConnectionStatus() throws RemoteException {
+			if(mState.equals(ServiceState.CONNECTED)){
+				if(mTransmitter!=null && !mTransmitter.isConnected())
+					mState=ServiceState.IDLE;
+			}
 			return mState.name();
 		}
 
@@ -184,10 +188,9 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 			mTransmitter.sendFile(fileList);
 		}
 
-
 		@Override
-		public boolean isTransmitterConnected() throws RemoteException {
-			return mTransmitter.isConnected();
+		public boolean isConnected() throws RemoteException {
+			return (mTransmitter!=null && mTransmitter.isConnected()) ? true : false;
 		}
 	};
 

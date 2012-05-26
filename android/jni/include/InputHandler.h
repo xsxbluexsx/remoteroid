@@ -9,6 +9,8 @@ extern "C" {
 #endif
 #undef org_secmem_remoteroid_natives_InputHandler_DIMENSION
 #define org_secmem_remoteroid_natives_InputHandler_DIMENSION 4096L
+#undef org_secmem_remoteroid_natives_InputHandler_HALF_DIMENSION
+#define org_secmem_remoteroid_natives_InputHandler_HALF_DIMENSION 2048L
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
  * Method:    openInputDevice

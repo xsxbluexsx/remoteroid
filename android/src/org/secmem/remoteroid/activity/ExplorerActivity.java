@@ -106,7 +106,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mRemoteroid = IRemoteroid.Stub.asInterface(service);
 			try {
-				if(mRemoteroid.isTransmitterConnected()){
+				if(mRemoteroid.isConnected()){
 					Log.i("qq","Connection True");
 					mRemoteroid.onSendFile(fileInfo);
 				}
@@ -185,7 +185,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		public void onClick(View v) {
 			switch(v.getId()){
 			
-			case R.id.explorer_btn_home : 			// 홈
+			case R.id.explorer_btn_home : 			// ��
 				
 				if(adapter.getType()==ADAPTER_TYPE_CATEGORY){
 					adapter.setType(ADAPTER_TYPE_EXPLORER);
@@ -198,7 +198,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 				
 				break;
 			
-			case R.id.explorer_btn_top : 				// 상위.
+			case R.id.explorer_btn_top : 				// ���.
 				
 				if(adapter.getType()==ADAPTER_TYPE_CATEGORY){
 					adapter.setType(ADAPTER_TYPE_EXPLORER);
@@ -217,7 +217,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 				}
 				break;
 			
-			case R.id.explorer_btn_category:			// 카테고리
+			case R.id.explorer_btn_category:			// 移댄�怨�━
 				
 				Intent intent = new Intent(ExplorerActivity.this, CategoryDialog.class);
 				startActivityForResult(intent, CODE_CATEGORY);
@@ -242,7 +242,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		}
 		else if(dataList.getPath().equals("/mnt/sdcard/")){
 			if(!isTimer){
-				HongUtil.makeToast(ExplorerActivity.this, "\'뒤로가기\' 버튼을 한번더 누르시면 종료됩니다.");
+				HongUtil.makeToast(ExplorerActivity.this, "\'�ㅻ�媛�린\' 踰�����������Ⅴ��㈃ 醫���⑸���");
 				backTimer timer = new backTimer(2000, 1);
 				timer.start();
 			}

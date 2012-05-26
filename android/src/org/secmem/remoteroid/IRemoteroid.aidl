@@ -3,6 +3,7 @@ import java.util.List;
 
 interface IRemoteroid{
 	String getConnectionStatus();
+	boolean isConnected();
 	void connect(String ipAddress, String password);
 	void disconnect();
 	void onNotificationCatched(String notificationText, long when);
@@ -10,5 +11,4 @@ interface IRemoteroid{
 	void onReceiveSMS(String displayedName, String number, String body, long when);
 	void onSMSSent(String displayedName, String phoneNumber, long when);
 	void onSendFile(in List<String> pathlist);
-	boolean isTransmitterConnected();
 }
