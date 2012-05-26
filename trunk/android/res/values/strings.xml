@@ -70,25 +70,13 @@
     <string name="ime_mode_kor">Korean</string>
     <string name="ime_mode_eng">English</string>
     <string name="connection_cancelled">Connection cancelled.</string>
-    <string name="calibrate">Calibrate</string>
-    <string name="press_calibrate_to_start_calibration_do_not_touch_screen_while_calibration_is_in_progress">Press \'Calibrate\' to start calibration. Do not touch screen while calibration is in progress.</string>
-    <string name="calibrate_in_progress">Calibrate in progress</string>
-    <string name="calibration_completed">Calibration completed</string>
-    <string name="calibration_failed">Calibration failed.</string>
-    <string name="calibration_pointer">Calibration pointer</string>
     <string name="connected">Connected</string>
     <string name="disconnect">Disconnect</string>
-    <string name="calibration_starts_in_s_seconds">Calibration starts in %s seconds</string>
     <string name="proceed">Proceed</string>
     <string name="get_notified">Get notified</string>
     <string name="install_driver">Install Driver</string>
     <string name="remoteroid_driver_description">Remoteroid driver description</string>
-    <plurals name="calibration_starts_in_s_seconds">
-        <item quantity="zero">Calibration starts in %d second</item>
-        <item quantity="one">Calibration starts in %d second</item>
-        <item quantity="other">Calibration starts in %d seconds</item>
-    </plurals>
-        <string name="do_not_touch_screen_while_calibration_is_in_progress">Do not touch screen while calibration is in progress.</string>
+   
         <string name="enable_remotroid_service_to_check_notifications_on_your_pc">Enable Remotroid service to check notifications on your PC.</string>
         <string name="connected_to_s">Connected to %s</string>
         <string name="disconnected_from_server">Disconnected from server.</string>

@@ -7,6 +7,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef org_secmem_remoteroid_natives_InputHandler_DIMENSION
+#define org_secmem_remoteroid_natives_InputHandler_DIMENSION 4096L
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
  * Method:    openInputDevice
@@ -85,14 +87,6 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchUp
  * Signature: (II)V
  */
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchSetPtr
-  (JNIEnv *, jobject, jint, jint);
-
-/*
- * Class:     org_secmem_remoteroid_natives_InputHandler
- * Method:    touchOnce
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchOnce
   (JNIEnv *, jobject, jint, jint);
 
 #ifdef __cplusplus

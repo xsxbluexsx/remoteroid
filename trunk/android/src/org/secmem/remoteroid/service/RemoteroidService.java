@@ -46,7 +46,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.os.SystemClock;
 import android.telephony.PhoneStateListener;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
@@ -295,7 +294,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	@Override
 	public void onSetCoordinates(int xPosition, int yPosition) {
 		if(mInputHandler.isDeviceOpened())
-			mInputHandler.touchSetPointer(xPosition, yPosition, true);
+			mInputHandler.touchSetPointer(xPosition, yPosition);
 		
 	}
 

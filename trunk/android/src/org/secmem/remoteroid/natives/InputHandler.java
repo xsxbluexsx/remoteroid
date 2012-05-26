@@ -19,12 +19,12 @@
 
 package org.secmem.remoteroid.natives;
 
-import org.secmem.remoteroid.BuildConfig;
 import org.secmem.remoteroid.util.CommandLine;
-import org.secmem.remoteroid.util.Util;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 
 /**
  * Contains methods related to event injection.
@@ -35,24 +35,36 @@ public class InputHandler {
 	private static final String TAG = "InputHandler";
 	
 	private boolean isDeviceOpened = false;
-	private Context context;
 	
-	private float xScaleFactor;
-	private float yScaleFactor;
-	private int xOffset;
-	private int yOffset;
+	private int displayWidth;
+	private int displayHeight;
 	
+	/**
+	 * uinput's touch input will be mapped into 4096*4096 matrix,<br/>
+	 * where center coordinate is (0,0) and each axis ranges from -2047 to 2048.<br/>
+	 * We should re-map original coordinate to send event properly.
+	 */
+	private static final int DIMENSION = 4096;
+	
+	@SuppressWarnings("deprecation")
 	public InputHandler(Context context){
-		this.context = context;
-		
-		xScaleFactor = Util.Screen.getXScalingFactor(context);
-		yScaleFactor = Util.Screen.getYScalingFactor(context);
-		
-		xOffset = Util.Screen.getXOffset(context);
-		yOffset = Util.Screen.getYOffset(context);
-
+		WindowManager mng = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+		Display disp = mng.getDefaultDisplay();
+		displayWidth = disp.getWidth();
+		displayHeight = disp.getHeight();
 	}
 	
+	
+	
+	@Override
+	protected void finalize() throws Throwable {
+		if(isDeviceOpened){
+			close();
+		}
+	}
+
+
+
 	public boolean isDeviceOpened(){
 		return isDeviceOpened;
 	}
@@ -148,31 +160,19 @@ public class InputHandler {
 	 * Injects touch up (user removed finger from a screen) event.
 	 */
 	public native void touchUp();
-	
+
 	/**
 	 * Set coordinates where user has touched on the screen.<br/>
 	 * When user touches the screen, this method called first to set where user has touched, then {@link #touchDown()} called to notify user has touched screen.
 	 * @param x x coordinate that user has touched
 	 * @param y y coordinate that user has touched
-	 * @param ignoreCalibrations if this has set to true, ignore saved calibration data and will inject raw coordinates.
 	 */
-	public void touchSetPointer(int x, int y, boolean ignoreCalibrations){
-		if(BuildConfig.DEBUG)
-			Log.d(TAG, String.format("Got raw pointer (%d, %d)", x, y));
-		
-		if(!ignoreCalibrations){
-			// Calculate calibrated coordinates
-			int calX = (int)((x + xOffset)*xScaleFactor);
-			int calY = (int)((y + yOffset)*yScaleFactor);
-			if(BuildConfig.DEBUG)
-				Log.d(TAG, String.format("Pointer calibrated (%d, %d)", calX, calY));
-			touchSetPtr(calX, calY);
-		}else{
-			touchSetPtr(x, y);
-		}
-		
+	public void touchSetPointer(int x, int y){
+		x = x*DIMENSION/displayWidth - DIMENSION>>1 +1;
+		y = y*DIMENSION/displayHeight - DIMENSION>>1 +1;
+		Log.d(TAG, String.format("Setting remapped pointer (%d, %d)", x, y));
+		touchSetPtr(x, y);
 	}
-	
 	
 	private native void touchSetPtr(int x, int y);
 	
@@ -182,5 +182,10 @@ public class InputHandler {
 	 * @param x x coordinate that user has touched
 	 * @param y y coordinate that user has touched
 	 */
-	public native void touchOnce(int x, int y);
+	public void touchOnce(int x, int y){
+		touchSetPointer(x, y);
+		touchDown();
+		touchUp();
+	}
+	
 }

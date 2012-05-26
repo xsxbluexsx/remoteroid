@@ -15,7 +15,7 @@ header : ../$(JAVA_NATIVES_DIR)/InputHandler.class ../$(JAVA_NATIVES_DIR)/FrameH
 	mv FrameHandler.h ../../jni/include/FrameHandler.h
 	
 lib : $(SOURCES)
-	ndk-build
+	ndk-build APP_ABI="armeabi x86"
 	
 clean :
 	rm -rf ../libs/armeabi/libremoteroid.so; \
