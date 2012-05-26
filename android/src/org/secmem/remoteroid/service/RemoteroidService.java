@@ -19,6 +19,7 @@
 
 package org.secmem.remoteroid.service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,8 +30,10 @@ import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.activity.Main;
 import org.secmem.remoteroid.data.RDSmsMessage;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
+import org.secmem.remoteroid.natives.FrameHandler;
 import org.secmem.remoteroid.natives.InputHandler;
 import org.secmem.remoteroid.network.FileTransmissionListener;
+import org.secmem.remoteroid.network.FrameBufferRequestListener;
 import org.secmem.remoteroid.network.Tranceiver;
 import org.secmem.remoteroid.network.VirtualEventListener;
 import org.secmem.remoteroid.receiver.SmsReceiver;
@@ -55,13 +58,17 @@ import android.telephony.TelephonyManager;
  * @author Taeho Kim
  *
  */
-public class RemoteroidService extends Service implements FileTransmissionListener, VirtualEventListener{
+public class RemoteroidService extends Service implements FileTransmissionListener, VirtualEventListener, FrameBufferRequestListener{
 	public enum ServiceState{IDLE, CONNECTING, CONNECTED};
 	
 	private Tranceiver mTransmitter;
 	private InputHandler mInputHandler;
 	private ServiceState mState = ServiceState.IDLE;
+	private FrameHandler frameHandler;
+	
 	private boolean flag = true;
+	
+	private boolean frameFlag = false;
 	
 	private IBinder mBinder = new IRemoteroid.Stub() {
 		
@@ -119,6 +126,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 				telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_CALL_STATE);
 				
 				// TODO Start fetch frame buffer and send it to server
+				frameHandler = new FrameHandler(getApplicationContext());
 				
 				sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTED).putExtra("ip", ipAddress));
 				
@@ -340,6 +348,31 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		}
 		
 		return result;
+	}
+
+	@Override
+	public void onStartFrameBuffer() {
+		frameFlag = true;
+		
+		Thread mThread = new Thread(){
+			@Override
+			public void run() {
+				while(frameFlag){
+					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
+					
+					// sendScreen(frameStream.size() , frameStream.toByteArray());
+					
+				}
+			}
+		};
+		mThread.setDaemon(true);
+		mThread.start();
+	}
+
+	@Override
+	public void onCancelFrameBuffer() {
+		frameFlag = false;
+		
 	}
 	
 		
