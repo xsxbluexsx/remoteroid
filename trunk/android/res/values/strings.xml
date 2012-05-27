@@ -82,4 +82,5 @@
         <string name="disconnected_from_server">Disconnected from server.</string>
         <string name="connection_with_server_has_interrupted">Connection with server has interrupted.</string>
         <string name="disconnecting">Disconnecting...</string>
+        <string name="back_finished">\'뒤로가기\'를 한번더 누르면 종료가 됩니다.</string>
 </resources>
