@@ -19,6 +19,7 @@
 
 package org.secmem.remoteroid.activity;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +33,18 @@ import org.secmem.remoteroid.dialog.CategoryDialog;
 import org.secmem.remoteroid.expinterface.OnFileLongClickListener;
 import org.secmem.remoteroid.expinterface.OnFileSelectedListener;
 import org.secmem.remoteroid.expinterface.OnPathChangedListener;
+import org.secmem.remoteroid.natives.FrameHandler;
+import org.secmem.remoteroid.service.FrameBufferService;
 import org.secmem.remoteroid.service.RemoteroidService;
 import org.secmem.remoteroid.service.RemoteroidService.ServiceState;
 import org.secmem.remoteroid.util.HongUtil;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -52,8 +57,11 @@ import android.os.RemoteException;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.text.Annotation;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
@@ -94,6 +102,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	private GridView gridview;
 	
 	public static ExplorerAdapter adapter;
+	private IntentFilter adapterFilter;
 	
 	private boolean isTimer=false;
 	private boolean isBound=false;
@@ -159,6 +168,12 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		
 		gridview.setAdapter(adapter);
 		
+		adapterFilter = new IntentFilter();
+		adapterFilter.addAction("adapter_changed");
+		
+//		Intent i = new Intent(ExplorerActivity.this, FrameBufferService.class);
+//		startService(i);
+		
 	}
 	
 	
@@ -172,11 +187,13 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	@Override
 	protected void onPause() {
 		super.onPause();
+		unregisterReceiver(adapter_BR);
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
+		registerReceiver(adapter_BR, adapterFilter);
 	}
 	
 	OnClickListener topBtnListener = new OnClickListener() {
@@ -185,7 +202,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		public void onClick(View v) {
 			switch(v.getId()){
 			
-			case R.id.explorer_btn_home : 			// ��
+			case R.id.explorer_btn_home : 		
 				
 				if(adapter.getType()==ADAPTER_TYPE_CATEGORY){
 					adapter.setType(ADAPTER_TYPE_EXPLORER);
@@ -198,7 +215,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 				
 				break;
 			
-			case R.id.explorer_btn_top : 				// ���.
+			case R.id.explorer_btn_top : 			
 				
 				if(adapter.getType()==ADAPTER_TYPE_CATEGORY){
 					adapter.setType(ADAPTER_TYPE_EXPLORER);
@@ -217,7 +234,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 				}
 				break;
 			
-			case R.id.explorer_btn_category:			// 移댄�怨�━
+			case R.id.explorer_btn_category:			
 				
 				Intent intent = new Intent(ExplorerActivity.this, CategoryDialog.class);
 				startActivityForResult(intent, CODE_CATEGORY);
@@ -242,7 +259,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		}
 		else if(dataList.getPath().equals("/mnt/sdcard/")){
 			if(!isTimer){
-				HongUtil.makeToast(ExplorerActivity.this, "\'�ㅻ�媛�린\' 踰�����������Ⅴ��㈃ 醫���⑸���");
+				HongUtil.makeToast(ExplorerActivity.this, getString(R.string.back_finished));
 				backTimer timer = new backTimer(2000, 1);
 				timer.start();
 			}
@@ -435,5 +452,13 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	public void setGridview(GridView gridview) {
 		this.gridview = gridview;
 	}
+	
+	private BroadcastReceiver adapter_BR = new BroadcastReceiver() {
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			adapter.notifyDataSetChanged();
+		}
+	}; 
 	
 }

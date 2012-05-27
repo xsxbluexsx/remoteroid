@@ -107,13 +107,12 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 						TelephonyManager telManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 						telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_CALL_STATE);
 						
-						// TODO Start fetch frame buffer and send it to server
-						frameHandler = new FrameHandler(getApplicationContext());
 						sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTED).putExtra("ip", ipAddress));
 						
 						showConnectionNotification(ipAddress);
 						
 						mState = ServiceState.CONNECTED;
+						frameHandler = new FrameHandler(getApplicationContext());
 						
 					}else{ // Connection failed
 						sendBroadcast(new Intent(RemoteroidIntent.ACTION_INTERRUPTED));
@@ -141,7 +140,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 					mInputHandler.close();
 					mTransmitter.disconnect();
 					mState = ServiceState.IDLE;
-					frameFlag=false;
+					isSending=false;
 					return null;
 				}
 				
@@ -350,17 +349,17 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		return result;
 	}
 	
-	private boolean frameFlag = true; // Taeho : What is this variable means for?
+	private boolean isSending = true; // Taeho : What is this variable means for?
 
 	@Override
-	public void onStartFrameBuffer() {
-		frameFlag = true;
+	public void onStartScreenTranmit() {
+		
+		isSending = true;
 		Thread mThread = new Thread(){
 			@Override
 			public void run() {
 				SystemClock.sleep(4000);
-				while(frameFlag){
-					
+				while(isSending){
 					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
 					
 					mTransmitter.sendFrameBuffer(frameStream.toByteArray());
@@ -373,7 +372,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 
 	@Override
 	public void onCancelFrameBuffer() {
-		frameFlag = false;
+		isSending = false;
 		
 	}
 	
