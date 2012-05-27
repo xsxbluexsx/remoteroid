@@ -28,7 +28,7 @@ extern int inputFd;
  * Signature: ()Z
  */
 JNIEXPORT jboolean JNICALL Java_org_secmem_remoteroid_natives_InputHandler_openInputDevice(JNIEnv* env, jobject thiz, jint scrWidth, jint scrHeight){
-	return (jboolean)openInput(scrWidth, scrHeight);
+	return (jboolean)openInput(scrWidth-1, scrHeight-1);
 }
 
 /*
