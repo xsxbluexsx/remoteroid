@@ -55,7 +55,7 @@ int suinput_write_syn(int uinput_fd,
     return suinput_write(uinput_fd, EV_SYN, SYN_REPORT, 0);
 }
 
-int suinput_open(const char* device_name, const struct input_id* id)
+int suinput_open(const char* device_name, const struct input_id* id, const int scrWidth, const int scrHeight)
 {
     int original_errno = 0;
     int uinput_fd = -1;
@@ -127,13 +127,13 @@ int suinput_open(const char* device_name, const struct input_id* id)
     user_dev.id.version = id->version;
 
     //minor tweak to support ABSolute events
-    user_dev.absmin[ABS_X] = -2047;
-    user_dev.absmax[ABS_X] = 2048;
+    user_dev.absmin[ABS_X] = 0;
+    user_dev.absmax[ABS_X] = scrWidth;
     user_dev.absfuzz[ABS_X] = 0;
     user_dev.absflat[ABS_X] = 0;
 
-    user_dev.absmin[ABS_Y] = -2047;
-    user_dev.absmax[ABS_Y] = 2048;
+    user_dev.absmin[ABS_Y] = 0;
+    user_dev.absmax[ABS_Y] = scrHeight;
     user_dev.absfuzz[ABS_Y] = 0;
     user_dev.absflat[ABS_Y] = 0;
 

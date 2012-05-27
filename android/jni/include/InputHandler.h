@@ -14,10 +14,10 @@ extern "C" {
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler
  * Method:    openInputDevice
- * Signature: ()Z
+ * Signature: (II)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_secmem_remoteroid_natives_InputHandler_openInputDevice
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jint, jint);
 
 /*
  * Class:     org_secmem_remoteroid_natives_InputHandler

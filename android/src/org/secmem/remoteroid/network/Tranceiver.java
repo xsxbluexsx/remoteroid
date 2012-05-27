@@ -17,7 +17,6 @@ import android.util.DisplayMetrics;
 public class Tranceiver  implements PacketListener{
 	private static final int PORT = 50000;
 	
-	
 	private Socket socket;
 	private OutputStream sendStream;
 	private InputStream recvStream;
@@ -161,10 +160,10 @@ public class Tranceiver  implements PacketListener{
 			parseVirtualEventPacket(packet);
 			break;	
 		case OpCode.SCREEN_SEND_REQUESTED:
-			mScreenTransListener.onStartScreenTransmission();
+			mScreenTransListener.onScreenTransferRequested();
 			break;
 		case OpCode.SCREEN_STOP_REQUESTED:
-			mScreenTransListener.onStopScreenTransmission();
+			mScreenTransListener.onScreenTransferStopRequested();
 			break;
 		}
 	}
