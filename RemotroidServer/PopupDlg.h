@@ -30,7 +30,7 @@ public:
 	virtual BOOL OnInitDialog();	
 private:
 	CMyBitmapBtn m_CloseBtn;
-	
+
 public:
 	afx_msg void OnBnClickedBtnClose();		
 	afx_msg void OnPaint();
