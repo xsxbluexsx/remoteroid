@@ -19,24 +19,39 @@
 
 package org.secmem.remoteroid.service;
 
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.secmem.remoteroid.*;
-import org.secmem.remoteroid.activity.*;
-import org.secmem.remoteroid.data.*;
-import org.secmem.remoteroid.intent.*;
-import org.secmem.remoteroid.natives.*;
-import org.secmem.remoteroid.network.*;
-import org.secmem.remoteroid.receiver.*;
+import org.secmem.remoteroid.IRemoteroid;
+import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.activity.Main;
+import org.secmem.remoteroid.data.RDSmsMessage;
+import org.secmem.remoteroid.intent.RemoteroidIntent;
+import org.secmem.remoteroid.natives.FrameHandler;
+import org.secmem.remoteroid.natives.InputHandler;
+import org.secmem.remoteroid.network.FileTransmissionListener;
+import org.secmem.remoteroid.network.ScreenTransmissionListener;
+import org.secmem.remoteroid.network.Tranceiver;
+import org.secmem.remoteroid.network.VirtualEventListener;
+import org.secmem.remoteroid.receiver.SmsReceiver;
 
-import android.app.*;
-import android.content.*;
-import android.net.*;
-import android.os.*;
-import android.telephony.*;
-import android.util.*;
-
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.os.SystemClock;
+import android.telephony.PhoneStateListener;
+import android.telephony.SmsManager;
+import android.telephony.TelephonyManager;
 
 /**
  * A base service to communicate with PC.
@@ -267,7 +282,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	@Override
 	public void onSetCoordinates(int xPosition, int yPosition) {
 		if(mInputHandler.isDeviceOpened())
-			mInputHandler.touchSetPointer(xPosition, yPosition);
+			mInputHandler.touchSetPtr(xPosition, yPosition);
 		
 	}
 
@@ -352,7 +367,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	private boolean isTransmission = true; // Taeho : What is this variable means for?
 
 	@Override
-	public void onStartScreenTransmission() {
+	public void onScreenTransferRequested() {
 		
 		isTransmission = true;
 		Thread mThread = new Thread(){
@@ -371,7 +386,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	}
 
 	@Override
-	public void onStopScreenTransmission() {
+	public void onScreenTransferStopRequested() {
 		isTransmission = false;		
 	}
 	

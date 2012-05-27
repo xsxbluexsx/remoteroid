@@ -78,7 +78,6 @@ public class NotificationReceiverService extends AccessibilityService {
 
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
-		Log.d(TAG, event.toString());
 		try{
 			if(mRemoteroidSvc!=null){
 				// Check notification type will be catched

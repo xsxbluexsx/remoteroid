@@ -27,12 +27,12 @@
  */
 int inputFd = -1;
 
-bool openInput(){
+bool openInput(int scrWidth, int scrHeight){
 	system("su -c \"chmod 666 /dev/uinput\"");
-	return openInputWithoutPermission();
+	return openInputWithoutPermission(scrWidth, scrHeight);
 }
 
-bool openInputWithoutPermission(){
+bool openInputWithoutPermission(int scrWidth, int scrHeight){
 	LOGD(LOGTAG, "Opening input device...");
 	struct input_id id = {
 			BUS_VIRTUAL, /* Bus type. */
@@ -41,7 +41,7 @@ bool openInputWithoutPermission(){
 			1 /* Version id. */
 	};
 
-	if((inputFd = suinput_open("remoteroid", &id)) == -1){
+	if((inputFd = suinput_open("remoteroid", &id, scrWidth, scrHeight)) == -1){
 		LOGD(LOGTAG, "Cannot open device - 'remoteroid'");
 		return false;
 	}

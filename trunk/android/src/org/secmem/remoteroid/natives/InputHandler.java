@@ -19,11 +19,9 @@
 
 package org.secmem.remoteroid.natives;
 
-import org.secmem.remoteroid.BuildConfig;
 import org.secmem.remoteroid.util.CommandLine;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -56,8 +54,6 @@ public class InputHandler {
 		displayHeight = disp.getHeight();
 	}
 	
-	
-	
 	@Override
 	protected void finalize() throws Throwable {
 		if(isDeviceOpened){
@@ -76,7 +72,7 @@ public class InputHandler {
 	 * @return true device has opened without error, false otherwise
 	 */
 	public boolean open(){
-		isDeviceOpened = openInputDevice();
+		isDeviceOpened = openInputDevice(displayWidth, displayHeight);
 		return isDeviceOpened;
 	}
 	
@@ -110,7 +106,7 @@ public class InputHandler {
 	 * Opens uinput(User-level input) device for event injection.
 	 * @return true device has opened without error, false otherwise
 	 */
-	private native boolean openInputDevice();
+	private native boolean openInputDevice(final int scrWidth, final int scrHeight);
 	
 	/**
 	 * Open input device using suinput, without setting permission 666 to /dev/uinput.<br/>
@@ -162,24 +158,14 @@ public class InputHandler {
 	 * Injects touch up (user removed finger from a screen) event.
 	 */
 	public native void touchUp();
-
+	
 	/**
 	 * Set coordinates where user has touched on the screen.<br/>
 	 * When user touches the screen, this method called first to set where user has touched, then {@link #touchDown()} called to notify user has touched screen.
 	 * @param x x coordinate that user has touched
 	 * @param y y coordinate that user has touched
 	 */
-	public void touchSetPointer(int x, int y){
-		if(BuildConfig.DEBUG)
-			Log.d(TAG, String.format("(%d, %d), w=%d, h=%d", displayWidth, displayHeight, x, y));
-		int newX = x*DIMENSION/displayWidth - HALF_DIMENSION +1;
-		int newY = y*DIMENSION/displayHeight - HALF_DIMENSION +1;
-		if(BuildConfig.DEBUG)
-			Log.d(TAG, String.format("Setting remapped pointer (%d, %d)", newX, newY));
-		touchSetPtr(newX, newY);
-	}
-	
-	private native void touchSetPtr(int x, int y);
+	public native void touchSetPtr(int x, int y);
 	
 	/**
 	 * Injects 'touch once' event, touching specific coordinate once.<br/>
@@ -188,7 +174,7 @@ public class InputHandler {
 	 * @param y y coordinate that user has touched
 	 */
 	public void touchOnce(int x, int y){
-		touchSetPointer(x, y);
+		touchSetPtr(x, y);
 		touchDown();
 		touchUp();
 	}

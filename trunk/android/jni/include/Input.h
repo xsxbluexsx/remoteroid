@@ -36,14 +36,14 @@
  * It will change /dev/uinput's permission to 666 first to read/write event from app, then attempt to open device. set true, uses su -c to change /dev/uinput permission to 666.
  * @return true if open succeeds, false otherwise.
  */
-bool openInput();
+bool openInput(const int scrWidth, const int scrHeight);
 
 /**
  * Open input device using suinput, without setting permission 666 to /dev/uinput.
  * If user has su binary that doesn't supports 'su -c' option, which enables running shell command with root permission,
  * Change permission through org.secmem.remoteroie.util.ComandLine.execAsRoot() first, then use this command to open device.
  */
-bool openInputWithoutPermission();
+bool openInputWithoutPermission(const int scrWidth, const int scrHeight);
 
 /**
  * Close input device.
