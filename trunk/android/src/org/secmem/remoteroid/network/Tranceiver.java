@@ -77,6 +77,8 @@ public class Tranceiver  implements PacketListener{
 		packetReceiver = new PacketReceiver(recvStream);
 		packetReceiver.setPacketListener(this);
 		packetReceiver.start();		
+		
+		mFrameBufferListener.onStartFrameBuffer();
 	}
 	
 	/**

@@ -19,36 +19,23 @@
 
 package org.secmem.remoteroid.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
-import org.secmem.remoteroid.IRemoteroid;
-import org.secmem.remoteroid.R;
-import org.secmem.remoteroid.activity.Main;
-import org.secmem.remoteroid.data.RDSmsMessage;
-import org.secmem.remoteroid.intent.RemoteroidIntent;
-import org.secmem.remoteroid.natives.InputHandler;
-import org.secmem.remoteroid.network.FileTransmissionListener;
-import org.secmem.remoteroid.network.FrameBufferRequestListener;
-import org.secmem.remoteroid.network.Tranceiver;
-import org.secmem.remoteroid.network.VirtualEventListener;
-import org.secmem.remoteroid.receiver.SmsReceiver;
+import org.secmem.remoteroid.*;
+import org.secmem.remoteroid.activity.*;
+import org.secmem.remoteroid.data.*;
+import org.secmem.remoteroid.intent.*;
+import org.secmem.remoteroid.natives.*;
+import org.secmem.remoteroid.network.*;
+import org.secmem.remoteroid.receiver.*;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.IBinder;
-import android.os.RemoteException;
-import android.telephony.PhoneStateListener;
-import android.telephony.SmsManager;
-import android.telephony.TelephonyManager;
+import android.app.*;
+import android.content.*;
+import android.net.*;
+import android.os.*;
+import android.telephony.*;
+import android.util.*;
 
 
 /**
@@ -62,7 +49,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	private Tranceiver mTransmitter;
 	private InputHandler mInputHandler;
 	private static ServiceState mState = ServiceState.IDLE;
-	
+	private FrameHandler frameHandler;
 	private IBinder mBinder = new IRemoteroid.Stub() {
 		
 		@Override
@@ -121,7 +108,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 						telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_CALL_STATE);
 						
 						// TODO Start fetch frame buffer and send it to server
-						
+						frameHandler = new FrameHandler(getApplicationContext());
 						sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTED).putExtra("ip", ipAddress));
 						
 						showConnectionNotification(ipAddress);
@@ -154,6 +141,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 					mInputHandler.close();
 					mTransmitter.disconnect();
 					mState = ServiceState.IDLE;
+					frameFlag=false;
 					return null;
 				}
 				
@@ -362,20 +350,20 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		return result;
 	}
 	
-	private boolean frameFlag = false; // Taeho : What is this variable means for?
+	private boolean frameFlag = true; // Taeho : What is this variable means for?
 
 	@Override
 	public void onStartFrameBuffer() {
 		frameFlag = true;
-		
 		Thread mThread = new Thread(){
 			@Override
 			public void run() {
+				SystemClock.sleep(4000);
 				while(frameFlag){
-//					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
 					
-					// sendScreen(frameStream.size() , frameStream.toByteArray());
+					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
 					
+					mTransmitter.sendFrameBuffer(frameStream.toByteArray());
 				}
 			}
 		};
