@@ -1,5 +1,6 @@
 package org.secmem.remoteroid.network;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,11 +12,11 @@ import java.util.ArrayList;
 import org.secmem.remoteroid.data.NativeKeyCode;
 import org.secmem.remoteroid.network.PacketHeader.OpCode;
 
-import android.util.*;
+import android.util.DisplayMetrics;
 
 public class Tranceiver  implements PacketListener{
 	private static final int PORT = 50000;
-	private static final int UDP_PORT = 50001;
+	
 	
 	private Socket socket;
 	private OutputStream sendStream;
@@ -23,12 +24,12 @@ public class Tranceiver  implements PacketListener{
 	
 	private PacketReceiver packetReceiver;	
 	private FileTranceiver fileTransReceiver;
-	private FrameUdpSender frameUdpSender;
+	private ScreenSender screemSender;
 
 	// Event listeners
 	private FileTransmissionListener mFileTransListener;
 	private VirtualEventListener mVirtEventListener;
-	private FrameBufferRequestListener mFrameBufferListener;
+	private ScreenTransmissionListener mScreenTransListener;
 	
 	public Tranceiver(){		
 	}
@@ -48,8 +49,8 @@ public class Tranceiver  implements PacketListener{
 	public void setVirtualEventListener(VirtualEventListener listener){
 		mVirtEventListener = listener;
 	}
-	public void setFrameBufferListener(FrameBufferRequestListener listener){
-		mFrameBufferListener = listener;
+	public void setFrameBufferListener(ScreenTransmissionListener listener){
+		mScreenTransListener = listener;
 	}
 	
 	/**
@@ -59,7 +60,8 @@ public class Tranceiver  implements PacketListener{
 	 */
 	public void connect(String ipAddr) throws IOException{
 		socket = new Socket();
-		socket.connect(new InetSocketAddress(ipAddr, PORT), 5000); // Set timeout to 5 seconds
+		//socket.connect(new InetSocketAddress(ipAddr, PORT), 5000); // Set timeout to 5 seconds
+		socket.connect(new InetSocketAddress("210.118.74.85", PORT), 5000); // Set timeout to 5 seconds
 		
 		// Open outputStream
 		sendStream = socket.getOutputStream();
@@ -70,15 +72,14 @@ public class Tranceiver  implements PacketListener{
 		fileTransReceiver = new FileTranceiver(sendStream, mFileTransListener);
 		
 		//Connect udp socket
-		frameUdpSender = new FrameUdpSender(ipAddr);
-		frameUdpSender.connectUdpSocket();
+		screemSender = new ScreenSender(ipAddr);
+		screemSender.connectUdpSocket();
 		
 		// Create and start packet receiver
 		packetReceiver = new PacketReceiver(recvStream);
 		packetReceiver.setPacketListener(this);
-		packetReceiver.start();		
+		packetReceiver.start();	
 		
-		mFrameBufferListener.onStartScreenTranmit();
 	}
 	
 	/**
@@ -99,7 +100,6 @@ public class Tranceiver  implements PacketListener{
 	}
 	
 	public void sendFile(ArrayList<File> fileList){
-		// TODO implement send only one file
 		try{
 			fileTransReceiver.sendFileList(fileList);
 		}catch(IOException e){
@@ -112,7 +112,7 @@ public class Tranceiver  implements PacketListener{
 	public void sendNotification(String str){
 		try{
 			fileTransReceiver.send(
-					new Packet(PacketHeader.OpCode.NOTIFICATION_SEND, str.getBytes(), str.getBytes().length));
+					new Packet(OpCode.NOTIFICATION_SEND, str.getBytes(), str.getBytes().length));
 		}catch(IOException e){
 			e.printStackTrace();
 			onInterrupt();
@@ -121,9 +121,9 @@ public class Tranceiver  implements PacketListener{
 	
 	
 	//Send frameBuffer to host by udp
-	public void sendFrameBuffer(byte[] jpgData){
+	public void screenTransmission(byte[] jpgData){
 		try{
-			frameUdpSender.sendFrameBuffer(jpgData);
+			screemSender.screenTransmission(jpgData);
 		}catch(IOException e){
 			e.printStackTrace();
 			onInterrupt();
@@ -147,22 +147,25 @@ public class Tranceiver  implements PacketListener{
 
 		case OpCode.FILEINFO_RECEIVED:		
 			fileTransReceiver.receiveFileInfo(packet);
-			break;
-			
+			break;			
 		case OpCode.FILEDATA_RECEIVED:
 			fileTransReceiver.receiveFileData(packet);
-			break;
-			
+			break;			
 		case OpCode.FILEDATA_REQUESTED:
 			fileTransReceiver.sendFileData();
-			break;
-			
+			break;			
 		case OpCode.FILEINFO_REQUESTED:
 			fileTransReceiver.sendFileInfo();
 			break;
 		case OpCode.EVENT_RECEIVED:			
 			parseVirtualEventPacket(packet);
 			break;	
+		case OpCode.SCREEN_SEND_REQUESTED:
+			mScreenTransListener.onStartScreenTransmission();
+			break;
+		case OpCode.SCREEN_STOP_REQUESTED:
+			mScreenTransListener.onStopScreenTransmission();
+			break;
 		}
 	}
 		
