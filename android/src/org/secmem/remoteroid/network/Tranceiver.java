@@ -59,8 +59,7 @@ public class Tranceiver  implements PacketListener{
 	 */
 	public void connect(String ipAddr) throws IOException{
 		socket = new Socket();
-		//socket.connect(new InetSocketAddress(ipAddr, PORT), 5000); // Set timeout to 5 seconds
-		socket.connect(new InetSocketAddress("210.118.74.85", PORT), 5000); // Set timeout to 5 seconds
+		socket.connect(new InetSocketAddress(ipAddr, PORT), 5000); // Set timeout to 5 seconds
 		
 		// Open outputStream
 		sendStream = socket.getOutputStream();
