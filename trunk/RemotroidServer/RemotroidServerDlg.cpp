@@ -107,6 +107,8 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_TRAY, &CRemotroidServerDlg::OnBnClickedBtnTray)
 	ON_BN_CLICKED(IDC_BTN_CLOSE, &CRemotroidServerDlg::OnBnClickedBtnClose)
 	ON_WM_CLOSE()
+	ON_BN_CLICKED(IDC_BUTTON1, &CRemotroidServerDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON2, &CRemotroidServerDlg::OnBnClickedButton2)
 END_MESSAGE_MAP()
 
 
@@ -433,6 +435,9 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 				pDlg->screen.SendMessage(WM_RECVDEVICEINFO, 0, (LPARAM)data);
 				break;
 			case OP_SENDNOTIFICATION:
+				if(iPacketSize == HEADERSIZE)
+					break;
+
 				pDlg->SendMessage(WM_CREATEPOPUPDLG, iPacketSize, (LPARAM)data);
 				break;
 			}
@@ -810,12 +815,13 @@ LRESULT CRemotroidServerDlg::OnCreatePopupDlg(WPARAM wParam, LPARAM lParam)
 {
 	char *data = (char*)lParam;
 	int payloadSize = wParam-HEADERSIZE;
-	TCHAR *notiText = new TCHAR[payloadSize+1];
+	TCHAR *notiText = new TCHAR[payloadSize*2];
 	CUtil::UtfToUni(notiText, data);
 
 	CPopupDlg* pDlg = new CPopupDlg;
-	pDlg->m_strNoti = notiText;
-	delete notiText;
+	pDlg->m_strNoti.Format(_T("%s"), notiText);
+	
+	delete [] notiText;
 	CPopupDlg::numOfDlg++;	
 	m_popDlgMgr.InsertPopDlg(pDlg);
 
@@ -856,6 +862,8 @@ LRESULT CRemotroidServerDlg::OnMyDblClkTray(WPARAM wParam, LPARAM lParam)
 void CRemotroidServerDlg::OnBnClickedBtnTray()
 {
 	// TODO: Add your control notification handler code here
+	SetFocus();
+
 	CUtil::AniMinimizeToTray(GetSafeHwnd());	
 	ShowWindow(SW_HIDE);
 }
@@ -864,6 +872,8 @@ void CRemotroidServerDlg::OnBnClickedBtnTray()
 void CRemotroidServerDlg::OnBnClickedBtnClose()
 {
 	// TODO: Add your control notification handler code here
+	SetFocus();
+
 	PostMessage(WM_CLOSE, 0, 0);
 }
 
@@ -885,4 +895,18 @@ void CRemotroidServerDlg::OnClose()
 			return;
 	}
 	CImageDlg::OnClose();
+}
+
+
+void CRemotroidServerDlg::OnBnClickedButton1()
+{
+	// TODO: Add your control notification handler code here
+	m_pClient->SendPacket(OP_REQSENDSCREEN, NULL, 0);
+}
+
+
+void CRemotroidServerDlg::OnBnClickedButton2()
+{
+	// TODO: Add your control notification handler code here
+	m_pClient->SendPacket(OP_REQSTOPSCREEN, NULL, 0);
 }

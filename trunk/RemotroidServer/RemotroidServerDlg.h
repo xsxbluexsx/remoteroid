@@ -123,4 +123,6 @@ public:
 	afx_msg void OnBnClickedBtnTray();
 	afx_msg void OnBnClickedBtnClose();
 	afx_msg void OnClose();
+	afx_msg void OnBnClickedButton1();
+	afx_msg void OnBnClickedButton2();
 };
