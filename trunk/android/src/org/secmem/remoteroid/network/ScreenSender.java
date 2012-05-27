@@ -24,8 +24,7 @@ public class ScreenSender{
 	private byte[] sendBuffer = new byte[MAXDATASIZE];
 	
 	public ScreenSender(String ipAddr){
-		//this.ipAddr = ipAddr;
-		this.ipAddr = "210.118.74.85";
+		this.ipAddr = ipAddr;		
 	}
 	
 	public void connectUdpSocket() throws IOException{		
@@ -42,9 +41,7 @@ public class ScreenSender{
 	
 	public void screenTransmission(byte[] jpgData) throws IOException{
 		int jpgTotalSize = jpgData.length;
-		int transmittedSize = 0;
-		
-		Log.i("qwe", "size : "+jpgTotalSize);
+		int transmittedSize = 0;		
 		
 		//First send jpg size information to host
 		byte [] jpgSizeInfo = String.valueOf(jpgTotalSize).getBytes();		

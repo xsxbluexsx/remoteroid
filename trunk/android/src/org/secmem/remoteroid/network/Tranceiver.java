@@ -59,7 +59,9 @@ public class Tranceiver  implements PacketListener{
 	 */
 	public void connect(String ipAddr) throws IOException{
 		socket = new Socket();
+
 		socket.connect(new InetSocketAddress(ipAddr, PORT), 5000); // Set timeout to 5 seconds
+
 		
 		// Open outputStream
 		sendStream = socket.getOutputStream();
@@ -89,7 +91,8 @@ public class Tranceiver  implements PacketListener{
 			try{				
 				recvStream.close();
 				sendStream.close();
-				packetReceiver = null;				
+				packetReceiver = null;	
+				mScreenTransListener.onScreenTransferStopRequested();
 				socket.close();
 			}catch(IOException e){
 				e.printStackTrace();
@@ -171,7 +174,7 @@ public class Tranceiver  implements PacketListener{
 	public void onInterrupt() {
 		//If server was closed, throw an IOException	
 		//If file is open, Shoud be closed
-		fileTransReceiver.closeFile();
+		fileTransReceiver.closeFile();		
 		disconnect();
 	}
 	

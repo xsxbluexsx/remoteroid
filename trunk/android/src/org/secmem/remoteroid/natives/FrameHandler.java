@@ -20,6 +20,7 @@
 package org.secmem.remoteroid.natives;
 
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 import android.content.Context;
@@ -34,6 +35,7 @@ public class FrameHandler {
 	
 	private ByteBuffer frameBuffer;
 	private ByteArrayOutputStream frameStream;
+	
 	private byte[] buffer;
 	private Bitmap bitmap;
 	
@@ -105,7 +107,7 @@ public class FrameHandler {
 		
 		frameBuffer = ByteBuffer.allocate(displaySize);
 		buffer = new byte[displaySize];
-//		buffer = new byte[4096000];
+		frameStream = new ByteArrayOutputStream();				
 	}
 	
 	
@@ -139,13 +141,14 @@ public class FrameHandler {
 		if(orientation != getDisplayOrientation()){
 			setDisplayValue();
 			setBitmap(getDisplayBitmap());
-		}
+		}	
 		
-		ByteArrayOutputStream frameStream = new ByteArrayOutputStream();
 		int ret = getFrameBuffer(buffer, pixelFormat);
 		frameBuffer.put(buffer, 0, displaySize);
 		frameBuffer.rewind();
 		bitmap.copyPixelsFromBuffer(frameBuffer);
+				
+		frameStream.reset();
 		bitmap.compress(CompressFormat.JPEG, 70, frameStream);
 		return frameStream;
 	}
