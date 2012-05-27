@@ -81,28 +81,6 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 			}
 			
 		}
-		
-
-		@Override
-		public void onReceiveCall(String displayedName, String number, long when)
-				throws RemoteException {
-			// TODO Call received.
-			
-		}
-
-		@Override
-		public void onReceiveSMS(String displayedName, String number,
-				String body, long when) throws RemoteException {
-			// TODO SMS Received.
-			
-		}
-		
-		@Override
-		public void onSMSSent(String displayedName, String phoneNumber,
-				long when) throws RemoteException {
-			// TODO Auto-generated method stub
-			
-		}
 
 		@Override
 		public String getConnectionStatus() throws RemoteException {
@@ -225,6 +203,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		@Override
 		public void onCallStateChanged(int state, String incomingNumber) {
 			if(state==TelephonyManager.CALL_STATE_RINGING){
+				// TODO Notify call catched!
 				
 			}
 		}

@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class DriverInstallationFragment extends Fragment {
 
@@ -53,8 +54,8 @@ public class DriverInstallationFragment extends Fragment {
 			public void onClick(View v) {
 				if(!installCompleted){
 					// Install Driver
-					new InstallDriverTask().execute();
-					
+					//new InstallDriverTask().execute();
+					Toast.makeText(getActivity(), "test", Toast.LENGTH_SHORT).show();
 				}else{
 					mListener.onDriverInstalled();
 				}

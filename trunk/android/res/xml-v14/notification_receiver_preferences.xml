@@ -29,5 +29,14 @@
                 android:targetPackage="org.secmem.remoteroid" />
         </PreferenceScreen>
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/notification_type" >
+        <ListPreference
+            android:defaultValue="a"
+            android:entries="@array/notificaton_types"
+            android:entryValues="@array/notification_types_val"
+            android:key="notification_type"
+            android:summary="@string/notification_type_summary"
+            android:title="@string/notification_type" />
+    </PreferenceCategory>
 
 </PreferenceScreen>
