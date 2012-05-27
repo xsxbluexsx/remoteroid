@@ -21,6 +21,7 @@ package org.secmem.remoteroid.service;
 
 import java.util.List;
 
+import org.secmem.remoteroid.BuildConfig;
 import org.secmem.remoteroid.IRemoteroid;
 import org.secmem.remoteroid.util.FilterUtil;
 import org.secmem.remoteroid.util.Util;
@@ -28,6 +29,7 @@ import org.secmem.remoteroid.util.Util.Filter;
 import org.secmem.remoteroid.util.Util.Filter.NotificationType;
 
 import android.accessibilityservice.AccessibilityService;
+import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -39,39 +41,58 @@ import android.view.accessibility.AccessibilityEvent;
 
 public class NotificationReceiverService extends AccessibilityService {
 	private static final String TAG = "NotificationReceiverService";
-	private static final boolean D = true;
 	
 	private IRemoteroid mRemoteroidSvc = null;
 	private ServiceConnection mRemoteroidSvcConn = new ServiceConnection(){
 
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
-			if(D) Log.d(TAG, "Connected to Remoteroid service.");
+			if(BuildConfig.DEBUG) 
+				Log.d(TAG, "Connected to Remoteroid service.");
 			mRemoteroidSvc = IRemoteroid.Stub.asInterface(service);
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
-			if(D) Log.d(TAG, "Disconnected from Remoteroid service.");
+			if(BuildConfig.DEBUG) 
+				Log.d(TAG, "Disconnected from Remoteroid service.");
 			mRemoteroidSvc = null;
 		}
 		
 	};
 	
+	// You should implement onServiceConnected() to let system know about 
+	// what will your accessibility service catches, and how will handle it.
+	// On ICS(maybe Honeycomb?) or higher, you would not implement this method.
+	// (You can just implement accessibility property XML!)
+	@Override
+	protected void onServiceConnected() {
+		AccessibilityServiceInfo info = new AccessibilityServiceInfo();
+	    info.eventTypes = AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED;
+	    info.feedbackType = AccessibilityServiceInfo.FEEDBACK_SPOKEN;
+	    setServiceInfo(info);
+	    
+	    if(mRemoteroidSvc==null)
+	    	bindService(new Intent(this, RemoteroidService.class), mRemoteroidSvcConn, Context.BIND_AUTO_CREATE);
+	}
+
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
+		Log.d(TAG, event.toString());
 		try{
 			if(mRemoteroidSvc!=null){
-				// Check notification type
+				// Check notification type will be catched
 				NotificationType notiType = Util.Filter.getNotificationType(this);
+				if(BuildConfig.DEBUG)
+					Log.d(TAG, "Got notification, type="+notiType);
 				
 				switch(notiType){
 				case STATUSBAR:
 					if(!event.getClassName().equals("android.app.Notification"))
 						return;
 					
-				case TOAST:
-					if(!event.getClassName().equals("android.widget.Toast"))
+				case TOAST: // Toast notification only supported on Android 4.0+ (Maybe Honeycomb+?, not tested)
+					if(!event.getClassName().equals("android.widget.Toast$TN"))
 						return;
 				}
 				
@@ -100,6 +121,8 @@ public class NotificationReceiverService extends AccessibilityService {
 			e.printStackTrace();
 		}
 	}
+	
+	
 
 	@Override
 	public void onInterrupt() {
@@ -107,6 +130,7 @@ public class NotificationReceiverService extends AccessibilityService {
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		Log.d(TAG, "Starting notification receiver");
 		// Bind to RemoteroidService on start
 		if(mRemoteroidSvc!=null)
 			bindService(new Intent(this, RemoteroidService.class), mRemoteroidSvcConn, Context.BIND_AUTO_CREATE);
