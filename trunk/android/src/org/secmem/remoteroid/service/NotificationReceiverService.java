@@ -78,7 +78,12 @@ public class NotificationReceiverService extends AccessibilityService {
 
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
-		try{
+		if(mRemoteroidSvc==null){
+	    	bindService(new Intent(this, RemoteroidService.class), mRemoteroidSvcConn, Context.BIND_AUTO_CREATE);
+	    	return;
+		}
+		
+	    try{
 			if(mRemoteroidSvc!=null){
 				// Check notification type will be catched
 				NotificationType notiType = Util.Filter.getNotificationType(this);
@@ -97,6 +102,7 @@ public class NotificationReceiverService extends AccessibilityService {
 				
 				// Check filter enabled or not
 				if(Util.Filter.isFilterEnabled(getApplicationContext())){ // Filter enabled
+					Log.d(TAG, "Filter enabled");
 					FilterUtil filterUtil = new FilterUtil(this);
 					boolean filtered = false;
 					
@@ -109,6 +115,8 @@ public class NotificationReceiverService extends AccessibilityService {
 						filtered = !filterUtil.quickCheckExists(event.getPackageName().toString());
 						break;
 					}
+					if(BuildConfig.DEBUG)
+						Log.d(TAG, "Filtered = "+filtered);
 					// If not filtered, send notification via callback.
 					if(!filtered)
 						mRemoteroidSvc.onNotificationCatched(listToString(event.getText()), event.getEventTime());
