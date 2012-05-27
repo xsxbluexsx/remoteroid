@@ -8,7 +8,7 @@ import java.text.ParseException;
  * @author Taeho Kim
  *
  */
-public class PacketHeader {
+public class PacketHeader{
 	
 	public static final int LENGTH = 6;
 	public static final int OPCODE_LENGTH = 2;
@@ -24,13 +24,15 @@ public class PacketHeader {
 		public static final int FILEINFO_RECEIVED = 1;
 		public static final int FILEDATA_RECEIVED = 2;
 		public static final int JPGINFO_SEND = 3;
-		public static final int JPGDATA_SEND = 2;
+		public static final int JPGDATA_SEND = 4;
 		public static final int FILEDATA_REQUESTED = 5;
 		public static final int READY_TO_SEND = 6;
 		public static final int FILEINFO_REQUESTED = 7;
 		public static final int EVENT_RECEIVED = 8;		
 		public static final int DEVICEINFO_SEND = 9;
 		public static final int NOTIFICATION_SEND = 10;
+		public static final int SCREEN_SEND_REQUESTED = 11;
+		public static final int SCREEN_STOP_REQUESTED = 12;
 	}
 	
 	/**

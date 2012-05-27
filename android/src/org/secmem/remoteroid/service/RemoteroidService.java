@@ -43,7 +43,7 @@ import android.util.*;
  * @author Taeho Kim
  *
  */
-public class RemoteroidService extends Service implements FileTransmissionListener, VirtualEventListener, FrameBufferRequestListener{
+public class RemoteroidService extends Service implements FileTransmissionListener, VirtualEventListener, ScreenTransmissionListener{
 	public enum ServiceState{IDLE, CONNECTING, CONNECTED};
 	
 	private Tranceiver mTransmitter;
@@ -140,7 +140,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 					mInputHandler.close();
 					mTransmitter.disconnect();
 					mState = ServiceState.IDLE;
-					isSending=false;
+					isTransmission=false;
 					return null;
 				}
 				
@@ -349,20 +349,20 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		return result;
 	}
 	
-	private boolean isSending = true; // Taeho : What is this variable means for?
+	private boolean isTransmission = true; // Taeho : What is this variable means for?
 
 	@Override
-	public void onStartScreenTranmit() {
+	public void onStartScreenTransmission() {
 		
-		isSending = true;
+		isTransmission = true;
 		Thread mThread = new Thread(){
 			@Override
 			public void run() {
-				SystemClock.sleep(4000);
-				while(isSending){
+				SystemClock.sleep(3000);
+				while(isTransmission){
 					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
 					
-					mTransmitter.sendFrameBuffer(frameStream.toByteArray());
+					mTransmitter.screenTransmission(frameStream.toByteArray());
 				}
 			}
 		};
@@ -371,9 +371,8 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	}
 
 	@Override
-	public void onCancelFrameBuffer() {
-		isSending = false;
-		
+	public void onStopScreenTransmission() {
+		isTransmission = false;		
 	}
 	
 		
