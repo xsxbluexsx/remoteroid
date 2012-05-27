@@ -72,7 +72,7 @@ public class AuthenticateFragment extends Fragment {
 		mCbAutoConn = (CheckBox)view.findViewById(R.id.auto_connect);
 		mBtnConnect = (Button)view.findViewById(R.id.connect);
 		
-		mEdtIpAddr.setText("210.118.74.80");
+		mEdtIpAddr.setText("210.118.74.85");
 		mEdtPassword.setText("aaa");
 		
 		mEdtIpAddr.addTextChangedListener(new TextWatcher(){

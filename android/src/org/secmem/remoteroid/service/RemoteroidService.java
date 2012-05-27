@@ -153,8 +153,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 				protected Void doInBackground(Void... params) {
 					mInputHandler.close();
 					mTransmitter.disconnect();
-					mState = ServiceState.IDLE;
-					isTransmission=false;
+					mState = ServiceState.IDLE;					
 					return null;
 				}
 				
