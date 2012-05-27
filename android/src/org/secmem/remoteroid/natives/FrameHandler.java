@@ -131,21 +131,16 @@ public class FrameHandler {
 	
 	// Compress JPEG
 	public ByteArrayOutputStream getFrameStream(){
-		
 		if(orientation != getDisplayOrientation()){
 			setDisplayValue();
 			setBitmap(getDisplayBitmap());
 		}
-		
 		ByteArrayOutputStream frameStream = new ByteArrayOutputStream();
-		
 		int ret = getFrameBuffer(buffer, getDisplayOrientation());
-		
 		frameBuffer.put(buffer, 0, displaySize);
 		frameBuffer.rewind();
 		bitmap.copyPixelsFromBuffer(frameBuffer);
 		bitmap.compress(CompressFormat.JPEG, 70, frameStream);
-		
 		return frameStream;
 	}
 	
