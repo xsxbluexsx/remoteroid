@@ -127,7 +127,6 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 						showConnectionNotification(ipAddress);
 						
 						mState = ServiceState.CONNECTED;
-						frameHandler = new FrameHandler(getApplicationContext());
 						
 					}else{ // Connection failed
 						sendBroadcast(new Intent(RemoteroidIntent.ACTION_INTERRUPTED));
@@ -370,10 +369,12 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	public void onScreenTransferRequested() {
 		
 		isTransmission = true;
+		frameHandler = new FrameHandler(getApplicationContext());
+		
 		Thread mThread = new Thread(){
 			@Override
 			public void run() {
-				SystemClock.sleep(3000);
+				SystemClock.sleep(1000);
 				while(isTransmission){
 					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
 					
