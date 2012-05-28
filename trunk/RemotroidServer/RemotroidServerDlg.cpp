@@ -118,6 +118,8 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 {
 	CImageDlg::OnInitDialog();
 
+	
+
 	// Add "About..." menu item to system menu.
 
 	// IDM_ABOUTBOX must be in the system command range.
@@ -326,6 +328,7 @@ UINT CRemotroidServerDlg::AcceptFunc(LPVOID pParam)
 		return 0;
 	}
 	AfxMessageBox(_T("sdfsd"));
+
 	CMyClient *pClient = new CMyClient(ClientSocket);
 	pClient->SetNoDelay(TRUE);
 
@@ -388,28 +391,43 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 	CRemotroidServerDlg *pDlg = (CRemotroidServerDlg *)pParam;
 	CMyClient *pClient = pDlg->GetClientSocket();
 
-	char bPacket[MAXSIZE];
+	char bPacket[MAXSIZE];			
+
 	CRecvFile& recvFileClass = pDlg->recvFileClass;	
 	CTextProgressCtrl& prgressBar = pDlg->m_progressCtrl;
 	
 	while (TRUE)
-	{
-		memset(bPacket, 0, sizeof(bPacket));
+	{		
 		int iRecvLen = pClient->RecvPacket();		
 		if(iRecvLen <= 0)
 		{
 			TRACE("recvlen <= 0 \n");
 			break;
 		}
+
+		TRACE("GetPacket\n");
+
 		while(pClient->GetPacket(bPacket))
 		{
 			int iOPCode = CUtil::GetOpCode(bPacket);
+
+			TRACE("opcode : %d\n", iOPCode);
+
 			int iPacketSize = CUtil::GetPacketSize(bPacket);
+			
+			//packet 크기가 0이면 깨진 패킷
+			if(iPacketSize == 0)
+			{
+				pClient->ResetBuffer();
+				break;
+			}
+
 			char *data = bPacket+HEADERSIZE;
 
 			switch(iOPCode)
 			{
 			case OP_SENDFILEINFO:
+				TRACE("OP_SENDFILEINFO\n");
 				if(recvFileClass.RecvFileInfo(data) != INVALID_HANDLE_VALUE)
 				{
 					//파일은 수신 받을 준비가 되면 req 요청을 전송한다
@@ -417,26 +435,33 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 				}
 				break;
 			case OP_SENDFILEDATA:
+				TRACE("OP_SENDFILEDATA\n");
 				recvFileClass.RecvFileData(data, iPacketSize);				
 				break;		
-			case OP_SENDJPGINFO:				
+			case OP_SENDJPGINFO:	
+				TRACE("OP_SENDJPGINFO\n");
 				//pDlg->screen.SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);
 				pDlg->screen.SetJpgInfo(data);
 				break;
-			case OP_SENDJPGDATA:				
+			case OP_SENDJPGDATA:		
+				TRACE("OP_SENDJPGDATA\n");
 				//pDlg->screen.SendMessage(WM_RECVJPGDATA, iPacketSize, (LPARAM)data);
 				pDlg->screen.RecvJpgData(data, iPacketSize);
 				break;
 			case OP_REQFILEDATA:
+				TRACE("OP_REQFILEDATA\n");
 				pDlg->fileSender.SendFileData();
 				break;
 			case OP_READYSEND:
+				TRACE("OP_READYSEND\n");
 				pDlg->SendMessage(WM_READYRECVFILE, 0, 0);
 				break;
 			case OP_SENDDEVICEINFO:
+				TRACE("OP_SENDDEVICEINFO\n");
 				pDlg->screen.SendMessage(WM_RECVDEVICEINFO, 0, (LPARAM)data);
 				break;
 			case OP_SENDNOTIFICATION:
+				TRACE("OP_SENDNOTIFICATION\n");
 				if(iPacketSize == HEADERSIZE)
 					break;
 
@@ -446,7 +471,9 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 		}
 	}
 	
+	TRACE("close recv handle\n");
 	recvFileClass.CloseFileHandle();		
+	TRACE("close recv handle next\n");
 	pDlg->fileSender.DeleteFileList();
 
 	delete pClient;	
@@ -479,6 +506,7 @@ CMyClient * CRemotroidServerDlg::GetClientSocket(void)
 
 void CRemotroidServerDlg::OnDestroy()
 {	
+	TRACE("OnDestroy\n");
 	// TODO: Add your message handler code here		
 	m_isClickedEndBtn = TRUE;
 	EndAccept();
@@ -498,7 +526,7 @@ void CRemotroidServerDlg::OnBnClickedOk()
 void CRemotroidServerDlg::OnBnClickedCancel()
 {
 	// TODO: Add your control notification handler code here
-	
+	TRACE("OnBnClickedCancel\n");
 	CDialogEx::OnCancel();
 }
 
@@ -583,6 +611,8 @@ void CRemotroidServerDlg::EndConnect(void)
 			::TranslateMessage(&msg);
 			::DispatchMessage(&msg);
 		}
+
+		TRACE("waitfor endconnect\n");
 	}
 	
 	delete pRecvThread;
@@ -763,8 +793,11 @@ void CRemotroidServerDlg::OnLButtonUp(UINT nFlags, CPoint point)
 		GetStoreFilePath();
 		SystemParametersInfo(SPI_SETCURSORS, 0, NULL, 0);
 		ReleaseCapture();
-		m_isReadyRecv = FALSE;
-		TRACE("op reqfileinfo\n");
+		m_isReadyRecv = FALSE;		
+
+		CVitualEventPacket event(TOUCHUP);
+		m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
+
 		m_pClient->SendPacket(OP_REQFILEINFO, 0, 0);
 	}	
 	CImageDlg::OnLButtonUp(nFlags, point);
@@ -818,6 +851,7 @@ LRESULT CRemotroidServerDlg::OnCreatePopupDlg(WPARAM wParam, LPARAM lParam)
 	char *data = (char*)lParam;
 	int payloadSize = wParam-HEADERSIZE;
 	TCHAR *notiText = new TCHAR[payloadSize*2];
+	memset(notiText, 0, payloadSize*2);
 	CUtil::UtfToUni(notiText, data);
 
 	CPopupDlg* pDlg = new CPopupDlg;
@@ -896,6 +930,8 @@ void CRemotroidServerDlg::OnClose()
 		if(ret == IDNO)
 			return;
 	}
+
+	TRACE("onclose\n");
 	CImageDlg::OnClose();
 }
 

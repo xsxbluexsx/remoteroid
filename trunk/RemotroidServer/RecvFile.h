@@ -11,13 +11,14 @@ private:
 	TCHAR m_uniFileName[100];
 	unsigned long long m_iTotalFileSize;	
 	unsigned long long m_iRecvFileSize;
+
 	TCHAR directoryPath[MAX_PATH];
 	CTextProgressCtrl *pProgressBar;
 
 public:
 	HANDLE RecvFileInfo(char * data);
 	void RecvFileData(char * data, int packetSize);
-	LONGLONG atoll(char * str);
+	unsigned long long atoll(char * str);
 	void CloseFileHandle(void);	
 	void SetFilePath(TCHAR * path);
 	void SetDefaultPath(void);

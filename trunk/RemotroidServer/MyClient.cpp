@@ -27,26 +27,25 @@ int CMyClient::RecvPacket(void)
 }
 
 
-bool CMyClient::GetPacket(char * packet)
+BOOL CMyClient::GetPacket(char * packet)
 {
 	if(m_iCurrent < HEADERSIZE)
-	{
-		return FALSE;
-	}
-		
+		return FALSE;	
+
 	int iPacketSize = CUtil::GetPacketSize(m_RecvBuffer);
 	//헤더에서 패킷 싸이즈 얻기
-
-
+	
 	//수신받은 데이터가 패킷 싸이즈보다 작으면..
 	if(iPacketSize > m_iCurrent)
-	{
-		return FALSE;
-	}
+		return FALSE;		
+
+	memset(packet, 0, MAXSIZE);
 
 	memcpy(packet, m_RecvBuffer, iPacketSize);
 	m_iCurrent -= iPacketSize;
 	memcpy(m_RecvBuffer, m_RecvBuffer+iPacketSize, m_iCurrent);
+
+	TRACE("m_icur : %d packetSize : %d\n", m_iCurrent, iPacketSize);
 
 	return TRUE;
 }
@@ -65,6 +64,7 @@ int CMyClient::SendPacket(int iOPCode, const char * data, int iDataLen)
 	int iPacketSize = iDataLen + HEADERSIZE;
 	sprintf(bPacketSize, "%4d", iPacketSize);
 
+	memset(packet, 0, sizeof(packet));
 	memcpy(packet, bOPCode, OPCODESIZE);
 	memcpy(packet+OPCODESIZE, bPacketSize, TOTALSIZE);
 	if(data != NULL)
@@ -90,4 +90,11 @@ void CMyClient::SetNoDelay(BOOL bOp)
 	int bOptLen = sizeof(BOOL);
 	int iOptLen = sizeof(int);
 	setsockopt(m_ClientSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&bOptVal, bOptLen);
+}
+
+
+void CMyClient::ResetBuffer(void)
+{
+	memset(m_RecvBuffer, 0, sizeof(m_RecvBuffer));
+	m_iCurrent = 0;
 }
