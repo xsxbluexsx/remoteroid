@@ -110,7 +110,7 @@ public class FrameHandler {
 		bitmap.copyPixelsFromBuffer(frameBuffer);
 				
 		frameStream.reset();
-		bitmap.compress(CompressFormat.JPEG, 100, frameStream);
+		bitmap.compress(CompressFormat.JPEG, 70, frameStream);
 		return frameStream;
 	}
 	

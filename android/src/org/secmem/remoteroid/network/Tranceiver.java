@@ -76,8 +76,7 @@ public class Tranceiver  implements PacketListener{
 			fileTransReceiver = new FileTranceiver(sendStream, mFileTransListener);
 			
 			//Connect udp socket
-			screenSender = new ScreenSender(ipAddr);
-			screenSender.connectUdpSocket();
+			screenSender = new ScreenSender(sendStream);
 			
 			// Create and start packet receiver
 			packetReceiver = new PacketReceiver(recvStream);
