@@ -18,12 +18,21 @@ CScreen::CScreen()
 , width(0)
 , height(0)
 , m_bTrack(FALSE)
-{	
+, m_strMyIp(_T(""))
+, m_isConnect(FALSE)
+{
+	m_bkgImg.LoadFromResource(AfxGetInstanceHandle(), IDB_BITMAP_WAITING);		
+	ZeroMemory(&lf, sizeof(lf));
+	lf.lfHeight = 45;
+	lf.lfWeight = FW_BOLD;
+	wsprintf(lf.lfFaceName, _T("HY°ß°íµñ"));
+	
+	newFont.CreateFontIndirect(&lf);
 }
 
 CScreen::~CScreen()
 {	
-	
+	newFont.DeleteObject();
 }
 
 
@@ -36,6 +45,9 @@ BEGIN_MESSAGE_MAP(CScreen, CStatic)
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()		
 	ON_WM_MOUSELEAVE()
+	ON_WM_PAINT()
+	ON_WM_CREATE()
+	
 END_MESSAGE_MAP()
  
 
@@ -52,6 +64,8 @@ void CScreen::InitDrawJpg(void)
 	width = rect.Width();
 	height = rect.Height();
 	drawJpg.InitDrawJpg(GetSafeHwnd(), width, height);	
+
+	
 }
 
 
@@ -85,6 +99,7 @@ LRESULT CScreen::OnSetJpgInfo(WPARAM wParam, LPARAM lParam)
 {	
 	char *data = (char*)lParam;
 	drawJpg.SetJpgInfo(data);
+
 	return 0;
 }
 
@@ -161,7 +176,10 @@ void CScreen::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CScreen::SetClient(CMyClient * pClient)
 {
-	this->pClient = pClient;
+	m_isConnect = TRUE;
+	aniWait.SetAnimation(FALSE);
+
+	this->pClient = pClient;	
 }
 
 
@@ -221,10 +239,6 @@ void CScreen::OnMouseLeave()
 	}	
 }
 
-
-
-
-
 BOOL CScreen::PreCreateWindow(CREATESTRUCT& cs)
 {
 	// TODO: Add your specialized code here and/or call the base class
@@ -233,12 +247,54 @@ BOOL CScreen::PreCreateWindow(CREATESTRUCT& cs)
 	WNDCLASS wc;
 	memset(&wc, 0, sizeof(wc));
 	GetClassInfo(cs.hInstance, cs.lpszClass, &wc);	
+	
 	wc.style = wc.style & (~CS_DBLCLKS);	
 	cs.lpszClass = AfxRegisterWndClass(wc.style, wc.hCursor, wc.hbrBackground, wc.hIcon);	
 	return CStatic::PreCreateWindow(cs);
 }
 
 
+void CScreen::OnPaint()
+{
+	CPaintDC dc(this); // device context for painting
+	// TODO: Add your message handler code here
+	// Do not call CStatic::OnPaint() for painting messages
+	if(m_isConnect)
+		return;
+	
+	CDC *pDC = CDC::FromHandle(m_bkgImg.GetDC());
+		
+	CFont *pOldFont = pDC->SelectObject(&newFont);
+
+	pDC->SetTextColor(RGB(255,255,255));
+	pDC->SetBkMode(TRANSPARENT);
+	pDC->TextOut(40,250, m_strMyIp);
+
+	dc.SelectObject(pOldFont);
+	
+	m_bkgImg.ReleaseDC();
+	m_bkgImg.BitBlt(dc.m_hDC, 0, 0);	
+}
 
 
+int CScreen::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CStatic::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+	// TODO:  Add your specialized creation code here
+	aniWait.Create(_T(""), WS_CHILD|WS_VISIBLE,CRect(60,330,290,500), this, 0);
+	aniWait.myRect = CRect(80,350,280,480);
+	aniWait.SetAnimation(TRUE);
+	
+	return 0;
+}
+
+
+void CScreen::SetDisconnect()
+{
+	m_isConnect = FALSE;
+	RedrawWindow();
+	aniWait.SetAnimation(TRUE);
+}
 

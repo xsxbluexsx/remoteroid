@@ -44,9 +44,7 @@ BOOL CMyClient::GetPacket(char * packet)
 	memcpy(packet, m_RecvBuffer, iPacketSize);
 	m_iCurrent -= iPacketSize;
 	memcpy(m_RecvBuffer, m_RecvBuffer+iPacketSize, m_iCurrent);
-
-	TRACE("m_icur : %d packetSize : %d\n", m_iCurrent, iPacketSize);
-
+	
 	return TRUE;
 }
 

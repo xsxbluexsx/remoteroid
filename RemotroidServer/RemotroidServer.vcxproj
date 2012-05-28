@@ -104,6 +104,9 @@
     <None Include="res\BACKGROUND.rgn" />
     <None Include="res\bitmap1.bmp" />
     <None Include="res\bitmap2.bmp" />
+    <None Include="res\byYeongHo_00.bmp" />
+    <None Include="res\byYeongHo_01.bmp" />
+    <None Include="res\byYeongHo_02.bmp" />
     <None Include="res\galaxy.png" />
     <None Include="res\galaxybalck.png" />
     <None Include="res\galaxybalck11.bmp" />
@@ -126,6 +129,7 @@
     <None Include="res\XBtn_main_hover.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AniStatic.h" />
     <ClInclude Include="CMyMemDC.h" />
     <ClInclude Include="DrawJpg.h" />
     <ClInclude Include="FileSender.h" />
@@ -151,6 +155,7 @@
     <ClInclude Include="VitualEventPacket.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AniStatic.cpp" />
     <ClCompile Include="DrawJpg.cpp" />
     <ClCompile Include="FileSender.cpp" />
     <ClCompile Include="ImageDlg.cpp" />

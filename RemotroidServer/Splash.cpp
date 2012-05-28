@@ -75,8 +75,8 @@ void CSplash::OnTimer(UINT_PTR nIDEvent)
 	// TODO: Add your message handler code here and/or call default
 	ShowWindow(SW_HIDE);
 
- 	AnimateWindow(300, AW_BLEND);
- 	Sleep(1000);
+	AnimateWindow(300, AW_BLEND);
+	Sleep(1000);
 	AnimateWindow(300, AW_BLEND | AW_HIDE);
 	
  	EndDialog(0);
