@@ -9,8 +9,8 @@ public:
 private:
 	HANDLE m_hRecvFile;
 	TCHAR m_uniFileName[100];
-	LONGLONG m_iTotalFileSize;	
-	LONGLONG m_iRecvFileSize;
+	unsigned long long m_iTotalFileSize;	
+	unsigned long long m_iRecvFileSize;
 	TCHAR directoryPath[MAX_PATH];
 	CTextProgressCtrl *pProgressBar;
 

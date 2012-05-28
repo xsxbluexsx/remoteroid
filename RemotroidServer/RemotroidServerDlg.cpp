@@ -420,10 +420,12 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 				recvFileClass.RecvFileData(data, iPacketSize);				
 				break;		
 			case OP_SENDJPGINFO:				
-				pDlg->screen.SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);
+				//pDlg->screen.SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);
+				pDlg->screen.SetJpgInfo(data);
 				break;
 			case OP_SENDJPGDATA:				
-				pDlg->screen.SendMessage(WM_RECVJPGDATA, iPacketSize, (LPARAM)data);
+				//pDlg->screen.SendMessage(WM_RECVJPGDATA, iPacketSize, (LPARAM)data);
+				pDlg->screen.RecvJpgData(data, iPacketSize);
 				break;
 			case OP_REQFILEDATA:
 				pDlg->fileSender.SendFileData();
