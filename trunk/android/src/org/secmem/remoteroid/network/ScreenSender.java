@@ -11,66 +11,30 @@ import org.secmem.remoteroid.network.PacketHeader.OpCode;
 import android.util.Log;
 
 
-class ScreenPacket extends Packet{
-	private static byte[] jpgBuffer = new byte[MAX_LENGTH];
-	
-	
-	public ScreenPacket(int opCode, byte[] data, int dataLength){
-		setHeader(new PacketHeader(opCode, dataLength));
-		setPayload(data);
-	}
-	
-	@Override
-	public byte[] asByteArray(){
-		byte[] headerData = getHeader().asByteArray();
-		System.arraycopy(headerData, 0, jpgBuffer, 0, PacketHeader.LENGTH);
-		
-		// Append payload
-		System.arraycopy(getPayload(), 0, jpgBuffer, PacketHeader.LENGTH, 
-				getHeader().getPayloadLength());
-		
-		return jpgBuffer;
-	}
-}
-
-
 /**
- * Send screen shot data to host (UDP socket)
+ * Send screen shot data to host
  * @author ssm
  */
-public class ScreenSender{
-	
-	private static final int UDP_PORT = 50001;
-	private static final int MAXDATASIZE = 400;
-	private String ipAddr;
-	private InetAddress serverAddress;
-	private DatagramSocket datagramSocket;
+public class ScreenSender extends PacketSender{
+		
+	private static final int MAXDATASIZE = 4090;
+
 	private byte[] sendBuffer = new byte[MAXDATASIZE];
 	
-	public ScreenSender(String ipAddr){	
-		this.ipAddr = ipAddr;		
+	public ScreenSender(OutputStream out){
+		super(out);		
 	}
 	
-	public void connectUdpSocket() throws IOException{		
-		datagramSocket = new DatagramSocket();
-		serverAddress = InetAddress.getByName(ipAddr);
-	}
-	
-	private void sendUdp(Packet packet) throws IOException{
-		DatagramPacket out = new DatagramPacket(packet.asByteArray(),			
-				packet.getHeader().getPacketLength(), serverAddress, UDP_PORT);
 		
-		datagramSocket.send(out);
-	}
-	
 	public void screenTransmission(byte[] jpgData) throws IOException{
 		int jpgTotalSize = jpgData.length;
 		int transmittedSize = 0;		
 		
 		//First send jpg size information to host
 		byte [] jpgSizeInfo = String.valueOf(jpgTotalSize).getBytes();		
-		ScreenPacket jpgInfoPacket = new ScreenPacket(OpCode.JPGINFO_SEND, jpgSizeInfo, jpgSizeInfo.length);				
-		sendUdp(jpgInfoPacket);		
+		Packet jpgInfoPacket = new Packet(OpCode.JPGINFO_SEND, jpgSizeInfo, jpgSizeInfo.length);				
+		
+		send(jpgInfoPacket);
 		
 		//Next send jpg data to host
 		while(jpgTotalSize > transmittedSize){
@@ -79,8 +43,9 @@ public class ScreenSender{
 			System.arraycopy(jpgData, transmittedSize, sendBuffer, 0, CurTransSize);
 			transmittedSize += CurTransSize;
 			
-			ScreenPacket jpgDataPacket = new ScreenPacket(OpCode.JPGDATA_SEND, sendBuffer, CurTransSize);
-			sendUdp(jpgDataPacket);			
+			Packet jpgDataPacket = new Packet(OpCode.JPGDATA_SEND, sendBuffer, CurTransSize);
+			
+			send(jpgDataPacket);
 		}		
 	}
 }
