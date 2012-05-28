@@ -35,6 +35,7 @@ import org.secmem.remoteroid.natives.FrameHandler;
 import org.secmem.remoteroid.natives.InputHandler;
 import org.secmem.remoteroid.network.FileTransmissionListener;
 import org.secmem.remoteroid.network.ScreenTransmissionListener;
+import org.secmem.remoteroid.network.ServerConnectionListener;
 import org.secmem.remoteroid.network.Tranceiver;
 import org.secmem.remoteroid.network.VirtualEventListener;
 import org.secmem.remoteroid.receiver.SmsReceiver;
@@ -60,7 +61,8 @@ import android.util.Log;
  * @author Taeho Kim
  *
  */
-public class RemoteroidService extends Service implements FileTransmissionListener, VirtualEventListener, ScreenTransmissionListener{
+public class RemoteroidService extends Service 
+					implements ServerConnectionListener, FileTransmissionListener, VirtualEventListener, ScreenTransmissionListener{
 	public enum ServiceState{IDLE, CONNECTING, CONNECTED};
 	
 	private Tranceiver mTransmitter;
@@ -97,46 +99,21 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		public void connect(final String ipAddress, final String password)
 				throws RemoteException {
 			
-			new AsyncTask<Void, Void, Boolean>(){
+			new AsyncTask<Void, Void, Void>(){
 
 				@Override
-				protected Boolean doInBackground(Void... params) {
-					try {
+				protected Void doInBackground(Void... params) {
 						mState = ServiceState.CONNECTING;
+						
+						// Open input device
+						mInputHandler.open();
 						
 						// Start connection and receive events from server
 						mTransmitter.connect(ipAddress);
 						//Send devices resolution to host for coordinate transformation;
 						mTransmitter.sendDeviceInfo(getApplicationContext().getResources().getDisplayMetrics());
-						// Open input device
-						return mInputHandler.open();
-					} catch (IOException e) {
-						mState = ServiceState.IDLE;
-						sendBroadcast(new Intent(RemoteroidIntent.ACTION_INTERRUPTED));
-						dismissNotification();
-						e.printStackTrace();
-						return false;
-					}
-				}
-				
-				@Override
-				public void onPostExecute(Boolean result){
-					if(result){ // Connected
-						// Listen incoming calls
-						TelephonyManager telManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-						telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_CALL_STATE);
 						
-						sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTED).putExtra("ip", ipAddress));
-						
-						showConnectionNotification(ipAddress);
-						
-						mState = ServiceState.CONNECTED;
-						
-					}else{ // Connection failed
-						sendBroadcast(new Intent(RemoteroidIntent.ACTION_INTERRUPTED));
-						dismissNotification();
-						mState = ServiceState.IDLE;
-					}
+						return null;	
 				}
 				
 			}.execute();
@@ -157,16 +134,9 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 				protected Void doInBackground(Void... params) {
 					mInputHandler.close();
 					mTransmitter.disconnect();
-					mState = ServiceState.IDLE;					
 					return null;
 				}
-				
-				@Override
-				protected void onPostExecute(Void result){
-					// Sending broadcast for disconnection..
-					sendBroadcast(new Intent(RemoteroidIntent.ACTION_DISCONNECTED));
-				}
-				
+
 			}.execute();
 		}
 
@@ -195,7 +165,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		mTransmitter = new Tranceiver();
+		mTransmitter = new Tranceiver(this);
 		mTransmitter.setFileTransmissionListener(this);
 		mTransmitter.setVirtualEventListener(this);
 		mTransmitter.setFrameBufferListener(this);
@@ -219,7 +189,6 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if(intent.getExtras()!=null && intent.getParcelableArrayListExtra(SmsReceiver.EXTRA_MSGS)!=null){
 			ArrayList<RDSmsMessage> list = intent.getParcelableArrayListExtra(SmsReceiver.EXTRA_MSGS);
-			
 			for(RDSmsMessage msg : list){
 				System.out.println(msg.toString());
 				// TODO Message received..
@@ -352,7 +321,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 
 
 	@Override
-	public void onInterrupt() {
+	public void onFileTransferInterrupted() {
 		// TODO Auto-generated method stub
 		
 	}
@@ -418,6 +387,49 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 			os.flush();
 		} catch (IOException e) {	}
 	}
+
+	@Override
+	public void onServerConnected(String ipAddress) {
+		// Listen incoming calls
+		TelephonyManager telManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+		telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_CALL_STATE);
+		
+		sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTED).putExtra("ip", ipAddress));
+		
+		showConnectionNotification(ipAddress);
+		mState = ServiceState.CONNECTED;
+	}
+	
+	@Override
+	public void onServerConnectionFailed() {
+		mState = ServiceState.IDLE;
+		sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTION_FAILED));
+	}
+
+	@Override
+	public void onServerConnectionInterrupted() {
+		mState = ServiceState.IDLE;
+		sendBroadcast(new Intent(RemoteroidIntent.ACTION_INTERRUPTED));
+		dismissNotification();
+	}
+
+	@Override
+	public void onServerDisconnected() {
+		mState = ServiceState.IDLE;		
+		// Sending broadcast for disconnection..
+		sendBroadcast(new Intent(RemoteroidIntent.ACTION_DISCONNECTED));
+		dismissNotification();
+	}
+
+	@Override
+	public void onScreenTransferInterrupted() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+
+	
 	
 		
 

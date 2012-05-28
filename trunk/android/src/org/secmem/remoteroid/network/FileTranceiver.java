@@ -177,7 +177,7 @@ public class FileTranceiver extends PacketSender{
 				send(fileInfoPacket);
 			} catch (IOException e) {
 				e.printStackTrace();
-				mListener.onInterrupt();
+				mListener.onFileTransferInterrupted();
 			}		
 		}
 		
@@ -211,10 +211,10 @@ public class FileTranceiver extends PacketSender{
 					SendFileInfo();
 				}catch(FileNotFoundException e){
 					e.printStackTrace();
-					mListener.onInterrupt();
+					mListener.onFileTransferInterrupted();
 				}catch(IOException e){					
 					e.printStackTrace();
-					mListener.onInterrupt();
+					mListener.onFileTransferInterrupted();
 				}finally{
 					try{
 						in.close();				
