@@ -121,6 +121,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 			try {
 				if(mRemoteroid.isConnected()){
 					mRemoteroid.onSendFile(fileInfo);
+					isBound=true;
 				}
 				else{
 				}
@@ -173,7 +174,6 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		adapterFilter = new IntentFilter();
 		adapterFilter.addAction(RemoteroidIntent.ACTION_FILE_TRANSMISSION_SECCESS);
 		Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
-		Log.i("qq","format = "+display.getPixelFormat());
 //		i = new Intent(ExplorerActivity.this, FrameBufferService.class);
 //		startService(i);
 		
@@ -374,7 +374,6 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		public void onLongclick() {
 				if(fileInfo.size()!=0 && !isBound){
 					bindService(new Intent(ExplorerActivity.this, RemoteroidService.class), conn, Context.BIND_AUTO_CREATE);
-					isBound=true;
 				}
 				else if(isBound){
 					try {

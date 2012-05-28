@@ -121,6 +121,7 @@ public class FileTranceiver extends PacketSender{
 					mListener.onFileTransferSucceeded();
 				}
 			}catch(IOException e){
+				Log.i("debug_state","Filed receiveFileData");
 				e.printStackTrace();
 				closeFile();		
 			}
@@ -130,7 +131,7 @@ public class FileTranceiver extends PacketSender{
 			if(out != null){
 				try {
 					out.close();
-				} catch (IOException e) {}
+				} catch (IOException e) {Log.i("debug_state","closeFile");}
 				out = null;
 			}
 		}
