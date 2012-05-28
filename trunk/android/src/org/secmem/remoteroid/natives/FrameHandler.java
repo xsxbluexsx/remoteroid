@@ -20,18 +20,20 @@
 package org.secmem.remoteroid.natives;
 
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
 public class FrameHandler {
+	
+	static {
+		System.loadLibrary("fbuffer");
+	}
 	
 	private ByteBuffer frameBuffer;
 	private ByteArrayOutputStream frameStream;
@@ -48,55 +50,13 @@ public class FrameHandler {
 	private int orientation;
 	private int pixelFormat;
 	
-	/*
-
-	 1. FrameHandler handler = new FrameHandler();
-	 3. suPermission();
-	 
-	 **Start Loop{
-	 
-		 4. frameStream = getFrameStream();
-		 
-		 **SendScreenShot(frameStream.size() , frameStream.toByteArray());
-	 }
-	 */
-
 	/**
 	 * Read frame buffer from device.
-	 * @param width Screen width
-	 * @param height Screen height
-	 * @param pixelDepth 
-	 * @param dest Byte buffer where frame buffer's data be stored
-	 * @return true if frame buffer loaded successful, false otherwise
+	 * @param buff Byte buffer where frame buffer's data will be stored
+	 * @param pixelformat
+	 * @return
 	 */
-//	public native boolean readFrameBufferNative(int width, int height, int pixelDepth, byte[] dest);
-
 	private native int getFrameBuffer(byte[] buff, int pixelformat);
-	
-	static {
-		System.loadLibrary("fbuffer");
-	}
-	
-//	public Bitmap readFrameBuffer(Context context){
-//		DisplayMetrics dm = context.getResources().getDisplayMetrics();
-//		int width = dm.widthPixels;
-//		int height = dm.heightPixels;
-//		int pixelDepth = 4;
-//		
-//		WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-//		
-//		int rotation = wm.getDefaultDisplay().getRotation();
-//		
-//		byte[] frameData = new byte[width*height*4];
-////		readFrameBufferNative(width, height, pixelDepth, frameData);
-//		
-//		ByteBuffer frameBuffer = ByteBuffer.allocate(width*height*4);
-//		Bitmap bm = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-//		// FIXME
-//		
-//		return null;
-//	}
-	
 	
 	
 	public FrameHandler(Context context) {
@@ -113,7 +73,7 @@ public class FrameHandler {
 	
 	private void setDisplayValue() {
 		DisplayMetrics dm = context.getResources().getDisplayMetrics();
-		Display display = ((WindowManager) context.getSystemService(context.WINDOW_SERVICE)).getDefaultDisplay();
+		Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 	
 		this.width = dm.widthPixels/2;
 		this.height = dm.heightPixels/2;
@@ -144,7 +104,7 @@ public class FrameHandler {
 		
 		int ret = getFrameBuffer(buffer, pixelFormat);
 				
-		Log.i("qwe", ""+ret);
+		//Log.i("qwe", ""+ret);
 		frameBuffer.put(buffer, 0, displaySize);
 		frameBuffer.rewind();
 		bitmap.copyPixelsFromBuffer(frameBuffer);
@@ -171,32 +131,6 @@ public class FrameHandler {
 		
 		return bitmap;
 	}
-	
-	
-	
-//	public void suPermission() {
-//		try {
-//			p = Runtime.getRuntime().exec("su");
-//			DataOutputStream os = new DataOutputStream(p.getOutputStream());
-//			os.writeBytes("chmod 664 /dev/graphics/fb0\n");
-//			os.writeBytes("chmod 664 /dev/graphics/fb1\n");
-//			os.writeBytes("exit\n");
-//			os.flush();
-//		} catch (IOException e) {	
-//		}
-//	}
-	
-//	public void suClose() {
-//		try {
-//			p = Runtime.getRuntime().exec("su");
-//			DataOutputStream os = new DataOutputStream(p.getOutputStream());
-//			os.writeBytes("chmod 660 /dev/graphics/fb0\n");
-//			os.writeBytes("chmod 664 /dev/graphics/fb1\n");
-//			os.writeBytes("exit\n");
-//			os.flush();
-//		} catch (IOException e) {	e.printStackTrace();}
-//	}
-	
 	
 	public ByteBuffer getFrameBuffer() {
 		return frameBuffer;

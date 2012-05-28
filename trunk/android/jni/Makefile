@@ -1,7 +1,7 @@
 JAVA_CLASSES_DIR = bin/classes
 JAVA_NATIVES_DIR = $(JAVA_CLASSES_DIR)/org/secmem/remoteroid/natives
 JNI_HEADER_DIR = jni/include
-SOURCES = InputHandler.cpp FrameHandler.cpp
+SOURCES = InputHandler.cpp fbuffer.c
 
 all: header lib
 
