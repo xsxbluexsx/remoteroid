@@ -2,6 +2,9 @@
 #include "DrawJpg.h"
 #include "MyClient.h"
 #include "VitualEventPacket.h"
+#include "AniStatic.h"
+#include "atlimage.h"
+#include "afxwin.h"
 
 
 
@@ -55,11 +58,23 @@ private:
 	int height;
 
 	inline void CoordinateTransform(CPoint& point);
+
 	BOOL m_bTrack;
+	CAniStatic aniWait;
+	
 public:
 	afx_msg void OnMouseLeave();
 	void SetJpgInfo(char *data);
 	void RecvJpgData(char * data, int iPacketSize);
+	afx_msg void OnPaint();
+	CString m_strMyIp;
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	BOOL m_isConnect;
+	void SetDisconnect();
+
+	CImage m_bkgImg;
+	CFont newFont;
+	LOGFONT lf;
 };
 
 

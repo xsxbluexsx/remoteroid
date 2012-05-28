@@ -95,6 +95,15 @@
     <None Include="res\traybtn.bmp">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\byYeongHo_00.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\byYeongHo_01.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\byYeongHo_02.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RemotroidServer.h">
@@ -166,6 +175,9 @@
     <ClInclude Include="TrayIcon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AniStatic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RemotroidServer.cpp">
@@ -220,6 +232,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TrayIcon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AniStatic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

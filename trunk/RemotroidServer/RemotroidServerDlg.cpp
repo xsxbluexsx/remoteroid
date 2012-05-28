@@ -56,6 +56,7 @@ CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
 	, pAcceptThread(NULL)
 	, pUdpRecvThread(NULL)
 	, m_isReadyRecv(FALSE)	
+	, isTray(FALSE)	
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	
@@ -107,8 +108,8 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_TRAY, &CRemotroidServerDlg::OnBnClickedBtnTray)
 	ON_BN_CLICKED(IDC_BTN_CLOSE, &CRemotroidServerDlg::OnBnClickedBtnClose)
 	ON_WM_CLOSE()
-	ON_BN_CLICKED(IDC_BUTTON1, &CRemotroidServerDlg::OnBnClickedButton1)
-	ON_BN_CLICKED(IDC_BUTTON2, &CRemotroidServerDlg::OnBnClickedButton2)
+	
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -152,7 +153,8 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	
 	screen.CreateEx(WS_EX_TOPMOST
 		, _T("STATIC"), NULL, WS_CHILD|WS_VISIBLE|SS_NOTIFY, CRect(LEFT, TOP, RIGHT, BOTTOM), this, 1234);
-	screen.SetFocus();	
+	//screen.SetFocus();	
+	screen.SetLayeredWindowAttributes(0, 255, LWA_ALPHA);
 
 	m_progressCtrl.MoveWindow(LEFT, TOP-10, WIDTH, 10);
 	m_progressCtrl.ShowWindow(SW_HIDE);
@@ -238,12 +240,26 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 		return TRUE;
 	}
 
+	//자신의 IP 얻어오기
+	PHOSTENT hostinfo;
+	char name[255];
+	char ip[255];
+	if(gethostname(name, sizeof(name)) == 0)
+	{
+		if((hostinfo = gethostbyname(name)) != NULL)
+		{
+			strcpy(ip, inet_ntoa(*(struct in_addr *)*hostinfo->h_addr_list));
+			m_strMyIp = CA2W(ip);
+			screen.m_strMyIp = m_strMyIp;
+		}
+	}	
+
 	if(listen(m_ServerSocket , SOMAXCONN) == SOCKET_ERROR)
 	{
 		MessageBox(_T("listen error"));
 		EndDialog(IDCANCEL);
 		return TRUE;
-	}
+	}	
 	
 	pAcceptThread = AfxBeginThread(AcceptFunc, this);	
 	pAcceptThread->m_bAutoDelete = FALSE;
@@ -261,6 +277,12 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	
 	SetWindowText(_T("Remoteroid"));
 
+	//비프음 끄기
+	TOGGLEKEYS tk;
+	SystemParametersInfo(SPI_SETBEEP, false, &tk, 0);	
+
+	SetTimer(0, 0, NULL);
+ 
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -327,7 +349,7 @@ UINT CRemotroidServerDlg::AcceptFunc(LPVOID pParam)
 	{		
 		return 0;
 	}
-	AfxMessageBox(_T("sdfsd"));
+		
 
 	CMyClient *pClient = new CMyClient(ClientSocket);
 	pClient->SetNoDelay(TRUE);
@@ -405,13 +427,9 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 			break;
 		}
 
-		TRACE("GetPacket\n");
-
 		while(pClient->GetPacket(bPacket))
 		{
 			int iOPCode = CUtil::GetOpCode(bPacket);
-
-			TRACE("opcode : %d\n", iOPCode);
 
 			int iPacketSize = CUtil::GetPacketSize(bPacket);
 			
@@ -427,7 +445,6 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 			switch(iOPCode)
 			{
 			case OP_SENDFILEINFO:
-				TRACE("OP_SENDFILEINFO\n");
 				if(recvFileClass.RecvFileInfo(data) != INVALID_HANDLE_VALUE)
 				{
 					//파일은 수신 받을 준비가 되면 req 요청을 전송한다
@@ -435,46 +452,39 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 				}
 				break;
 			case OP_SENDFILEDATA:
-				TRACE("OP_SENDFILEDATA\n");
 				recvFileClass.RecvFileData(data, iPacketSize);				
 				break;		
-			case OP_SENDJPGINFO:	
-				TRACE("OP_SENDJPGINFO\n");
+			case OP_SENDJPGINFO:
 				//pDlg->screen.SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);
 				pDlg->screen.SetJpgInfo(data);
 				break;
-			case OP_SENDJPGDATA:		
-				TRACE("OP_SENDJPGDATA\n");
+			case OP_SENDJPGDATA:
 				//pDlg->screen.SendMessage(WM_RECVJPGDATA, iPacketSize, (LPARAM)data);
 				pDlg->screen.RecvJpgData(data, iPacketSize);
 				break;
 			case OP_REQFILEDATA:
-				TRACE("OP_REQFILEDATA\n");
 				pDlg->fileSender.SendFileData();
 				break;
 			case OP_READYSEND:
-				TRACE("OP_READYSEND\n");
 				pDlg->SendMessage(WM_READYRECVFILE, 0, 0);
 				break;
-			case OP_SENDDEVICEINFO:
-				TRACE("OP_SENDDEVICEINFO\n");
+			case OP_SENDDEVICEINFO:				
 				pDlg->screen.SendMessage(WM_RECVDEVICEINFO, 0, (LPARAM)data);
+				//디바이스 정보를 수신하면 화면 전송을 요청한다
+				pClient->SendPacket(OP_REQSENDSCREEN, NULL, 0);
 				break;
 			case OP_SENDNOTIFICATION:
-				TRACE("OP_SENDNOTIFICATION\n");
 				if(iPacketSize == HEADERSIZE)
 					break;
-
 				pDlg->SendMessage(WM_CREATEPOPUPDLG, iPacketSize, (LPARAM)data);
 				break;
 			}
 		}
 	}
-	
-	TRACE("close recv handle\n");
+
 	recvFileClass.CloseFileHandle();		
-	TRACE("close recv handle next\n");
 	pDlg->fileSender.DeleteFileList();
+	pDlg->screen.SetDisconnect();
 
 	delete pClient;	
 
@@ -505,8 +515,7 @@ CMyClient * CRemotroidServerDlg::GetClientSocket(void)
 
 
 void CRemotroidServerDlg::OnDestroy()
-{	
-	TRACE("OnDestroy\n");
+{		
 	// TODO: Add your message handler code here		
 	m_isClickedEndBtn = TRUE;
 	EndAccept();
@@ -525,8 +534,7 @@ void CRemotroidServerDlg::OnBnClickedOk()
 
 void CRemotroidServerDlg::OnBnClickedCancel()
 {
-	// TODO: Add your control notification handler code here
-	TRACE("OnBnClickedCancel\n");
+	// TODO: Add your control notification handler code here	
 	CDialogEx::OnCancel();
 }
 
@@ -611,8 +619,6 @@ void CRemotroidServerDlg::EndConnect(void)
 			::TranslateMessage(&msg);
 			::DispatchMessage(&msg);
 		}
-
-		TRACE("waitfor endconnect\n");
 	}
 	
 	delete pRecvThread;
@@ -848,6 +854,10 @@ void CRemotroidServerDlg::OnClickedBtnMenu()
 
 LRESULT CRemotroidServerDlg::OnCreatePopupDlg(WPARAM wParam, LPARAM lParam)
 {
+	//tray에 있을 경우만 팝업 생성
+	if(!isTray)
+		return 0;
+
 	char *data = (char*)lParam;
 	int payloadSize = wParam-HEADERSIZE;
 	TCHAR *notiText = new TCHAR[payloadSize*2];
@@ -888,7 +898,12 @@ LRESULT CRemotroidServerDlg::OnTrayNotification(WPARAM wParam, LPARAM lParam)
 }
 
 LRESULT CRemotroidServerDlg::OnMyDblClkTray(WPARAM wParam, LPARAM lParam)
-{
+{	
+	isTray = FALSE;
+
+	if(m_pClient != NULL)
+		m_pClient->SendPacket(OP_REQSENDSCREEN, NULL, 0);
+	
 	CUtil::AniMaximiseFromTray(AfxGetMainWnd()->GetSafeHwnd());
 	ShowWindow(SW_RESTORE);
 	return LRESULT();
@@ -899,7 +914,11 @@ void CRemotroidServerDlg::OnBnClickedBtnTray()
 {
 	// TODO: Add your control notification handler code here
 	SetFocus();
+	isTray = TRUE;
 
+	//트레이로 가면 화면전송을 중지한다
+	if(m_pClient != NULL)
+		m_pClient->SendPacket(OP_REQSTOPSCREEN, NULL, 0);
 	CUtil::AniMinimizeToTray(GetSafeHwnd());	
 	ShowWindow(SW_HIDE);
 }
@@ -931,20 +950,16 @@ void CRemotroidServerDlg::OnClose()
 			return;
 	}
 
-	TRACE("onclose\n");
 	CImageDlg::OnClose();
 }
 
 
-void CRemotroidServerDlg::OnBnClickedButton1()
-{
-	// TODO: Add your control notification handler code here
-	m_pClient->SendPacket(OP_REQSENDSCREEN, NULL, 0);
-}
 
-
-void CRemotroidServerDlg::OnBnClickedButton2()
+void CRemotroidServerDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	// TODO: Add your control notification handler code here
-	m_pClient->SendPacket(OP_REQSTOPSCREEN, NULL, 0);
+	// TODO: Add your message handler code here and/or call default
+ 
+	
+	KillTimer(0);
+	CImageDlg::OnTimer(nIDEvent);
 }

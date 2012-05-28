@@ -17,6 +17,7 @@
 #include "PopupDlg.h"
 #include "PopupDlgMgr.h"
 #include "TrayIcon.h"
+#include "AniStatic.h"
 
 
 
@@ -123,6 +124,10 @@ public:
 	afx_msg void OnBnClickedBtnTray();
 	afx_msg void OnBnClickedBtnClose();
 	afx_msg void OnClose();
-	afx_msg void OnBnClickedButton1();
-	afx_msg void OnBnClickedButton2();
+private:
+	BOOL isTray;
+
+public:
+	CString m_strMyIp;
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
