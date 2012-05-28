@@ -171,7 +171,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		gridview.setAdapter(adapter);
 		
 		adapterFilter = new IntentFilter();
-		adapterFilter.addAction("adapter_changed");
+		adapterFilter.addAction(RemoteroidIntent.ACTION_FILE_TRANSMISSION_SECCESS);
 		Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
 		Log.i("qq","format = "+display.getPixelFormat());
 //		i = new Intent(ExplorerActivity.this, FrameBufferService.class);
@@ -463,7 +463,10 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
 			if(action.equals(RemoteroidIntent.ACTION_FILE_TRANSMISSION_SECCESS))
+			{	
+				dataList.setPath(dataList.get_Path());
 				adapter.notifyDataSetChanged();
+			}
 		}
 	}; 
 	
