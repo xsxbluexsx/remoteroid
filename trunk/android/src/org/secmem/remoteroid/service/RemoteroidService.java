@@ -129,7 +129,6 @@ public class RemoteroidService extends Service
 			telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_NONE);
 			dismissNotification();
 			onScreenTransferStopRequested();
-			
 			// Do time-consuming (blocks UI thread, causes activity death) task on here
 			new AsyncTask<Void, Void, Void>(){
 
