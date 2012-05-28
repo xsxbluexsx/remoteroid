@@ -172,25 +172,32 @@ public class Tranceiver  implements PacketListener{
 	public void onPacketReceived(Packet packet) {
 		switch(packet.getOpcode()){		
 
-		case OpCode.FILEINFO_RECEIVED:		
+		case OpCode.FILEINFO_RECEIVED:	
+			Log.i("debug_state","FILEINFO_RECEIVED");
 			fileTransReceiver.receiveFileInfo(packet);
 			break;			
 		case OpCode.FILEDATA_RECEIVED:
+			Log.i("debug_state","FILEDATA_RECEIVED");
 			fileTransReceiver.receiveFileData(packet);
 			break;			
 		case OpCode.FILEDATA_REQUESTED:
+			Log.i("debug_state","FILEDATA_REQUESTED");
 			fileTransReceiver.sendFileData();
 			break;			
 		case OpCode.FILEINFO_REQUESTED:
+			Log.i("debug_state","FILEINFO_REQUESTED");
 			fileTransReceiver.sendFileInfo();
 			break;
 		case OpCode.EVENT_RECEIVED:			
+			Log.i("debug_state","EVENT_RECEIVED");
 			parseVirtualEventPacket(packet);
 			break;	
 		case OpCode.SCREEN_SEND_REQUESTED:
+			Log.i("debug_state","SCREEN_SEND_REQUESTED");
 			mScreenTransListener.onScreenTransferRequested();
 			break;
 		case OpCode.SCREEN_STOP_REQUESTED:
+			Log.i("debug_state","SCREEN_STOP_REQUESTED");
 			mScreenTransListener.onScreenTransferStopRequested();
 			break;
 		}

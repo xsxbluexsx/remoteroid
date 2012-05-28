@@ -72,6 +72,8 @@ public class RemoteroidService extends Service
 	private FrameHandler frameHandler;
 	private Process process;
 	
+	private String DEBUG_STATE = "debug_state";
+	
 	private IBinder mBinder = new IRemoteroid.Stub() {
 		
 		@Override
@@ -135,6 +137,7 @@ public class RemoteroidService extends Service
 				protected Void doInBackground(Void... params) {
 					mInputHandler.close();
 					mTransmitter.disconnect();
+					Log.i(DEBUG_STATE,"disconnect()");
 					return null;
 				}
 
@@ -146,6 +149,7 @@ public class RemoteroidService extends Service
 		public void onSendFile(List<String> pathlist) throws RemoteException {
 			ArrayList<File> fileList = getFileList(pathlist);
 			mTransmitter.sendFile(fileList);
+			Log.i(DEBUG_STATE,"onSendFile()");
 		}
 
 		@Override
@@ -329,6 +333,7 @@ public class RemoteroidService extends Service
 	
 	@Override
 	public void onFileTransferSucceeded() {
+		Log.i(DEBUG_STATE,"onFileTransferSucceeded()");
 		sendBroadcast(new Intent(RemoteroidIntent.ACTION_FILE_TRANSMISSION_SECCESS));
 	}
 	
@@ -345,7 +350,7 @@ public class RemoteroidService extends Service
 
 	@Override
 	public void onScreenTransferRequested() {
-		
+		Log.i(DEBUG_STATE,"onScreenTransferRequested()");
 		isTransmission = true;
 		CommandLine.execAsRoot("chmod 664 /dev/graphics/fb0");
 		CommandLine.execAsRoot("chmod 664 /dev/graphics/fb1");
@@ -356,7 +361,7 @@ public class RemoteroidService extends Service
 				SystemClock.sleep(1000);
 				while(isTransmission){
 					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
-					
+					Log.i("sendscreen","sendScreen");
 					mTransmitter.screenTransmission(frameStream.toByteArray());
 				}
 			}
@@ -367,6 +372,7 @@ public class RemoteroidService extends Service
 
 	@Override
 	public void onScreenTransferStopRequested() {
+		Log.i(DEBUG_STATE,"onScreenTransferStopRequested()");
 		isTransmission = false;		
 		CommandLine.execAsRoot("chmod 660 /dev/graphics/fb0");
 		CommandLine.execAsRoot("chmod 660 /dev/graphics/fb1");
@@ -387,19 +393,23 @@ public class RemoteroidService extends Service
 	
 	@Override
 	public void onServerConnectionFailed() {
+		Log.i(DEBUG_STATE,"onServerConnectionFailed()");
 		mState = ServiceState.IDLE;
 		sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTION_FAILED));
 	}
 
 	@Override
 	public void onServerConnectionInterrupted() {
+		Log.i(DEBUG_STATE,"onServerConnectionInterrupted()");
 		mState = ServiceState.IDLE;
+		onScreenTransferStopRequested();
 		sendBroadcast(new Intent(RemoteroidIntent.ACTION_INTERRUPTED));
 		dismissNotification();
 	}
 
 	@Override
 	public void onServerDisconnected() {
+		Log.i(DEBUG_STATE,"onServerDisconnected()");
 		mState = ServiceState.IDLE;		
 		// Sending broadcast for disconnection..
 		sendBroadcast(new Intent(RemoteroidIntent.ACTION_DISCONNECTED));
@@ -408,7 +418,7 @@ public class RemoteroidService extends Service
 
 	@Override
 	public void onScreenTransferInterrupted() {
-		// TODO Auto-generated method stub
+		Log.i(DEBUG_STATE,"onScreenTransferInterrupted()");
 		
 	}
 
