@@ -14,6 +14,7 @@ import org.secmem.remoteroid.network.PacketHeader.OpCode;
 
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 public class Tranceiver  implements PacketListener{
 	private static final int PORT = 50000;
@@ -24,7 +25,7 @@ public class Tranceiver  implements PacketListener{
 	
 	private PacketReceiver packetReceiver;	
 	private FileTranceiver fileTransReceiver;
-	private ScreenSender screemSender;
+	private ScreenSender screenSender;
 
 	// Event listeners
 	private FileTransmissionListener mFileTransListener;
@@ -41,7 +42,10 @@ public class Tranceiver  implements PacketListener{
 	 * @return true if connected to server, false otherwise
 	 */
 	public boolean isConnected(){
-		return socket!=null ? socket.isConnected() : false;
+		//return socket!=null ? socket.isConnected() : false;
+		boolean ret = socket!=null ? socket.isConnected() : false;
+		Log.i("qwe", "ret : "+ret);
+		return ret;
 	}
 	
 	public void setFileTransmissionListener(FileTransmissionListener listener){
@@ -75,8 +79,8 @@ public class Tranceiver  implements PacketListener{
 			fileTransReceiver = new FileTranceiver(sendStream, mFileTransListener);
 			
 			//Connect udp socket
-			screemSender = new ScreenSender(ipAddr);
-			screemSender.connectUdpSocket();
+			screenSender = new ScreenSender(ipAddr, sendStream);
+			//screemSender.connectUdpSocket();
 			
 			// Create and start packet receiver
 			packetReceiver = new PacketReceiver(recvStream);
@@ -146,7 +150,7 @@ public class Tranceiver  implements PacketListener{
 	//Send frameBuffer to host by udp
 	public void screenTransmission(byte[] jpgData){
 		try{
-			screemSender.screenTransmission(jpgData);
+			screenSender.screenTransmission(jpgData);
 		}catch(IOException e){
 			e.printStackTrace();
 			mScreenTransListener.onScreenTransferInterrupted();

@@ -117,7 +117,7 @@ public class FileTranceiver extends PacketSender{
 				recvFileSize += currentRecvLen;
 				if(totalFileSize <= recvFileSize){
 					out.close();
-					out = null;
+					out = null;	
 				}
 			}catch(IOException e){
 				e.printStackTrace();

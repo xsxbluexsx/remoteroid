@@ -114,13 +114,12 @@ public class FrameHandler {
 	private void setDisplayValue() {
 		DisplayMetrics dm = context.getResources().getDisplayMetrics();
 		Display display = ((WindowManager) context.getSystemService(context.WINDOW_SERVICE)).getDefaultDisplay();
-		
+	
 		this.width = dm.widthPixels/2;
 		this.height = dm.heightPixels/2;
-		this.pixelFormat=display.getPixelFormat();
+		this.pixelFormat=display.getPixelFormat();		
 		this.pixel=4;
-		this.orientation = getDisplayOrientation();
-		
+		this.orientation = getDisplayOrientation();		
 		this.displaySize = width*height*pixel;
 		
 	}
@@ -138,18 +137,20 @@ public class FrameHandler {
 	
 	// Compress JPEG
 	public ByteArrayOutputStream getFrameStream(){
-		if(orientation != getDisplayOrientation()){
-			setDisplayValue();
-			setBitmap(getDisplayBitmap());
-		}	
+//		if(orientation != getDisplayOrientation()){
+//			setDisplayValue();
+//			setBitmap(getDisplayBitmap());
+//		}	
 		
 		int ret = getFrameBuffer(buffer, pixelFormat);
+				
+		Log.i("qwe", ""+ret);
 		frameBuffer.put(buffer, 0, displaySize);
 		frameBuffer.rewind();
 		bitmap.copyPixelsFromBuffer(frameBuffer);
 				
 		frameStream.reset();
-		bitmap.compress(CompressFormat.JPEG, 70, frameStream);
+		bitmap.compress(CompressFormat.JPEG, 100, frameStream);
 		return frameStream;
 	}
 	
@@ -162,6 +163,7 @@ public class FrameHandler {
 		}
 		
 		int ret = getFrameBuffer(buffer, pixelFormat);
+		
 		
 		frameBuffer.put(buffer, 0, displaySize);
 		frameBuffer.rewind();
