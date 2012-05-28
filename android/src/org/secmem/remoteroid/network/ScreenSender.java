@@ -1,6 +1,7 @@
 package org.secmem.remoteroid.network;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -14,16 +15,17 @@ import android.util.Log;
  * Send screen shot data to host (UDP socket)
  * @author ssm
  */
-public class ScreenSender{
+public class ScreenSender extends PacketSender{
 	
 	private static final int UDP_PORT = 50001;
-	private static final int MAXDATASIZE = 500;
+	private static final int MAXDATASIZE = 4090;
 	private String ipAddr;
 	private InetAddress serverAddress;
 	private DatagramSocket datagramSocket;
 	private byte[] sendBuffer = new byte[MAXDATASIZE];
 	
-	public ScreenSender(String ipAddr){
+	public ScreenSender(String ipAddr, OutputStream out){
+		super(out);
 		this.ipAddr = ipAddr;		
 	}
 	
@@ -46,8 +48,10 @@ public class ScreenSender{
 		//First send jpg size information to host
 		byte [] jpgSizeInfo = String.valueOf(jpgTotalSize).getBytes();		
 		Packet jpgInfoPacket = new Packet(OpCode.JPGINFO_SEND, jpgSizeInfo, jpgSizeInfo.length);				
-		sendUdp(jpgInfoPacket);
+		//sendUdp(jpgInfoPacket);
+		send(jpgInfoPacket);
 		
+		Log.i("qwe", ""+jpgTotalSize);
 		//Next send jpg data to host
 		while(jpgTotalSize > transmittedSize){
 			int CurTransSize = (jpgTotalSize-transmittedSize) > MAXDATASIZE ? 
@@ -56,7 +60,8 @@ public class ScreenSender{
 			transmittedSize += CurTransSize;
 			
 			Packet jpgDataPacket = new Packet(OpCode.JPGDATA_SEND, sendBuffer, CurTransSize);
-			sendUdp(jpgDataPacket);
+			//sendUdp(jpgDataPacket);
+			send(jpgDataPacket);
 		}		
 	}
 }

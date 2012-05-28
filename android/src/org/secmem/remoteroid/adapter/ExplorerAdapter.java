@@ -354,7 +354,6 @@ public class ExplorerAdapter extends BaseAdapter{
 	
 	private void printFileInfo() {
 		for (int i = 0; i < ExplorerActivity.fileInfo.size(); i++) {
-			Log.i("fileinfo",i + "= "+ExplorerActivity.fileInfo.get(i));
 		}
 	}
 	

@@ -342,6 +342,7 @@ public class RemoteroidService extends Service
 		
 		isTransmission = true;
 		frameHandler = new FrameHandler(getApplicationContext());
+		suPermission();
 		
 		Thread mThread = new Thread(){
 			@Override
