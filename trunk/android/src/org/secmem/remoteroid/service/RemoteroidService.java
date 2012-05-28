@@ -39,6 +39,7 @@ import org.secmem.remoteroid.network.ServerConnectionListener;
 import org.secmem.remoteroid.network.Tranceiver;
 import org.secmem.remoteroid.network.VirtualEventListener;
 import org.secmem.remoteroid.receiver.SmsReceiver;
+import org.secmem.remoteroid.util.CommandLine;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -125,7 +126,7 @@ public class RemoteroidService extends Service
 			TelephonyManager telManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 			telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_NONE);
 			dismissNotification();
-			suClose();
+			onScreenTransferStopRequested();
 			
 			// Do time-consuming (blocks UI thread, causes activity death) task on here
 			new AsyncTask<Void, Void, Void>(){
@@ -170,6 +171,7 @@ public class RemoteroidService extends Service
 		mTransmitter.setVirtualEventListener(this);
 		mTransmitter.setFrameBufferListener(this);
 		mInputHandler = new InputHandler(this);
+		frameHandler = new FrameHandler(getApplicationContext());
 	}
 	
 	private PhoneStateListener mPhoneListener = new PhoneStateListener(){
@@ -322,7 +324,11 @@ public class RemoteroidService extends Service
 
 	@Override
 	public void onFileTransferInterrupted() {
-		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onFileTransferSucceeded() {
 		
 	}
 	
@@ -341,14 +347,13 @@ public class RemoteroidService extends Service
 	public void onScreenTransferRequested() {
 		
 		isTransmission = true;
-		frameHandler = new FrameHandler(getApplicationContext());
-		suPermission();
+		CommandLine.execAsRoot("chmod 664 /dev/graphics/fb0");
+		CommandLine.execAsRoot("chmod 664 /dev/graphics/fb1");
 		
 		Thread mThread = new Thread(){
 			@Override
 			public void run() {
 				SystemClock.sleep(1000);
-				Log.i("qq","send");
 				while(isTransmission){
 					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
 					
@@ -363,31 +368,10 @@ public class RemoteroidService extends Service
 	@Override
 	public void onScreenTransferStopRequested() {
 		isTransmission = false;		
-		suClose();
+		CommandLine.execAsRoot("chmod 660 /dev/graphics/fb0");
+		CommandLine.execAsRoot("chmod 660 /dev/graphics/fb1");
 	}
 	
-	public void suPermission() {
-		try {
-			process = Runtime.getRuntime().exec("su");
-			DataOutputStream os = new DataOutputStream(process.getOutputStream());
-			os.writeBytes("chmod 664 /dev/graphics/fb0\n");
-			os.writeBytes("chmod 664 /dev/graphics/fb1\n");
-			os.writeBytes("exit\n");
-			os.flush();
-		} catch (IOException e) {	}
-	}
-	
-	
-	public void suClose() {
-		try {
-			process = Runtime.getRuntime().exec("su");
-			DataOutputStream os = new DataOutputStream(process.getOutputStream());
-			os.writeBytes("chmod 660 /dev/graphics/fb0\n");
-			os.writeBytes("chmod 664 /dev/graphics/fb1\n");
-			os.writeBytes("exit\n");
-			os.flush();
-		} catch (IOException e) {	}
-	}
 
 	@Override
 	public void onServerConnected(String ipAddress) {
@@ -427,11 +411,5 @@ public class RemoteroidService extends Service
 		// TODO Auto-generated method stub
 		
 	}
-
-	
-
-	
-	
-		
 
 }
