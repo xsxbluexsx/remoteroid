@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import org.secmem.remoteroid.BuildConfig;
 import org.secmem.remoteroid.data.CommunicateInfo;
+import org.secmem.remoteroid.network.PacketHeader.OpCode;
 
 import android.util.Log;
 
@@ -98,7 +99,7 @@ public class FileTranceiver extends PacketSender{
 				recvFileSize = 0;
 						
 				//Send to host that ready for receive file
-				send(new Packet(PacketHeader.OpCode.FILEDATA_REQUESTED, null, 0));
+				send(new Packet(OpCode.FILEDATA_REQUESTED, null, 0));
 			}catch(IOException e){
 				file = null;
 				e.printStackTrace();							
@@ -160,7 +161,7 @@ public class FileTranceiver extends PacketSender{
 		 */
 		public void setFilesToSend(ArrayList<File> fileList) throws IOException{
 			this.fileList = fileList;
-			send(new Packet(PacketHeader.OpCode.READY_TO_SEND, null, 0));
+			send(new Packet(OpCode.READY_TO_SEND, null, 0));
 			mListener.onReadyToSend(fileList);
 		}
 		
@@ -199,12 +200,14 @@ public class FileTranceiver extends PacketSender{
 					
 					in = new FileInputStream(file);			
 					
-					while(fileSize > sentFileSize){					
+					while(fileSize > sentFileSize){		
+						Log.i("qwee", "filesize : "+fileSize+" sent : "+sentFileSize);
+						
 						int iCurrentSendSize =
 								(int) ((fileSize - sentFileSize) > MAXDATASIZE ? MAXDATASIZE : (fileSize - sentFileSize));
 						in.read(buffer, 0, iCurrentSendSize);	
 						
-						send(new Packet(PacketHeader.OpCode.FILEDATA_RECEIVED, buffer, iCurrentSendSize));
+						send(new Packet(OpCode.FILEDATA_RECEIVED, buffer, iCurrentSendSize));
 						
 						sentFileSize += iCurrentSendSize;						
 					}

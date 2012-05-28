@@ -42,10 +42,7 @@ public class Tranceiver  implements PacketListener{
 	 * @return true if connected to server, false otherwise
 	 */
 	public boolean isConnected(){
-		//return socket!=null ? socket.isConnected() : false;
-		boolean ret = socket!=null ? socket.isConnected() : false;
-		Log.i("qwe", "ret : "+ret);
-		return ret;
+		return socket!=null ? socket.isConnected() : false;		
 	}
 	
 	public void setFileTransmissionListener(FileTransmissionListener listener){
@@ -79,8 +76,8 @@ public class Tranceiver  implements PacketListener{
 			fileTransReceiver = new FileTranceiver(sendStream, mFileTransListener);
 			
 			//Connect udp socket
-			screenSender = new ScreenSender(ipAddr, sendStream);
-			//screemSender.connectUdpSocket();
+			screenSender = new ScreenSender(ipAddr);
+			screenSender.connectUdpSocket();
 			
 			// Create and start packet receiver
 			packetReceiver = new PacketReceiver(recvStream);
@@ -105,7 +102,7 @@ public class Tranceiver  implements PacketListener{
 				sendStream.close();
 				packetReceiver = null;	
 				mScreenTransListener.onScreenTransferStopRequested();
-				socket.close();
+				socket.close();			
 			}catch(IOException e){
 				e.printStackTrace();
 			} finally{
@@ -121,6 +118,7 @@ public class Tranceiver  implements PacketListener{
 				packetReceiver = null;
 				socket.close();
 				socket=null;
+			
 			}catch(IOException e){
 				
 			}
@@ -172,32 +170,25 @@ public class Tranceiver  implements PacketListener{
 	public void onPacketReceived(Packet packet) {
 		switch(packet.getOpcode()){		
 
-		case OpCode.FILEINFO_RECEIVED:	
-			Log.i("debug_state","FILEINFO_RECEIVED");
+		case OpCode.FILEINFO_RECEIVED:		
 			fileTransReceiver.receiveFileInfo(packet);
 			break;			
-		case OpCode.FILEDATA_RECEIVED:
-			Log.i("debug_state","FILEDATA_RECEIVED");
+		case OpCode.FILEDATA_RECEIVED:			
 			fileTransReceiver.receiveFileData(packet);
 			break;			
-		case OpCode.FILEDATA_REQUESTED:
-			Log.i("debug_state","FILEDATA_REQUESTED");
+		case OpCode.FILEDATA_REQUESTED:			
 			fileTransReceiver.sendFileData();
 			break;			
-		case OpCode.FILEINFO_REQUESTED:
-			Log.i("debug_state","FILEINFO_REQUESTED");
+		case OpCode.FILEINFO_REQUESTED:			
 			fileTransReceiver.sendFileInfo();
 			break;
 		case OpCode.EVENT_RECEIVED:			
-			Log.i("debug_state","EVENT_RECEIVED");
 			parseVirtualEventPacket(packet);
 			break;	
-		case OpCode.SCREEN_SEND_REQUESTED:
-			Log.i("debug_state","SCREEN_SEND_REQUESTED");
+		case OpCode.SCREEN_SEND_REQUESTED:			
 			mScreenTransListener.onScreenTransferRequested();
 			break;
-		case OpCode.SCREEN_STOP_REQUESTED:
-			Log.i("debug_state","SCREEN_STOP_REQUESTED");
+		case OpCode.SCREEN_STOP_REQUESTED:			
 			mScreenTransListener.onScreenTransferStopRequested();
 			break;
 		}
@@ -205,7 +196,7 @@ public class Tranceiver  implements PacketListener{
 		
 	@Override
 	public void onInterrupt() {
-		System.out.println("onInterrupt() - PacketReceiver");
+		
 		//If server was closed, throw an IOException	
 		//If file is open, Shoud be closed
 		fileTransReceiver.closeFile();		
