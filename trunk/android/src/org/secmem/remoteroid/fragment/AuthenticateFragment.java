@@ -118,9 +118,6 @@ public class AuthenticateFragment extends Fragment {
 			
 		});
 		
-		mEdtIpAddr.setText("210.118.74.85");
-		mEdtPassword.setText("aaa");
-		
 		mCbAutoConn.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 
 			@Override
@@ -131,11 +128,21 @@ public class AuthenticateFragment extends Fragment {
 			
 		});
 		
+		// Restore saved connection data from SharedPreferences
+		String ipAddrStored = Util.Connection.getIpAddress(getActivity());
+		String passwordStored = Util.Connection.getPassword(getActivity());
+		
+		if(ipAddrStored!=null)
+			mEdtIpAddr.setText(ipAddrStored);
+		
+		if(passwordStored!=null)
+			mEdtPassword.setText(passwordStored);
 		
 		mBtnConnect.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
+				Util.Connection.saveConnectionData(getActivity(), mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString());
 				mListener.onConnectRequested(mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString());
 				
 			}
