@@ -20,8 +20,6 @@
 package org.secmem.remoteroid.util;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -81,7 +79,6 @@ public class HongUtil {
 			String mimeType = mtm.getMimeTypeFromExtension(fileExtension);
 			if(mimeType!=null){
 				result = (mimeType.split("/", 0))[0];
-				Log.i("qq","result= "+result);
 			}
 //			result = mimeType;
 		}
@@ -146,7 +143,6 @@ public class HongUtil {
 	public static File getRootPath(){													// 디바이스 절대경로 리턴
 		String sdcard = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
 		File root = new File(sdcard);
-		Log.i("qq","sdcard = "+sdcard);
 		return root;
 	}
 	
@@ -203,7 +199,7 @@ public class HongUtil {
 				ExplorerActivity.searchList.add(categoryList);
 			}
 	    }
-	    imageCursor.close();
+//	    imageCursor.close();
 	}
 	
 	public static void getVideo(Cursor cursor){
@@ -219,7 +215,6 @@ public class HongUtil {
 				id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
 				path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
 				
-				Log.i("query","path = "+path);
 				
 				CategoryList categoryList = new CategoryList(new File(path), ExplorerActivity.TYPE_VIDEO);
 				categoryList.setId(id);
@@ -252,7 +247,6 @@ public class HongUtil {
             	 id = cursor.getLong(cid);
             	 album_id = cursor.getInt(calbum_id);
             	 
-            	 Log.i("query","path = "+path);
             	 
             	 CategoryList categoryList = new CategoryList(new File(path), ExplorerActivity.TYPE_MUSIC);
             	 categoryList.setAlbumId(album_id);
@@ -262,7 +256,7 @@ public class HongUtil {
             	 
              }while (cursor.moveToNext());
          }
-         cursor.close();
+//         cursor.close();
 	}
 	
 	public static void showExitDialog(Context context){
@@ -299,7 +293,6 @@ public class HongUtil {
 			
 		    Date d = result.getTime();
 		    String day = (d.getYear()+1900)+"년    "+(d.getMonth()+1)+"월"+d.getDate()+"일  "+d.getHours() +"시"+d.getMinutes()+" 분"+d.getSeconds()+"초";
-			Log.i("music","day           "+day);
 		    
 		    return result;
 		}
@@ -390,7 +383,6 @@ public class HongUtil {
 	public static String getMegabyte(long size){
 		String result ="";
 		double re = (double)(((double)size/(double)1024)/(double)1024);
-		Log.i("photo","size = "+re);
 		
 		result = String.format("%.1f", re);
 		
@@ -401,7 +393,6 @@ public class HongUtil {
 	public static String getMegabyte(double size){
 		String result ="";
 		double re = size/1024/1024;
-		Log.i("photo","size = "+re);
 		
 		result = String.format("%.1f", re);
 		
@@ -412,7 +403,6 @@ public class HongUtil {
 	public static String getMegaSpeed(long size){
 		String result ="";
 		double re = (double)size/(double)1000;
-		Log.i("photo","size = "+re);
 		
 		result = String.format("%.1f", re);
 		

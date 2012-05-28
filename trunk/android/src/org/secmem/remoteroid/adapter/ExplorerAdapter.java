@@ -158,7 +158,7 @@ public class ExplorerAdapter extends BaseAdapter{
 							if(threadCount<15){
 								f.setBitmapChecked(true);
 								threadCount++;
-								new ThumbAsync().execute(path,fileName, String.valueOf(pos), categoryType);
+								new ThumbAsync().execute(path, fileName, String.valueOf(pos), categoryType, String.valueOf(this.type));
 							}
 						}
 					}
@@ -226,7 +226,7 @@ public class ExplorerAdapter extends BaseAdapter{
 						if(threadCount<15){
 							item.setBitmapChecked(true);
 							threadCount++;
-							new ThumbAsync().execute(item.getFile().getParent()+"/",item.getFile().getName(), String.valueOf(pos), categoryType);
+							new ThumbAsync().execute(item.getFile().getParent()+"/",item.getFile().getName(), String.valueOf(pos), categoryType, String.valueOf(this.type) );
 						}
 					}
 				}
@@ -362,7 +362,7 @@ public class ExplorerAdapter extends BaseAdapter{
 		@Override
 		protected Integer doInBackground(String... params) {
 		
-			int result=setBitmap(params[0],params[1],params[2], params[3]);			// 寃쎈� , ��� �대�, �ъ��� ���
+			int result=setBitmap(params[0],params[1],params[2], params[3], params[4]);	   // path,  file,  position, cType	, explorer type
 			
 			return result;
 		}
@@ -441,7 +441,7 @@ public class ExplorerAdapter extends BaseAdapter{
 		}
 	}
 	
-	private int setBitmap(String path, String file, String position, String cType) {
+	private int setBitmap(String path, String file, String position, String cType, String exType) {
 		// TODO Auto-generated method stub
 //		String path = FileListManager.FilePhoto_List.get(position).getPath();
 		
@@ -467,7 +467,7 @@ public class ExplorerAdapter extends BaseAdapter{
 				}
 				else{
 					Bitmap tmp = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(path+file, option), 72, 72, true);
-					if(path.equals(dataList.get_Path())){
+					if(path.equals(dataList.get_Path()) && (Integer.valueOf(exType) == type)){
 						((FileList)dataList.getExpList().get(pos)).setBitmap(tmp);
 					}
 					else{

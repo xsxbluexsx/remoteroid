@@ -106,7 +106,6 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mRemoteroid = IRemoteroid.Stub.asInterface(service);
-			Log.i("qq","onServiceConnected");
 			try {
 				if(mRemoteroid.isConnected()){
 					mRemoteroid.onSendFile(fileInfo);
@@ -363,12 +362,10 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		@Override
 		public void onLongclick() {
 				if(fileInfo.size()!=0 && !isBound){
-					Log.i("qq","start bind");
 					bindService(new Intent(ExplorerActivity.this, RemoteroidService.class), conn, Context.BIND_AUTO_CREATE);
 				}
 				else if(isBound){
 					try {
-						Log.i("qq","send  bind");
 						mRemoteroid.onSendFile(fileInfo);
 					} catch (RemoteException e) {
 					}

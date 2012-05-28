@@ -114,7 +114,8 @@ public class RemoteroidService extends Service
 						// Start connection and receive events from server
 						mTransmitter.connect(ipAddress);
 						//Send devices resolution to host for coordinate transformation;
-						mTransmitter.sendDeviceInfo(getApplicationContext().getResources().getDisplayMetrics());
+						if(mTransmitter!=null && mTransmitter.isConnected())
+							mTransmitter.sendDeviceInfo(getApplicationContext().getResources().getDisplayMetrics());
 						
 						return null;	
 				}
