@@ -12,9 +12,10 @@ private:
 	SOCKET m_ClientSocket;
 public:
 	int RecvPacket(void);
-	bool GetPacket(char * packet);
+	BOOL GetPacket(char * packet);
 	int SendPacket(int iOPCode, const char * data, int iDataLen);
 	void CloseSocket(void);
 	void SetNoDelay(BOOL bOp);
+	void ResetBuffer(void);
 };
 

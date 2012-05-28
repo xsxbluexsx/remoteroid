@@ -11,7 +11,7 @@ CDrawJpg::CDrawJpg()
 	memset(&image, 0, sizeof(image));
 	if(ijlInit(&image) != IJL_OK)
 	{
-		TRACE(_T("Cannot initialize Intel JPEG library\n"));
+		TRACE("Cannot initialize Intel JPEG library\n");
 	}
 }
 
@@ -24,7 +24,7 @@ CDrawJpg::~CDrawJpg(void)
 
 	if(ijlFree(&image) != IJL_OK)
 	{
-		TRACE(_T("cannot free intel jpg\n"));
+		TRACE("cannot free intel jpg\n");
 	}
 }
 
@@ -48,7 +48,7 @@ void CDrawJpg::RecvJpgData(char * data, int packetSize)
 	memcpy(m_pJpgData+m_iRecvJpgSize, data, jpgDataSize);
 	m_iRecvJpgSize += jpgDataSize;
 		
-	if(m_iRecvJpgSize >= m_iTotalJpgSize)
+	if(m_iRecvJpgSize == m_iTotalJpgSize)
 	{		
 		DrawScreen();
 		m_iRecvJpgSize = 0;
@@ -77,7 +77,7 @@ BOOL CDrawJpg::SetIJLInfo(void)
 
 		if((err=ijlRead(&image, IJL_JBUFF_READPARAMS)) != IJL_OK)
 		{
-			TRACE(_T("cannot read jpeg file header %s\n"), ijlErrorStr(err));
+			TRACE("cannot read jpeg file header %s\n", ijlErrorStr(err));
 			AfxThrowUserException();
 		}
 
@@ -118,7 +118,7 @@ BOOL CDrawJpg::SetIJLInfo(void)
 
 		if((err=ijlRead(&image, IJL_JBUFF_READWHOLEIMAGE)) != IJL_OK)
 		{
-			TRACE(_T("cannot read image data : %s\n"), ijlErrorStr(err));
+			TRACE("cannot read image data : %s\n", ijlErrorStr(err));
 			AfxThrowUserException();
 		}
 	}	

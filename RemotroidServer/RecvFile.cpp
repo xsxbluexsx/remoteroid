@@ -1,4 +1,4 @@
-pProgressBar
+
 #include "StdAfx.h"
 #include "RecvFile.h"
 
@@ -94,26 +94,22 @@ void CRecvFile::RecvFileData(char * data, int packetSize)
 	
 	int percent = (int)(((float)m_iRecvFileSize/m_iTotalFileSize)*100);
 	
-	pProgressBar->SetPos(percent);
+	pProgressBar->SetPos(percent);		
 
-	TCHAR temp[100];
-	swprintf(temp, _T("total : %llu, recv : %llu\n"), m_iTotalFileSize, m_iRecvFileSize);
-	OutputDebugString(temp);
-	
 	if(m_iTotalFileSize <= m_iRecvFileSize)
 	{
 		pProgressBar->DeleteRgn();
 		pProgressBar->ShowWindow(SW_HIDE);
 		CloseHandle(m_hRecvFile);
 		m_hRecvFile = NULL;
-		//AfxMessageBox(_T("파일 수신 완료"));		
+		//AfxMessageBox(_T("파일 수신 완료"));			
 	}
 }
 
 
-LONGLONG CRecvFile::atoll(char * str)
+unsigned long long CRecvFile::atoll(char * str)
 {
-	LONGLONG rVal = 0;
+	unsigned long long rVal = 0;
 	int sign = 1;
 
 	while (*str && (*str == ' ' || *str == '\t')) str++;
