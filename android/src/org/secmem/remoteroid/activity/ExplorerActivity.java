@@ -109,6 +109,9 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	
 	private ProgressDialog mProgress;
 	private IRemoteroid mRemoteroid;
+	
+	Intent i;
+	
 	private ServiceConnection conn = new ServiceConnection(){
 
 		@Override
@@ -116,11 +119,9 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 			mRemoteroid = IRemoteroid.Stub.asInterface(service);
 			try {
 				if(mRemoteroid.isConnected()){
-					Log.i("qq","Connection True");
 					mRemoteroid.onSendFile(fileInfo);
 				}
 				else{
-					Log.i("qq","Connection False");
 				}
 			} catch (RemoteException e) {
 				e.printStackTrace();
@@ -170,8 +171,9 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		
 		adapterFilter = new IntentFilter();
 		adapterFilter.addAction("adapter_changed");
-		
-//		Intent i = new Intent(ExplorerActivity.this, FrameBufferService.class);
+		Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+		Log.i("qq","format = "+display.getPixelFormat());
+//		i = new Intent(ExplorerActivity.this, FrameBufferService.class);
 //		startService(i);
 		
 	}
@@ -182,6 +184,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 	protected void onDestroy() {
 		super.onDestroy();
 		dataList = null;
+//		stopService(i);
 	}
 
 	@Override

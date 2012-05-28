@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import org.secmem.remoteroid.data.NativeKeyCode;
 import org.secmem.remoteroid.network.PacketHeader.OpCode;
 
+import android.os.Build;
 import android.util.DisplayMetrics;
 
 public class Tranceiver  implements PacketListener{
@@ -29,8 +30,10 @@ public class Tranceiver  implements PacketListener{
 	private FileTransmissionListener mFileTransListener;
 	private VirtualEventListener mVirtEventListener;
 	private ScreenTransmissionListener mScreenTransListener;
+	private ServerConnectionListener mServerConnectionListener;
 	
-	public Tranceiver(){		
+	public Tranceiver(ServerConnectionListener listener){
+		mServerConnectionListener = listener;
 	}
 	
 	/**
@@ -57,36 +60,41 @@ public class Tranceiver  implements PacketListener{
 	 * @param ipAddr ip address
 	 * @throws IOException
 	 */
-	public void connect(String ipAddr) throws IOException{
-		socket = new Socket();
-
-		socket.connect(new InetSocketAddress(ipAddr, PORT), 5000); // Set timeout to 5 seconds
-
-		
-		// Open outputStream
-		sendStream = socket.getOutputStream();
-		
-		// Open inputStream
-		recvStream = socket.getInputStream();		
-		
-		fileTransReceiver = new FileTranceiver(sendStream, mFileTransListener);
-		
-		//Connect udp socket
-		screemSender = new ScreenSender(ipAddr);
-		screemSender.connectUdpSocket();
-		
-		// Create and start packet receiver
-		packetReceiver = new PacketReceiver(recvStream);
-		packetReceiver.setPacketListener(this);
-		packetReceiver.start();	
-		
+	public synchronized void connect(String ipAddr){
+		try{
+			socket = new Socket();
+	
+			socket.connect(new InetSocketAddress(ipAddr, PORT), 5000); // Set timeout to 5 seconds
+	
+			// Open outputStream
+			sendStream = socket.getOutputStream();
+			
+			// Open inputStream
+			recvStream = socket.getInputStream();		
+			
+			fileTransReceiver = new FileTranceiver(sendStream, mFileTransListener);
+			
+			//Connect udp socket
+			screemSender = new ScreenSender(ipAddr);
+			screemSender.connectUdpSocket();
+			
+			// Create and start packet receiver
+			packetReceiver = new PacketReceiver(recvStream);
+			packetReceiver.setPacketListener(this);
+			packetReceiver.start();	
+			
+			mServerConnectionListener.onServerConnected(ipAddr);
+		}catch(IOException e){
+			e.printStackTrace();
+			mServerConnectionListener.onServerConnectionFailed();
+		}
 	}
 	
 	/**
 	 * Disconnect from host.
 	 * @throws IOException
 	 */
-	public void disconnect(){
+	public synchronized void disconnect(){
 		if(socket!=null){
 			try{				
 				recvStream.close();
@@ -96,6 +104,21 @@ public class Tranceiver  implements PacketListener{
 				socket.close();
 			}catch(IOException e){
 				e.printStackTrace();
+			} finally{
+				mServerConnectionListener.onServerDisconnected();
+			}
+		}
+	}
+	
+	private synchronized void cleanup(){
+		if(socket!=null){
+			try{
+				recvStream.close();
+				packetReceiver = null;
+				socket.close();
+				socket=null;
+			}catch(IOException e){
+				
 			}
 		}
 	}
@@ -105,7 +128,7 @@ public class Tranceiver  implements PacketListener{
 			fileTransReceiver.sendFileList(fileList);
 		}catch(IOException e){
 			e.printStackTrace();
-			onInterrupt();
+			mFileTransListener.onFileTransferInterrupted();
 		}
 	}
 	
@@ -116,7 +139,6 @@ public class Tranceiver  implements PacketListener{
 					new Packet(OpCode.NOTIFICATION_SEND, str.getBytes(), str.getBytes().length));
 		}catch(IOException e){
 			e.printStackTrace();
-			onInterrupt();
 		}
 	}
 	
@@ -127,7 +149,7 @@ public class Tranceiver  implements PacketListener{
 			screemSender.screenTransmission(jpgData);
 		}catch(IOException e){
 			e.printStackTrace();
-			onInterrupt();
+			mScreenTransListener.onScreenTransferInterrupted();
 		}
 	}
 	
@@ -172,13 +194,13 @@ public class Tranceiver  implements PacketListener{
 		
 	@Override
 	public void onInterrupt() {
+		System.out.println("onInterrupt() - PacketReceiver");
 		//If server was closed, throw an IOException	
 		//If file is open, Shoud be closed
 		fileTransReceiver.closeFile();		
-		disconnect();
+		cleanup();
+		mServerConnectionListener.onServerConnectionInterrupted();
 	}
-	
-	
 	
 	private void parseVirtualEventPacket(Packet packet){
 		EventPacket eventPacket = EventPacket.parse(packet);
@@ -207,7 +229,10 @@ public class Tranceiver  implements PacketListener{
 			mVirtEventListener.onKeyStroke(NativeKeyCode.KEY_MENU);
 			break;
 		case EventPacket.HOME:
-			mVirtEventListener.onKeyStroke(NativeKeyCode.KEY_HOME);
+			if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1)
+				mVirtEventListener.onKeyStroke(NativeKeyCode.KEY_MOVE_HOME);
+			else
+				mVirtEventListener.onKeyStroke(NativeKeyCode.KEY_HOME);
 		}
 	}
 

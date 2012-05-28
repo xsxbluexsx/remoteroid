@@ -8,5 +8,5 @@ public interface FileTransmissionListener{
 	public void onReadyToSend(ArrayList<File> filesToSend);
 	public void onSendFileInfo(File file);
 	public void onFileSent(File file);
-	public void onInterrupt();
+	public void onFileTransferInterrupted();
 }

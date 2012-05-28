@@ -50,7 +50,7 @@ public class FrameBufferService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.i("qq","onStartCommand");
 		
-		transmitter = new Tranceiver();
+//		transmitter = new Tranceiver();
 		Intent bIntent = new Intent("connecting_fragment_connect");
 		
 //		try {
@@ -81,7 +81,7 @@ public class FrameBufferService extends Service {
 //					ByteArrayOutputStream frameStream = fHandler.getFrameStream();
 					// sendScreen(frameStream);
 					Bitmap bitmap = fHandler.getTestFrameStream();
-					ByteArrayOutputStream frameStream = fHandler.getFrameStream();
+//					ByteArrayOutputStream frameStream = fHandler.getFrameStream();
 				//	
 					File copyFile = new File("/mnt/sdcard/captured"+count+".jpg");
 					OutputStream out = null;
