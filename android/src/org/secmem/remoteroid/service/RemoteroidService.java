@@ -357,7 +357,6 @@ public class RemoteroidService extends Service
 		Thread mThread = new Thread(){
 			@Override
 			public void run() {
-				SystemClock.sleep(1000);
 				while(isTransmission){
 					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
 					Log.i("sendscreen","sendScreen");
