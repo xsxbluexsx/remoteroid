@@ -329,7 +329,7 @@ public class RemoteroidService extends Service
 	
 	@Override
 	public void onFileTransferSucceeded() {
-		
+		sendBroadcast(new Intent(RemoteroidIntent.ACTION_FILE_TRANSMISSION_SECCESS));
 	}
 	
 	private ArrayList<File> getFileList(List<String> pathlist) {
