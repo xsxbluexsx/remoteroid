@@ -19,8 +19,6 @@
 
 package org.secmem.remoteroid.activity;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,10 +32,7 @@ import org.secmem.remoteroid.expinterface.OnFileLongClickListener;
 import org.secmem.remoteroid.expinterface.OnFileSelectedListener;
 import org.secmem.remoteroid.expinterface.OnPathChangedListener;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
-import org.secmem.remoteroid.natives.FrameHandler;
-import org.secmem.remoteroid.service.FrameBufferService;
 import org.secmem.remoteroid.service.RemoteroidService;
-import org.secmem.remoteroid.service.RemoteroidService.ServiceState;
 import org.secmem.remoteroid.util.HongUtil;
 
 import android.app.ProgressDialog;
@@ -51,18 +46,11 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.os.RemoteException;
-import android.os.SystemClock;
 import android.provider.MediaStore;
-import android.text.Annotation;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
@@ -118,12 +106,14 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mRemoteroid = IRemoteroid.Stub.asInterface(service);
+			Log.i("qq","onServiceConnected");
 			try {
 				if(mRemoteroid.isConnected()){
 					mRemoteroid.onSendFile(fileInfo);
 					isBound=true;
 				}
 				else{
+					unbindService(conn);
 				}
 			} catch (RemoteException e) {
 				e.printStackTrace();
@@ -173,7 +163,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		
 		adapterFilter = new IntentFilter();
 		adapterFilter.addAction(RemoteroidIntent.ACTION_FILE_TRANSMISSION_SECCESS);
-		Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+//		Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
 //		i = new Intent(ExplorerActivity.this, FrameBufferService.class);
 //		startService(i);
 		
@@ -373,10 +363,12 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		@Override
 		public void onLongclick() {
 				if(fileInfo.size()!=0 && !isBound){
+					Log.i("qq","start bind");
 					bindService(new Intent(ExplorerActivity.this, RemoteroidService.class), conn, Context.BIND_AUTO_CREATE);
 				}
 				else if(isBound){
 					try {
+						Log.i("qq","send  bind");
 						mRemoteroid.onSendFile(fileInfo);
 					} catch (RemoteException e) {
 					}
@@ -464,6 +456,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 			if(action.equals(RemoteroidIntent.ACTION_FILE_TRANSMISSION_SECCESS))
 			{	
 				dataList.setPath(dataList.get_Path());
+				fileInfo.clear();
 				adapter.notifyDataSetChanged();
 			}
 		}
