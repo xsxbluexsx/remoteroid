@@ -33,6 +33,7 @@ import org.secmem.remoteroid.dialog.CategoryDialog;
 import org.secmem.remoteroid.expinterface.OnFileLongClickListener;
 import org.secmem.remoteroid.expinterface.OnFileSelectedListener;
 import org.secmem.remoteroid.expinterface.OnPathChangedListener;
+import org.secmem.remoteroid.intent.RemoteroidIntent;
 import org.secmem.remoteroid.natives.FrameHandler;
 import org.secmem.remoteroid.service.FrameBufferService;
 import org.secmem.remoteroid.service.RemoteroidService;
@@ -460,7 +461,9 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			adapter.notifyDataSetChanged();
+			String action = intent.getAction();
+			if(action.equals(RemoteroidIntent.ACTION_FILE_TRANSMISSION_SECCESS))
+				adapter.notifyDataSetChanged();
 		}
 	}; 
 	

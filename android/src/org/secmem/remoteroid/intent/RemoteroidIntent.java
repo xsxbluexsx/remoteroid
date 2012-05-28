@@ -66,4 +66,10 @@ public final class RemoteroidIntent {
 	 */
 	public static final String EXTRA_PHONE_NUMBER = "org.secmem.remoteroid.intent.extra.PHONE_NUMBER";
 	
+	/**
+	 * An action that client succedded send file.
+	 * @see RemoteroidIntent#ACTION_FILE_TRANSMISSION_SECCESS
+	 */
+	public static final String ACTION_FILE_TRANSMISSION_SECCESS = "org.secmem.remoteroid.intent.action.FILE_TRANSMISSION_SUCCESS";
+	
 }
