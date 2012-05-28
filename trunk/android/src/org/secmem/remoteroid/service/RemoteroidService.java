@@ -20,6 +20,7 @@
 package org.secmem.remoteroid.service;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ import android.os.SystemClock;
 import android.telephony.PhoneStateListener;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 /**
  * A base service to communicate with PC.
@@ -65,6 +67,8 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	private InputHandler mInputHandler;
 	private static ServiceState mState = ServiceState.IDLE;
 	private FrameHandler frameHandler;
+	private Process process;
+	
 	private IBinder mBinder = new IRemoteroid.Stub() {
 		
 		@Override
@@ -143,8 +147,8 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 		public void disconnect() throws RemoteException {
 			TelephonyManager telManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 			telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_NONE);
-			
 			dismissNotification();
+			suClose();
 			
 			// Do time-consuming (blocks UI thread, causes activity death) task on here
 			new AsyncTask<Void, Void, Void>(){
@@ -374,6 +378,7 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 			@Override
 			public void run() {
 				SystemClock.sleep(1000);
+				Log.i("qq","send");
 				while(isTransmission){
 					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
 					
@@ -388,6 +393,30 @@ public class RemoteroidService extends Service implements FileTransmissionListen
 	@Override
 	public void onScreenTransferStopRequested() {
 		isTransmission = false;		
+		suClose();
+	}
+	
+	public void suPermission() {
+		try {
+			process = Runtime.getRuntime().exec("su");
+			DataOutputStream os = new DataOutputStream(process.getOutputStream());
+			os.writeBytes("chmod 664 /dev/graphics/fb0\n");
+			os.writeBytes("chmod 664 /dev/graphics/fb1\n");
+			os.writeBytes("exit\n");
+			os.flush();
+		} catch (IOException e) {	}
+	}
+	
+	
+	public void suClose() {
+		try {
+			process = Runtime.getRuntime().exec("su");
+			DataOutputStream os = new DataOutputStream(process.getOutputStream());
+			os.writeBytes("chmod 660 /dev/graphics/fb0\n");
+			os.writeBytes("chmod 664 /dev/graphics/fb1\n");
+			os.writeBytes("exit\n");
+			os.flush();
+		} catch (IOException e) {	}
 	}
 	
 		
