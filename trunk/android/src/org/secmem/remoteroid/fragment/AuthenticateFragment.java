@@ -28,7 +28,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -73,12 +72,6 @@ public class AuthenticateFragment extends Fragment {
 		mCbAutoConn = (CheckBox)view.findViewById(R.id.auto_connect);
 		mBtnConnect = (Button)view.findViewById(R.id.connect);
 		
-		mEdtIpAddr.setText("210.118.74.80");
-		mEdtPassword.setText("aaa");
-		
-		isIpValid = setIpValid(mEdtIpAddr.getText().toString());
-		isPwValid = setPwValid(mEdtPassword.getText().toString().length());
-		
 		mEdtIpAddr.addTextChangedListener(new TextWatcher(){
 
 			@Override
@@ -97,8 +90,6 @@ public class AuthenticateFragment extends Fragment {
 					isIpValid = true;
 				else
 					isIpValid = false;
-				
-		
 				mBtnConnect.setEnabled(isIpValid&&isPwValid);
 			}
 			
@@ -118,7 +109,7 @@ public class AuthenticateFragment extends Fragment {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				if(s.length()>0)
+				if(count>0)
 					isPwValid = true;
 				else
 					isPwValid = false;
@@ -126,6 +117,9 @@ public class AuthenticateFragment extends Fragment {
 			}
 			
 		});
+		
+		mEdtIpAddr.setText("210.118.74.85");
+		mEdtPassword.setText("aaa");
 		
 		mCbAutoConn.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 
@@ -152,19 +146,6 @@ public class AuthenticateFragment extends Fragment {
 //					new ConnectingFragment(Util.Connection.getIpAddress(getActivity()), Util.Connection.getPassword(getActivity())))
 //					.commit();
 //		}
-	}
-	
-	private boolean setIpValid(String str) {
-		
-		return getMatches(str);
-	}
-	private boolean setPwValid(int length) {
-		return (length>0)?true:false ;
-	}
-	
-	private boolean getMatches(String str){
-		
-		return Pattern.matches("^(([2][5][0-5]|[2][0-4][0-9]|[0-1][0-9][0-9]|[0-9][0-9]|[0-9])\\.){3}([2][5][0-5]|[2][0-4][0-9]|[0-1][0-9][0-9]|[0-9][0-9]|[0-9])$", str);
 	}
 
 }
