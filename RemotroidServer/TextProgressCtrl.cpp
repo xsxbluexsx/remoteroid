@@ -102,10 +102,7 @@ CTextProgressCtrl::~CTextProgressCtrl()
 	// delete vertical font if needed
 	if (m_VerticalFont.m_hObject)
 		m_VerticalFont.DeleteObject();
-	if(m_Rgn.m_hObject != NULL)
-	{
-		m_Rgn.DeleteObject();
-	}
+	DeleteRgn();
 }
 
 BEGIN_MESSAGE_MAP(CTextProgressCtrl, CProgressCtrl)
@@ -634,7 +631,8 @@ void CTextProgressCtrl::SetRoundRect(void)
 
 void CTextProgressCtrl::DeleteRgn(void)
 {
-	m_Rgn.DeleteObject();
+	if(m_Rgn.m_hObject != NULL)
+		m_Rgn.DeleteObject();
 }
 
 
