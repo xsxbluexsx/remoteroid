@@ -65,4 +65,15 @@ void CKeyCodeGen::InitKeyCodeArray(void)
 	KeyCodeArray[VK_BACK] = KEY_BACKSPACE;	
 	KeyCodeArray[VK_RETURN] = KEY_ENTER;
 	KeyCodeArray[VK_SPACE] = KEY_SPACE;
+	KeyCodeArray[VK_HANGUL] = KEY_HANGEUL;
+	KeyCodeArray[VK_SHIFT] = KEY_LEFTSHIFT;
+	KeyCodeArray[VK_OEM_COMMA] = KEY_COMMA;
+	KeyCodeArray[VK_OEM_PERIOD] = KEY_DOT;
+	KeyCodeArray[VK_OEM_2] = KEY_SLASH;
+	KeyCodeArray[VK_OEM_PLUS] = KEY_EQUAL;
+	KeyCodeArray[VK_OEM_MINUS] = KEY_MINUS;
+	KeyCodeArray[VK_LEFT] = KEY_LEFT;
+	KeyCodeArray[VK_RIGHT] = KEY_RIGHT;
+	KeyCodeArray[VK_DOWN] = KEY_DOWN;
+	KeyCodeArray[VK_UP] = KEY_UP;	
 }

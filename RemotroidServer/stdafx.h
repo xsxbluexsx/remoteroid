@@ -52,6 +52,9 @@ using namespace Gdiplus;
 #pragma comment(lib, "winmm")
 #include <mmsystem.h>
 
+//한영 관련
+#pragma comment(lib, "imm32.lib")
+#include <imm.h>
 
 #ifdef _UNICODE
 #if defined _M_IX86

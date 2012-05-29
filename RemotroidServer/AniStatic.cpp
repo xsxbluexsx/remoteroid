@@ -66,11 +66,10 @@ void CAniStatic::OnTimer(UINT_PTR nIDEvent)
 	// TODO: Add your message handler code here and/or call default
 	
 	if(alpahValue == 255 || alpahValue == 0)
-	{
 		pos = pos * -1;		
-	}	
+		
 	alpahValue += pos;	
 	
-	GetParent()->InvalidateRect(&myRect, TRUE);
+	GetParent()->InvalidateRect(&myRect, FALSE);
 	CStatic::OnTimer(nIDEvent);
 }

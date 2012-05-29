@@ -110,6 +110,8 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_WM_CLOSE()
 	
 	ON_WM_TIMER()
+	
+	ON_WM_MOUSEWHEEL()
 END_MESSAGE_MAP()
 
 
@@ -703,11 +705,11 @@ void CRemotroidServerDlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CRemotroidServerDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	// TODO: Add your message handler code here and/or call default		
+	// TODO: Add your message handler code here and/or call default			
 	int keyCode;
 	if( (m_pClient != NULL) && ((keyCode=keyCodeGen.GetKeyCode(nChar)) != INVALID_KEYCODE) )
 	{
-		CVitualEventPacket event(KEYDOWN, keyCodeGen.GetKeyCode(nChar));
+		CVitualEventPacket event(KEYDOWN, keyCode);
 		m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);	
 	}	
 }
@@ -718,10 +720,13 @@ BOOL CRemotroidServerDlg::PreTranslateMessage(MSG* pMsg)
 	// TODO: Add your specialized code here and/or call the base class
 	//esc 종료 방지
 	if(pMsg->wParam == VK_ESCAPE)
-		return TRUE;
+		return TRUE;	
 
 	if((pMsg->message == WM_KEYDOWN) || (pMsg->message == WM_KEYUP))
 	{
+		//한영키 눌렀을 경우 처리
+		if(pMsg->wParam == VK_PROCESSKEY)
+			pMsg->wParam = ImmGetVirtualKey(GetSafeHwnd());
 		SendMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
 	}
 	return CImageDlg::PreTranslateMessage(pMsg);
@@ -962,4 +967,12 @@ void CRemotroidServerDlg::OnTimer(UINT_PTR nIDEvent)
 	
 	KillTimer(0);
 	CImageDlg::OnTimer(nIDEvent);
+}
+
+
+BOOL CRemotroidServerDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+{
+	// TODO: Add your message handler code here and/or call default
+	TRACE("nFlgs : %d, zDelta : %d, x : %d, y : %d\n", nFlags, zDelta, pt.x, pt.y);
+	return CImageDlg::OnMouseWheel(nFlags, zDelta, pt);
 }
