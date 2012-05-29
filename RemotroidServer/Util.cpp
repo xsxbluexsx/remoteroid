@@ -86,3 +86,20 @@ void CUtil::AniMaximiseFromTray(HWND hwnd)
 
 	DrawAnimatedRects(hwnd, IDANI_CAPTION, &rectFrom, &wndpl.rcNormalPosition);
 }
+
+
+void CUtil::SetHanEngMode(HWND hFocusWnd)
+{
+	HIMC hImc;
+	DWORD dwConv, dwSent, dwTemp;	
+	hImc = ImmGetContext(hFocusWnd);
+	if(hImc != NULL)
+	{
+		ImmGetConversionStatus(hImc, &dwConv, &dwSent);
+		dwTemp = dwConv & ~IME_CMODE_LANGUAGE;
+		dwTemp |= IME_CMODE_ALPHANUMERIC;
+		dwConv = dwTemp;
+		ImmSetConversionStatus(hImc,dwConv,dwSent);
+		ImmReleaseContext(hFocusWnd, hImc);
+	}
+}
