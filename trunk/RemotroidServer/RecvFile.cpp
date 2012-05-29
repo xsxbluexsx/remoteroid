@@ -97,12 +97,10 @@ void CRecvFile::RecvFileData(char * data, int packetSize)
 	pProgressBar->SetPos(percent);		
 
 	if(m_iTotalFileSize <= m_iRecvFileSize)
-	{
-		pProgressBar->DeleteRgn();
+	{		
 		pProgressBar->ShowWindow(SW_HIDE);
 		CloseHandle(m_hRecvFile);
-		m_hRecvFile = NULL;
-		//AfxMessageBox(_T("파일 수신 완료"));			
+		m_hRecvFile = NULL;		
 	}
 }
 
@@ -135,6 +133,7 @@ void CRecvFile::CloseFileHandle(void)
 	{
 		CloseHandle(m_hRecvFile);
 		m_hRecvFile = NULL;
+		pProgressBar->ShowWindow(SW_HIDE);
 	}
 }
 

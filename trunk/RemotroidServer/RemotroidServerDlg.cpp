@@ -424,8 +424,7 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 	{		
 		int iRecvLen = pClient->RecvPacket();		
 		if(iRecvLen <= 0)
-		{
-			TRACE("recvlen <= 0 \n");
+		{			
 			break;
 		}
 
@@ -563,7 +562,7 @@ void CRemotroidServerDlg::OnDropFiles(HDROP hDropInfo)
 			continue;
 		}
 		END_CATCH
-		
+
 		if(FALSE == fileSender.AddSendFile(pFile))
 		{
 			delete pFile;
@@ -779,7 +778,7 @@ void CRemotroidServerDlg::GetStoreFilePath(void)
 	if(!pToolbarWnd) goto ENDSEARCH;
 
 	//Å½»ö±â°¡ °¡¸£Å°´Â °÷ÀÇ °æ·Î È¹µæ	
-	pToolbarWnd->GetWindowText(temp, 50);
+	pToolbarWnd->GetWindowText(temp, MAX_PATH);
 	if(temp[4] >= _T('A') && temp[4] <= _T('Z'))
 		bResult = TRUE;
 
