@@ -47,7 +47,8 @@ BEGIN_MESSAGE_MAP(CScreen, CStatic)
 	ON_WM_MOUSELEAVE()
 	ON_WM_PAINT()
 	ON_WM_CREATE()
-	
+		
+	ON_WM_MOUSEWHEEL()
 END_MESSAGE_MAP()
  
 
@@ -298,3 +299,24 @@ void CScreen::SetDisconnect()
 	aniWait.SetAnimation(TRUE);
 }
 
+
+
+
+
+BOOL CScreen::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+{
+	// TODO: Add your message handler code here and/or call default
+	TRACE("nFlgs : %d, zDelta : %d, x : %d, y : %d", nFlags, zDelta, pt.x, pt.y);
+	return CStatic::OnMouseWheel(nFlags, zDelta, pt);
+}
+
+
+BOOL CScreen::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: Add your specialized code here and/or call the base class
+	if(pMsg->message == WM_MOUSEHWHEEL)
+	{
+		SendMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
+	}
+	return CStatic::PreTranslateMessage(pMsg);
+}

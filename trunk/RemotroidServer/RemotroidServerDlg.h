@@ -130,4 +130,6 @@ private:
 public:
 	CString m_strMyIp;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+
+	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 };
