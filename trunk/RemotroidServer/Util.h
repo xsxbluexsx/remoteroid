@@ -11,5 +11,6 @@ public:
 	static void AniMinimizeToTray(HWND hwnd);
 	static void GetTrayWndRect(RECT * pRect);
 	static void AniMaximiseFromTray(HWND hwnd);
+	static void SetHanEngMode(HWND hWnd);
 };
 

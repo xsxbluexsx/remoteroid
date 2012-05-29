@@ -694,6 +694,7 @@ HBRUSH CRemotroidServerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 void CRemotroidServerDlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	// TODO: Add your message handler code here and/or call default
+	
 	int keyCode;
 	if( (m_pClient != NULL) && ((keyCode=keyCodeGen.GetKeyCode(nChar)) != INVALID_KEYCODE) )
 	{
@@ -705,7 +706,12 @@ void CRemotroidServerDlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CRemotroidServerDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	// TODO: Add your message handler code here and/or call default			
+	// TODO: Add your message handler code here and/or call default	
+
+	//한글모드로 전환이 안되게 해야한다
+	if(nChar == VK_HANGUL)
+		CUtil::SetHanEngMode(GetSafeHwnd());	
+
 	int keyCode;
 	if( (m_pClient != NULL) && ((keyCode=keyCodeGen.GetKeyCode(nChar)) != INVALID_KEYCODE) )
 	{
@@ -727,6 +733,7 @@ BOOL CRemotroidServerDlg::PreTranslateMessage(MSG* pMsg)
 		//한영키 눌렀을 경우 처리
 		if(pMsg->wParam == VK_PROCESSKEY)
 			pMsg->wParam = ImmGetVirtualKey(GetSafeHwnd());
+
 		SendMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
 	}
 	return CImageDlg::PreTranslateMessage(pMsg);
