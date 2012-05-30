@@ -179,10 +179,20 @@ public class RemoteroidService extends Service
 	private PhoneStateListener mPhoneListener = new PhoneStateListener(){
 
 		@Override
-		public void onCallStateChanged(int state, String incomingNumber) {
+		public void onCallStateChanged(int state, final String incomingNumber) {
 			if(state==TelephonyManager.CALL_STATE_RINGING){
 				// TODO Notify call catched!
-				
+				if(mTransmitter!=null && mTransmitter.isConnected()){
+					new AsyncTask<Void, Void, Void>(){
+		
+						@Override
+						protected Void doInBackground(Void... params) {
+							mTransmitter.sendNotification(String.format(getString(R.string.incoming_call_from_s), incomingNumber));
+							return null;
+						}
+						
+					}.execute();
+				}
 			}
 		}
 		
