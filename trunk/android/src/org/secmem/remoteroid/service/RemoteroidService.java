@@ -20,9 +20,7 @@
 package org.secmem.remoteroid.service;
 
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,9 +47,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.os.SystemClock;
 import android.telephony.PhoneStateListener;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
@@ -335,6 +333,7 @@ public class RemoteroidService extends Service
 	public void onFileTransferSucceeded() {
 		Log.i(DEBUG_STATE,"onFileTransferSucceeded()");
 		sendBroadcast(new Intent(RemoteroidIntent.ACTION_FILE_TRANSMISSION_SECCESS));
+		sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
 	}
 	
 	private ArrayList<File> getFileList(List<String> pathlist) {

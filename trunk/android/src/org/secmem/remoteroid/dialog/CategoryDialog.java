@@ -127,7 +127,7 @@ public class CategoryDialog extends Activity implements OnClickListener, OnItemC
 		builder = new AlertDialog.Builder(context);
 		builder.setView(layout);
 		dialog = builder.create();
-		dialog.setTitle(getString(R.string.category_dialog_title));
+//		dialog.setTitle(getString(R.string.category_dialog_title));
 		dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 		
 		okBtn.setOnClickListener(new OnClickListener() {
