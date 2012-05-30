@@ -19,11 +19,14 @@ public:
 	
 private:	
 	CBitmap m_bmp;
+	BITMAP m_bmpInfo;
+	BLENDFUNCTION bf;
+	
 public:
 	
 	afx_msg void OnPaint();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	CImage m_Img;
+	
 	int alpahValue;
 	int pos;
 	void SetAnimation(BOOL cond);
