@@ -11,8 +11,17 @@
 IMPLEMENT_DYNAMIC(CAniStatic, CStatic)
 
 CAniStatic::CAniStatic()
-: alpahValue(255), pos(5)
+: alpahValue(250), pos(10)
 {
+	m_bmp.LoadBitmap(IDB_BITMAPWAITING3);
+	m_bmp.GetBitmap(&m_bmpInfo);
+
+	//알파블랜딩 효과를 위해
+	memset(&bf, 0, sizeof(bf));
+	bf.BlendOp = AC_SRC_OVER;
+	bf.BlendFlags = 0;
+	bf.SourceConstantAlpha = alpahValue;
+	bf.AlphaFormat = 0;
 }
 
 CAniStatic::~CAniStatic()
@@ -36,8 +45,16 @@ void CAniStatic::OnPaint()
 	CPaintDC dc(this); // device context for painting
 	// TODO: Add your message handler code here
 	// Do not call CStatic::OnPaint() for painting messages
+	CDC memDC;
+	memDC.CreateCompatibleDC(&dc);
+	CBitmap *pOldBmp = NULL;
+	pOldBmp = memDC.SelectObject(&m_bmp);
+
+	bf.SourceConstantAlpha = alpahValue;
+
+	dc.AlphaBlend(0,0,m_bmpInfo.bmWidth, m_bmpInfo.bmHeight, &memDC, 0,0,m_bmpInfo.bmWidth, m_bmpInfo.bmHeight, bf);
+	memDC.SelectObject(pOldBmp);
 	
-	m_Img.AlphaBlend(dc.m_hDC,0,0,alpahValue);	
 }
 
 
@@ -46,8 +63,7 @@ int CAniStatic::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CStatic::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
-	// TODO:  Add your specialized creation code here	
-	m_Img.LoadFromResource(AfxGetInstanceHandle(), IDB_BITMAPWAITING3);
+	// TODO:  Add your specialized creation code here		
 	return 0;
 }
 
@@ -55,7 +71,7 @@ int CAniStatic::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void CAniStatic::SetAnimation(BOOL cond)
 {
 	if(cond)
-		SetTimer(0, 30, NULL);
+		SetTimer(0, 50, NULL);
 	else
 		KillTimer(0);
 }
@@ -65,8 +81,11 @@ void CAniStatic::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Add your message handler code here and/or call default
 	
-	if(alpahValue == 255 || alpahValue == 0)
+	if(alpahValue == 250 || alpahValue == 0)
+	{
+		Sleep(200);
 		pos = pos * -1;		
+	}
 		
 	alpahValue += pos;	
 	
