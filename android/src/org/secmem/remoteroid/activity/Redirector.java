@@ -35,6 +35,7 @@ public class Redirector extends Activity {
 	    }else{
 	    	startActivity(new Intent(this, Main.class));
 	    }
+	    finish();
 	}
 
 }

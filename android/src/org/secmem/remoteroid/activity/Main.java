@@ -252,6 +252,7 @@ public class Main extends SherlockFragmentActivity implements
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putInt("lastFrag", lastFrag);
+//		super.onSaveInstanceState(outState);
 	}
 
 	@Override
