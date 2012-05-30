@@ -54,8 +54,7 @@ public class DriverInstallationFragment extends Fragment {
 			public void onClick(View v) {
 				if(!installCompleted){
 					// Install Driver
-					//new InstallDriverTask().execute();
-					Toast.makeText(getActivity(), "test", Toast.LENGTH_SHORT).show();
+					new InstallDriverTask().execute();
 				}else{
 					mListener.onDriverInstalled();
 				}
