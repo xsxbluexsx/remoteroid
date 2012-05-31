@@ -1,14 +1,7 @@
 #labels Featured,Phase-Implementation
-#Build instructions
+= How to build your own Remoteroid=
 
-= Introduction =
-
-Add your content here.
+==Client (Android)==
 
 
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+==Server==
