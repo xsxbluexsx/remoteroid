@@ -91,7 +91,7 @@ public class FrameHandler {
 	
 	// get Device Display Orientation
 	public int getDisplayOrientation(){
-		Display display = ((WindowManager) context.getSystemService(context.WINDOW_SERVICE)).getDefaultDisplay();
+		Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 		return display.getOrientation();
 	}
 	
@@ -110,7 +110,7 @@ public class FrameHandler {
 		bitmap.copyPixelsFromBuffer(frameBuffer);
 				
 		frameStream.reset();
-		bitmap.compress(CompressFormat.JPEG, 70, frameStream);
+		bitmap.compress(CompressFormat.JPEG, 100, frameStream);
 		return frameStream;
 	}
 	
