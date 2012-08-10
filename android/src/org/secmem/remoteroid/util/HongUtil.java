@@ -20,6 +20,7 @@
 package org.secmem.remoteroid.util;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -29,11 +30,15 @@ import java.util.regex.Pattern;
 import org.secmem.remoteroid.activity.ExplorerActivity;
 import org.secmem.remoteroid.data.CategoryList;
 import org.secmem.remoteroid.data.ExplorerType;
+import org.secmem.remoteroid.kakaotalk.KakaoLink;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -45,7 +50,6 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.text.InputFilter;
 import android.text.Spanned;
-import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -409,4 +413,26 @@ public class HongUtil {
 		
 		return result;
 	}
+	
+	// Feature - KakaoTalk Message Sending
+	public static class UseKakaoLink{
+		
+		public static void sendLinkMessage(Context context, String title, String msg) throws UnsupportedEncodingException{
+			KakaoLink link;
+			String strAppId = "org.secmem.remoteroid";
+			String strAppVer = "2.0";
+			 String strAppName = "Remoteroid";
+			link = new KakaoLink(context, title, strAppId, strAppVer, msg, strAppName, "UTF-8");
+			if(link.isAvailable()){
+				context.startActivity(link.getIntent());
+			}
+		}
+	}
+	
+	public static void excExplorer(Context context) throws CanceledException{
+		Intent i = new Intent(context, ExplorerActivity.class);
+		PendingIntent pi = PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_ONE_SHOT);
+		pi.send();
+	}
+	
 }

@@ -3,7 +3,9 @@ package org.secmem.remoteroid.adapter;
 import java.util.ArrayList;
 
 import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.data.PackageList;
 import org.secmem.remoteroid.util.FilterUtil;
+import org.secmem.remoteroid.util.PackageSoundSearcher;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -21,13 +23,19 @@ import android.widget.TextView;
 public class PackageAdapter extends BaseAdapter{
 	private Context mContext;
 	private ArrayList<PackageInfo> mPackageList = new ArrayList<PackageInfo>();
+	
 	private PackageManager mPkgManager;
 	private FilterUtil mFilterUtil;
+	private ArrayList<PackageList> packageList = new ArrayList<PackageList>();
 	
+	private boolean isSearch = false;
+	
+
 	public PackageAdapter(Context context){
 		mContext = context;
 		mPkgManager = mContext.getPackageManager();
 		mPackageList = (ArrayList<PackageInfo>)mPkgManager.getInstalledPackages(0);
+		setmPackageList(mPackageList);
 		mFilterUtil = new FilterUtil(mContext);
 		mFilterUtil.open();
 	}
@@ -87,6 +95,32 @@ public class PackageAdapter extends BaseAdapter{
 		});
 		
 		return convertView;
+	}
+	
+	public ArrayList<PackageInfo> getmPackageList() {
+		return mPackageList;
+	}
+
+	public void setmPackageList(ArrayList<PackageInfo> mPackageList) {
+		for(int i = 0 ; i<=mPackageList.size() ; i++){
+			this.packageList.add(new PackageList(mPackageList.get(i)));
+		}
+		this.mPackageList = mPackageList;
+	}
+	public boolean isSearch() {
+		return isSearch;
+	}
+
+	public void setSearch(boolean isSearch) {
+		this.isSearch = isSearch;
+	}
+	
+	public void searchSoundInitial(String msg){
+		for(int i = 0 ; i <= mPackageList.size() ; i++){
+			if(PackageSoundSearcher.matchString((mPackageList.get(i).applicationInfo.loadLabel(mPkgManager)).toString(), msg)){
+				packageList.get(i).setSearch(true);
+			}
+		}
 	}
 
 }

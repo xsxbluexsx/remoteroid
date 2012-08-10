@@ -22,8 +22,10 @@ package org.secmem.remoteroid.fragment;
 import java.util.regex.Pattern;
 
 import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.util.HongUtil;
 import org.secmem.remoteroid.util.Util;
 
+import android.app.PendingIntent.CanceledException;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -142,6 +144,7 @@ public class AuthenticateFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
+				
 				Util.Connection.saveConnectionData(getActivity(), mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString());
 				mListener.onConnectRequested(mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString());
 				
