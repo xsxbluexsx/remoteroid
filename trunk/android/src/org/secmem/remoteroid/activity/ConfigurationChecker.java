@@ -20,8 +20,10 @@
 package org.secmem.remoteroid.activity;
 
 import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.util.HongUtil;
 import org.secmem.remoteroid.util.Util;
 
+import android.app.PendingIntent.CanceledException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -52,6 +54,7 @@ public class ConfigurationChecker extends SherlockActivity {
 			@Override
 			public void onClick(View v) {
 				Util.Services.launchAccessibilitySettings(ConfigurationChecker.this);
+				
 			}
 			
 		});

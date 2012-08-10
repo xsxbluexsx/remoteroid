@@ -25,7 +25,11 @@ import org.secmem.remoteroid.util.FilterUtil;
 
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListActivity;
@@ -35,11 +39,15 @@ public class PackageSelector extends SherlockListActivity{
 	
 	private PackageAdapter mPackageAdapter;
 	private FilterUtil mFilterUtil;
+	
+	private EditText edtSearch;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_package_selector);
+		
+		edtSearch = (EditText)findViewById(R.id.activity_package_edt_search);
 		
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
@@ -49,6 +57,31 @@ public class PackageSelector extends SherlockListActivity{
 		
 		getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		setListAdapter(mPackageAdapter);
+		
+		edtSearch.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				Log.i("qq","onTextChanged");
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				Log.i("qq","beforeTextChanged");
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				Log.i("qq","afterTextChanged");
+				if(edtSearch.getText().toString().length() == 0 ){
+					mPackageAdapter.setSearch(false);
+				}
+				else{
+					mPackageAdapter.setSearch(true);
+				}
+				mPackageAdapter.notifyDataSetChanged();
+			}
+		});
 	}
 	
 	@Override
