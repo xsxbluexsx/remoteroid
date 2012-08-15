@@ -78,6 +78,7 @@ public:
 	
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };
 
 

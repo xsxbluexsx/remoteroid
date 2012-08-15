@@ -64,8 +64,14 @@ void CMyBitmapBtn::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 
 	CRect rect;
 	rect.CopyRect(&lpDIS->rcItem);
-	pDC->BitBlt(rect.left, rect.top, rect.Width(), rect.Height(),
-		&memDC, 0, 0, SRCCOPY);
+
+	BITMAP bm;
+	pBitmap->GetBitmap(&bm);
+// 	CRect rt;
+// 	GetClientRect(&rt);
+	pDC->StretchBlt(0,0,rect.Width(), rect.Height(), &memDC, 0, 0, bm.bmWidth, bm.bmHeight,SRCCOPY);
+// 	pDC->BitBlt(rect.left, rect.top, rect.Width(), rect.Height(),
+// 		&memDC, 0, 0, SRCCOPY);
 	memDC.SelectObject(pOld);	
 }
 

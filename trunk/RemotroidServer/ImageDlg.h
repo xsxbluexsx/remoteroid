@@ -1,4 +1,5 @@
 #pragma once
+#include "afxwin.h"
 
 
 // CImageDlg dialog
@@ -31,4 +32,6 @@ public:
 	afx_msg void OnPaint();
 	virtual BOOL OnInitDialog();
 	
+	void OnResizeSkin(CRect * rc);
+	CBitmap m_bitmap;
 };

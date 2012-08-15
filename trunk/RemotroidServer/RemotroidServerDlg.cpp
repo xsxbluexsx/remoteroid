@@ -112,6 +112,10 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_WM_TIMER()
 	
 	ON_WM_MOUSEWHEEL()
+	ON_WM_NCHITTEST()
+	ON_WM_SETFOCUS()
+	ON_WM_SETCURSOR()
+	
 END_MESSAGE_MAP()
 
 
@@ -152,6 +156,13 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	//스크린 윈도우 위치 및 스타일 설정
 
 	//ShowWindow(SW_HIDE);
+	MoveWindow(0,0,427, 781);
+
+	SetBackgroundColor(RGB(244,244,244));
+	SetLayeredWindowAttributes(RGB(244,244,244),0, LWA_COLORKEY);
+	
+	GetClientRect(&mainDlgRect);
+
 	
 	screen.CreateEx(WS_EX_TOPMOST
 		, _T("STATIC"), NULL, WS_CHILD|WS_VISIBLE|SS_NOTIFY, CRect(LEFT, TOP, RIGHT, BOTTOM), this, 1234);
@@ -169,6 +180,9 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	fileSender.SetProgressBar(&m_progressCtrl);
 
 	//하단 버튼 위치 설정
+	
+
+	
 	m_MenuButton.MoveWindow(60, 710, BUTTONWIDTH, BUTTONHEIGHT);
 	m_HomeButton.MoveWindow(60+BUTTONWIDTH, 710, BUTTONWIDTH, BUTTONHEIGHT);
 	m_BackButton.MoveWindow(60+BUTTONWIDTH*2, 710, BUTTONWIDTH, BUTTONHEIGHT);
@@ -284,6 +298,7 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	SystemParametersInfo(SPI_SETBEEP, false, &tk, 0);	
 
 	SetTimer(0, 0, NULL);
+		
  
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }
@@ -351,7 +366,8 @@ UINT CRemotroidServerDlg::AcceptFunc(LPVOID pParam)
 	{		
 		return 0;
 	}
-		
+	
+	AfxMessageBox(_T("화면 전송 중에는 배터리 소모가 많으니\n사용하시지 않을 경우에는 최소화 시켜주세요"));
 
 	CMyClient *pClient = new CMyClient(ClientSocket);
 	pClient->SetNoDelay(TRUE);
@@ -674,6 +690,26 @@ void CRemotroidServerDlg::OnMouseMove(UINT nFlags, CPoint point)
 }
 
 
+LRESULT CRemotroidServerDlg::OnNcHitTest(CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	CRect rect;
+	GetClientRect(&rect);
+	ScreenToClient(&point);
+	
+
+	if ((rect.bottom - 50 <= point.y) && (rect.bottom > point.y) && 
+		(rect.right - 100 <= point.x) && (rect.right > point.x)) 
+	{
+		return HTBOTTOMRIGHT; // 적당한 값을 반환합니다.
+	}
+	return CImageDlg::OnNcHitTest(point);
+}
+
+
+
+
+
 HBRUSH CRemotroidServerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	HBRUSH hbr = CImageDlg::OnCtlColor(pDC, pWnd, nCtlColor);
@@ -910,6 +946,9 @@ LRESULT CRemotroidServerDlg::OnTrayNotification(WPARAM wParam, LPARAM lParam)
 
 LRESULT CRemotroidServerDlg::OnMyDblClkTray(WPARAM wParam, LPARAM lParam)
 {	
+	if(isTray == FALSE)
+		return 0;
+
 	isTray = FALSE;
 
 	if(m_pClient != NULL)
@@ -982,3 +1021,5 @@ BOOL CRemotroidServerDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	TRACE("nFlgs : %d, zDelta : %d, x : %d, y : %d\n", nFlags, zDelta, pt.x, pt.y);
 	return CImageDlg::OnMouseWheel(nFlags, zDelta, pt);
 }
+
+

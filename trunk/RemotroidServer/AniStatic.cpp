@@ -6,6 +6,7 @@
 #include "AniStatic.h"
 #include <atlimage.h>
 
+
 // CAniStatic
 
 IMPLEMENT_DYNAMIC(CAniStatic, CStatic)
@@ -21,7 +22,7 @@ CAniStatic::CAniStatic()
 	bf.BlendOp = AC_SRC_OVER;
 	bf.BlendFlags = 0;
 	bf.SourceConstantAlpha = alpahValue;
-	bf.AlphaFormat = 0;
+	bf.AlphaFormat = 0;	
 }
 
 CAniStatic::~CAniStatic()
@@ -45,6 +46,7 @@ void CAniStatic::OnPaint()
 	CPaintDC dc(this); // device context for painting
 	// TODO: Add your message handler code here
 	// Do not call CStatic::OnPaint() for painting messages
+	
 	CDC memDC;
 	memDC.CreateCompatibleDC(&dc);
 	CBitmap *pOldBmp = NULL;
@@ -53,8 +55,7 @@ void CAniStatic::OnPaint()
 	bf.SourceConstantAlpha = alpahValue;
 
 	dc.AlphaBlend(0,0,m_bmpInfo.bmWidth, m_bmpInfo.bmHeight, &memDC, 0,0,m_bmpInfo.bmWidth, m_bmpInfo.bmHeight, bf);
-	memDC.SelectObject(pOldBmp);
-	
+	memDC.SelectObject(pOldBmp);	
 }
 
 
