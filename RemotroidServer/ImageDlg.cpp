@@ -40,6 +40,9 @@ void CImageDlg::OnPaint()
 	CPaintDC dc(this); // device context for painting
 	// TODO: Add your message handler code here
 	// Do not call CDialogEx::OnPaint() for painting messages
+	CRect rc;
+	GetClientRect(&rc);
+	OnResizeSkin(&rc);
 }
 
 
@@ -49,6 +52,8 @@ BOOL CImageDlg::OnInitDialog()
 
 	// TODO:  Add extra initialization here
 	///////////////////////////////
+
+	m_bitmap.LoadBitmap(IDB_BITMAP1);
 
 	//비트맵 모양에 맞춰서 다이얼로그 모양 만들기	
 
@@ -74,7 +79,7 @@ BOOL CImageDlg::OnInitDialog()
 			rgn = ExtCreateRegion(&xform, sizeof
 				(RGNDATAHEADER) + (sizeof(RECT) * ((RGNDATA*)rgndata)->rdh.nCount),(RGNDATA*)rgndata);
 			VERIFY(rgn!=NULL);  // if you want more comprehensive checking - feel free!
-			::SetWindowRgn(m_hWnd, rgn, TRUE);			
+		/*	::SetWindowRgn(m_hWnd, rgn, TRUE);		*/	
 			::UnlockResource(hBackGlobal);
 		}
 	}
@@ -85,3 +90,20 @@ BOOL CImageDlg::OnInitDialog()
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
+
+
+void CImageDlg::OnResizeSkin(CRect * rc)
+{
+	CDC *pDC = GetDC();
+	CDC MemDC;
+	MemDC.CreateCompatibleDC(pDC);
+
+	BITMAP bmp;
+	m_bitmap.GetBitmap(&bmp);
+	
+	CBitmap * old = MemDC.SelectObject(&m_bitmap);
+	
+	pDC->StretchBlt(0,0,rc->Width(), rc->Height(), &MemDC, 0,0,
+		bmp.bmWidth, bmp.bmHeight, SRCCOPY);
+	MemDC.SelectObject(old);
+}

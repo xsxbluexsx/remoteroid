@@ -7,6 +7,7 @@
 #include "Screen.h"
 
 
+
 // CScreen
 
 IMPLEMENT_DYNAMIC(CScreen, CStatic)
@@ -49,6 +50,7 @@ BEGIN_MESSAGE_MAP(CScreen, CStatic)
 	ON_WM_CREATE()
 		
 	ON_WM_MOUSEWHEEL()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
  
 
@@ -260,6 +262,7 @@ void CScreen::OnPaint()
 	CPaintDC dc(this); // device context for painting
 	// TODO: Add your message handler code here
 	// Do not call CStatic::OnPaint() for painting messages
+	
 	if(m_isConnect)
 		return;
 	
@@ -274,6 +277,7 @@ void CScreen::OnPaint()
 	dc.SelectObject(pOldFont);
 	
 	m_bkgImg.ReleaseDC();
+	
 	m_bkgImg.BitBlt(dc.m_hDC, 0, 0);	
 }
 
@@ -319,4 +323,13 @@ BOOL CScreen::PreTranslateMessage(MSG* pMsg)
 		SendMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
 	}
 	return CStatic::PreTranslateMessage(pMsg);
+}
+
+
+BOOL CScreen::OnEraseBkgnd(CDC* pDC)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	//return CStatic::OnEraseBkgnd(pDC);
+	return false;
 }

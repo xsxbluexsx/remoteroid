@@ -18,6 +18,7 @@
 #include "PopupDlgMgr.h"
 #include "TrayIcon.h"
 #include "AniStatic.h"
+#include "atltypes.h"
 
 
 
@@ -132,4 +133,9 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
+	afx_msg LRESULT OnNcHitTest(CPoint point);
+	
+
+	CRect mainDlgRect;
+	
 };

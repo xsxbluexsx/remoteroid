@@ -100,9 +100,9 @@ BOOL CPopupDlg::OnInitDialog()
 	dlgRect.right = dlgRect.left + bmpInfo.bmWidth;
 	dlgRect.bottom = dlgRect.top + bmpInfo.bmHeight;
 
-	
+
 	SetWindowPos(&wndTopMost, dlgRect.left, dlgRect.top, dlgRect.Width(), dlgRect.Height(), SWP_SHOWWINDOW);
-	
+
 	CRect rc;
 	GetClientRect(&rc);
 	m_CloseBtn.MoveWindow(rc.Width()-20, 8, 19, 16);		

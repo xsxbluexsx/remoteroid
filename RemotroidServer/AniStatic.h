@@ -1,6 +1,7 @@
 #pragma once
 #include "atlimage.h"
 #include "atltypes.h"
+#include "afxwin.h"
 
 
 // CAniStatic
@@ -32,6 +33,7 @@ public:
 	void SetAnimation(BOOL cond);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	CRect myRect;
+
 };
 
 
