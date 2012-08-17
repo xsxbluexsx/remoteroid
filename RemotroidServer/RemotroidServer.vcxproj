@@ -121,6 +121,7 @@
     <None Include="res\remoteroid_logo_wnd.bmp" />
     <None Include="res\RemotroidServer.ico" />
     <None Include="res\RemotroidServer.rc2" />
+    <None Include="res\size.png" />
     <None Include="res\traybtn.bmp" />
     <None Include="res\traybtn_hover.bmp" />
     <None Include="res\XBtn.bmp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="RecvFile.h" />
     <ClInclude Include="RemotroidServer.h" />
     <ClInclude Include="RemotroidServerDlg.h" />
+    <ClInclude Include="ResizingDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="Splash.h" />
@@ -167,6 +169,7 @@
     <ClCompile Include="RecvFile.cpp" />
     <ClCompile Include="RemotroidServer.cpp" />
     <ClCompile Include="RemotroidServerDlg.cpp" />
+    <ClCompile Include="ResizingDlg.cpp" />
     <ClCompile Include="Screen.cpp" />
     <ClCompile Include="Splash.cpp" />
     <ClCompile Include="stdafx.cpp">
