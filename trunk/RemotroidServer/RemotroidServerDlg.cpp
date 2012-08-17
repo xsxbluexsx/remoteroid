@@ -116,6 +116,12 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_WM_SETFOCUS()
 	ON_WM_SETCURSOR()
 	
+	ON_WM_SIZE()
+//	ON_WM_NCLBUTTONDOWN()
+	ON_WM_NCLBUTTONUP()
+	ON_WM_NCMOUSEMOVE()
+	ON_WM_MOVE()
+	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -156,12 +162,10 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	//스크린 윈도우 위치 및 스타일 설정
 
 	//ShowWindow(SW_HIDE);
-	MoveWindow(0,0,427, 781);
+	
 
 	SetBackgroundColor(RGB(244,244,244));
-	SetLayeredWindowAttributes(RGB(244,244,244),0, LWA_COLORKEY);
-	
-	GetClientRect(&mainDlgRect);
+	SetLayeredWindowAttributes(RGB(244,244,244),0, LWA_COLORKEY);	
 
 	
 	screen.CreateEx(WS_EX_TOPMOST
@@ -203,7 +207,7 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	m_MenuButton.LoadBitmaps(IDB_BITMAP_MENU, IDB_BITMAP_MENU_CLICK);
 	m_MenuButton.SetHoverBitmapID(IDB_BITMAP_MENU_OVER);
 
-
+/*
 	m_UDPServerSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if(m_UDPServerSocket == INVALID_SOCKET)
 	{
@@ -235,6 +239,7 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 
 	pUdpRecvThread = AfxBeginThread(UDPRecvFunc, this);
 	//pUdpRecvThread->m_bAutoDelete = FALSE;
+	*/
 
 	m_ServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if(m_ServerSocket == INVALID_SOCKET)
@@ -244,6 +249,7 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 		return TRUE;
 	}
 	
+	SOCKADDR_IN addr;
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	addr.sin_family = AF_INET;
@@ -297,8 +303,12 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	TOGGLEKEYS tk;
 	SystemParametersInfo(SPI_SETBEEP, false, &tk, 0);	
 
-	SetTimer(0, 0, NULL);
-		
+	SetTimer(0, 0, NULL);	
+	
+
+	//다이얼로그 초기위치
+	SetDlgPosition();
+	SetResizingDlg();
  
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }
@@ -683,28 +693,45 @@ void CRemotroidServerDlg::OnMouseMove(UINT nFlags, CPoint point)
 	moveRect.bottom = screenRect.top - 20;
 
 	if(PtInRect(&moveRect, point) && m_isReadyRecv == FALSE)
-	{
+	{		
 		PostMessage( WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM( point.x, point.y));
 	}
 	CImageDlg::OnMouseMove(nFlags, point);
 }
 
 
+//다이얼로그 크기 변경을 위해..부모클래스인 CImageDlg에서 수행
 LRESULT CRemotroidServerDlg::OnNcHitTest(CPoint point)
 {
-	// TODO: Add your message handler code here and/or call default
-	CRect rect;
-	GetClientRect(&rect);
-	ScreenToClient(&point);
-	
-
-	if ((rect.bottom - 50 <= point.y) && (rect.bottom > point.y) && 
-		(rect.right - 100 <= point.x) && (rect.right > point.x)) 
-	{
-		return HTBOTTOMRIGHT; // 적당한 값을 반환합니다.
-	}
+	// TODO: Add your message handler code here and/or call default	
 	return CImageDlg::OnNcHitTest(point);
 }
+//void CRemotroidServerDlg::OnNcLButtonDown(UINT nHitTest, CPoint point)
+//{
+//	// TODO: Add your message handler code here and/or call default
+//	CImageDlg::OnNcLButtonDown(nHitTest, point);
+//}
+void CRemotroidServerDlg::OnNcLButtonUp(UINT nHitTest, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	CImageDlg::OnNcLButtonUp(nHitTest, point);
+}
+void CRemotroidServerDlg::OnNcMouseMove(UINT nHitTest, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	CImageDlg::OnNcMouseMove(nHitTest, point);
+}
+
+void CRemotroidServerDlg::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	CImageDlg::OnLButtonDown(nFlags, point);
+}
+
+
+
 
 
 
@@ -1022,4 +1049,25 @@ BOOL CRemotroidServerDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	return CImageDlg::OnMouseWheel(nFlags, zDelta, pt);
 }
 
+
+
+
+void CRemotroidServerDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CImageDlg::OnSize(nType, cx, cy);
+
+	GetWindowRect(&baseRect);
+	// TODO: Add your message handler code here
+}
+
+
+
+
+
+void CRemotroidServerDlg::OnMove(int x, int y)
+{
+	CImageDlg::OnMove(x, y);
+	GetWindowRect(&baseRect);
+	// TODO: Add your message handler code here
+}
 
