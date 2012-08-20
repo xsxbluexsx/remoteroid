@@ -71,10 +71,12 @@ int CAniStatic::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 void CAniStatic::SetAnimation(BOOL cond)
 {
+	
 	if(cond)
 		SetTimer(0, 50, NULL);
 	else
 		KillTimer(0);
+	
 }
 
 
@@ -84,7 +86,7 @@ void CAniStatic::OnTimer(UINT_PTR nIDEvent)
 	
 	if(alpahValue == 250 || alpahValue == 0)
 	{
-		Sleep(200);
+		//Sleep(200);
 		pos = pos * -1;		
 	}
 		

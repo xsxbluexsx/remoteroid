@@ -3,7 +3,11 @@
 
 // CResizingDlg dialog
 
-#define SIDE		30
+#define SIDE					30
+#define GAROSERORATIO			0.55
+#define MAXHEIGHT				781
+#define MINHEIGHT				500
+
 
 class CResizingDlg : public CDialogEx
 {
@@ -22,13 +26,19 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual BOOL OnInitDialog();
-
 	
 	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
 	static int SearchSide(CRect rc, CPoint point);
-	afx_msg void OnNcLButtonUp(UINT nHitTest, CPoint point);
+	
+	
+private:
+	int m_CurCursorState;
+	RECT baseRect;
+	int xDiff;
+	int yDiff;
+public:
+	void ResizingDlg(CPoint point);
+	void InitResizingDlg(RECT rect, CPoint point, int CursorState);
 
-	afx_msg void OnNcLButtonDown(UINT nHitTest, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+
 };

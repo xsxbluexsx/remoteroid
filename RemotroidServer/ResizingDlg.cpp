@@ -29,11 +29,7 @@ void CResizingDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CResizingDlg, CDialogEx)
 	ON_WM_WINDOWPOSCHANGING()
-	ON_WM_NCLBUTTONUP()
-
-	ON_WM_NCLBUTTONDOWN()
-	ON_WM_LBUTTONUP()
-	ON_WM_MOUSEMOVE()
+	
 END_MESSAGE_MAP()
 
 
@@ -59,7 +55,7 @@ BOOL CResizingDlg::OnInitDialog()
 void CResizingDlg::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 {
 	CDialogEx::OnWindowPosChanging(lpwndpos);
-	lpwndpos->cx = (int)((float)(lpwndpos->cy)*0.55);
+	
 	// TODO: Add your message handler code here
 }
 
@@ -102,41 +98,73 @@ int CResizingDlg::SearchSide(CRect rc, CPoint point)
 	return -1;
 }
 
-
-void CResizingDlg::OnNcLButtonUp(UINT nHitTest, CPoint point)
+//크기조절하는 마우스 위치별로 테두리 다이얼로그 위치가 달라짐
+void CResizingDlg::ResizingDlg(CPoint point)
 {
-	// TODO: Add your message handler code here and/or call default
-	TRACE(_T("OnNcLButtonUp\n"));
-	
-	CDialogEx::OnNcLButtonUp(nHitTest, point);
+	int width, height;	
+	switch(m_CurCursorState)
+	{
+	case HTTOPLEFT:			
+		height = baseRect.bottom - point.y - yDiff;
+
+ 		if(height > MAXHEIGHT || height < MINHEIGHT)
+ 			return;			
+
+		width = (int)((float)height*GAROSERORATIO);
+		MoveWindow(baseRect.right-width, point.y+yDiff, width, height);
+		break;
+	case HTTOPRIGHT:
+		height = baseRect.bottom - point.y - yDiff;
+
+		if(height > MAXHEIGHT || height < MINHEIGHT)
+			return;
+
+		width = (int)((float)height*GAROSERORATIO);
+		MoveWindow(baseRect.left, point.y+yDiff, width, height);
+		break;
+	case HTBOTTOMLEFT:
+		height = point.y - baseRect.top + yDiff;
+
+		if(height > MAXHEIGHT || height < MINHEIGHT)
+			return;
+		
+		width = (int)((float)height*GAROSERORATIO);
+		MoveWindow(baseRect.right-width, baseRect.top, width, height);
+		break;
+	case HTBOTTOMRIGHT:
+		height = point.y - baseRect.top + yDiff;
+		
+		if(height > MAXHEIGHT || height < MINHEIGHT)
+			return;
+
+		width = (int)((float)height*GAROSERORATIO);
+		MoveWindow(baseRect.left, baseRect.top, width, height);
+		break;
+	}	
 }
 
 
-
-
-void CResizingDlg::OnNcLButtonDown(UINT nHitTest, CPoint point)
+void CResizingDlg::InitResizingDlg(RECT rect, CPoint point, int CursorState)
 {
-	// TODO: Add your message handler code here and/or call default		
-	TRACE(_T("OnNcLButtonDown\n"));
-	CDialogEx::OnNcLButtonDown(nHitTest, point);
-}
-
-
-void CResizingDlg::OnLButtonUp(UINT nFlags, CPoint point)
-{
-	// TODO: Add your message handler code here and/or call default
-	//ReleaseCapture();
-	//ShowWindow(SW_HIDE);
-	TRACE(_T("OnLButtonUp"));
-	CDialogEx::OnLButtonUp(nFlags, point);
-}
-
-
-void CResizingDlg::OnMouseMove(UINT nFlags, CPoint point)
-{
-	// TODO: Add your message handler code here and/or call default
-	
-	//PostMessage(WM_NCMOUSEMOVE, HTBOTTOMRIGHT, MAKELPARAM(point.x, point.y));
-	TRACE(_T("OnMouseMove"));
-	CDialogEx::OnMouseMove(nFlags, point);
+	baseRect = rect;
+	m_CurCursorState = CursorState;
+	switch(m_CurCursorState)
+	{
+	case HTTOPLEFT:			
+		xDiff = baseRect.left - point.x;
+		yDiff = baseRect.top - point.y;
+		break;
+	case HTTOPRIGHT:
+		xDiff = baseRect.right - point.x;
+		yDiff = baseRect.top - point.y;
+		break;
+	case HTBOTTOMLEFT:
+		xDiff = baseRect.left - point.x;
+		yDiff = baseRect.bottom - point.y;
+		break;
+	case HTBOTTOMRIGHT:
+		xDiff = baseRect.right - point.y;
+		yDiff = baseRect.bottom - point.y;
+		break;
+	}	
 }

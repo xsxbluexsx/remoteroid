@@ -69,4 +69,6 @@ private:
 	int SetSizeCursor(CPoint point);
 public:
 	CRect m_oldRect;
+private:
+	int m_CurCursorState;
 };
