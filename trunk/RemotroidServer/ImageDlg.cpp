@@ -16,6 +16,7 @@ CImageDlg::CImageDlg(UINT nIDTemplate, CWnd *pParent)
 	, pResizeDlg(NULL)
 	, m_bResizing(FALSE)
 	, m_nHitTest(0)
+	, m_CurCursorState(0)
 {
 
 }
@@ -72,9 +73,11 @@ BOOL CImageDlg::OnInitDialog()
 	m_bitmap.LoadBitmap(IDB_BITMAP1);
 	m_bitmap.GetBitmap(&m_bmp);
 
+
+	/*
 	hResource = FindResource(AfxGetApp()->m_hInstance,
 		MAKEINTRESOURCEW(IDB_RESIZE), _T("PNG"));
-
+	
 	DWORD imageSize = SizeofResource(AfxGetApp()->m_hInstance, hResource);
 	hGlobal = LoadResource(AfxGetApp()->m_hInstance, hResource);
 	pData = LockResource(hGlobal);
@@ -83,6 +86,7 @@ BOOL CImageDlg::OnInitDialog()
 	CopyMemory(pBuffer, pData, imageSize);
 	CreateStreamOnHGlobal(hBuffer, TRUE, &pStream);
 	pImagePng = new Image(pStream);
+	*/
 
 	//비트맵 모양에 맞춰서 다이얼로그 모양 만들기	
 
@@ -166,13 +170,6 @@ LRESULT CImageDlg::OnNcHitTest(CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
 
-// 	int result;
-// 	
-// 	if( (result = CResizingDlg::SearchSide(baseRect, point)) != -1)
-// 	{
-// 		//TRACE(_T("OnNcHitTest\n"));
-// 		return result;
-// 	}
 	return CDialogEx::OnNcHitTest(point);
 }
 
@@ -183,7 +180,6 @@ BOOL CImageDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 	if(nHitTest == HTTOPLEFT || nHitTest == HTTOPRIGHT || 
 		nHitTest == HTBOTTOMLEFT || nHitTest == HTBOTTOMRIGHT)
 	{
-		//TRACE(_T("OnSetCursor\n"));
 		switch (nHitTest)
 		{
 		case HTTOPLEFT:
@@ -205,31 +201,9 @@ BOOL CImageDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 	return CDialogEx::OnSetCursor(pWnd, nHitTest, message);
 }
 
-
-//void CImageDlg::OnNcLButtonDown(UINT nHitTest, CPoint point)
-//{
-//	// TODO: Add your message handler code here and/or call default	
-// 	if(nHitTest == HTTOPLEFT || nHitTest == HTTOPRIGHT || 
-// 		nHitTest == HTBOTTOMLEFT || nHitTest == HTBOTTOMRIGHT)
-// 	{
-// 		//TRACE(_T("OnNcLButtonDown\n"));
-// 		m_bResizing = TRUE;
-// 		m_nHitTest = nHitTest;
-// 		pResizeDlg->ShowWindow(SW_SHOW);
-// 		pResizeDlg->MoveWindow(CRect(baseRect));
-// 		pResizeDlg->SendMessage(WM_NCLBUTTONDOWN, nHitTest, MAKELPARAM(point.x, point.y));			
-// 	}
-//	CDialogEx::OnNcLButtonDown(nHitTest, point);
-//}
-
-
 void CImageDlg::OnNcLButtonUp(UINT nHitTest, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
-// 	if(m_bResizing)
-// 	{		
-// 		pResizeDlg->ShowWindow(SW_HIDE);
-// 	}
 	CDialogEx::OnNcLButtonUp(nHitTest, point);
 }
 
@@ -237,12 +211,6 @@ void CImageDlg::OnNcLButtonUp(UINT nHitTest, CPoint point)
 void CImageDlg::OnNcMouseMove(UINT nHitTest, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default	
-// 	if(m_bResizing && (nHitTest == HTTOPLEFT || nHitTest == HTTOPRIGHT || 
-// 		nHitTest == HTBOTTOMLEFT || nHitTest == HTBOTTOMRIGHT))
-// 	{
-// 		TRACE(_T("OnNcMouseMove\n"));
-// 		//pResizeDlg->PostMessage(WM_NCLBUTTONDOWN, nHitTest, MAKELPARAM(point.x, point.y));	
-// 	}
 	CDialogEx::OnNcMouseMove(nHitTest, point);
 }
 
@@ -265,11 +233,13 @@ void CImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 	// TODO: Add your message handler code here and/or call default
 
 	if(!m_bResizing)
+	{
 		SetSizeCursor(point);
+	}
 	else
 	{
 		ClientToScreen(&point);
-		pResizeDlg->MoveWindow(baseRect.left, baseRect.top, (point.y-baseRect.top)*0.5, point.y-baseRect.top);
+		pResizeDlg->ResizingDlg(point);			
 	}
 	
 	CDialogEx::OnMouseMove(nFlags, point);
@@ -280,9 +250,12 @@ void CImageDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
 	
-	if(SetSizeCursor(point) != -1)
+	if( (m_CurCursorState = SetSizeCursor(point)) != -1)
 	{
+		ClientToScreen(&point);
 		m_bResizing = TRUE;
+		pResizeDlg->InitResizingDlg(baseRect, point, m_CurCursorState);
+		pResizeDlg->ResizingDlg(point);
 		pResizeDlg->ShowWindow(SW_SHOW);
 		SetCapture();		
 	}	

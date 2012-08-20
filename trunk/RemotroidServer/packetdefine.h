@@ -11,6 +11,7 @@
 #define JPGSIZELEGNTH		10
 
 
+
 #define OP_SENDFILEINFO		1
 #define OP_SENDFILEDATA		2
 #define OP_SENDJPGINFO		3
