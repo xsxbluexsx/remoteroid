@@ -7,6 +7,8 @@
 #include "RemotroidServerDlg.h"
 #include "Splash.h"
 
+#include "ImageDlg.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -34,6 +36,8 @@ CRemotroidServerApp::CRemotroidServerApp()
 // The one and only CRemotroidServerApp object
 
 CRemotroidServerApp theApp;
+
+
 ULONG_PTR gdiplusToken;
 
 // CRemotroidServerApp initialization
@@ -81,11 +85,15 @@ BOOL CRemotroidServerApp::InitInstance()
 	memset(&wd,0, sizeof(wd));
 	WSAStartup(MAKEWORD(2,2), &wd);
 
-	CSplash splashDlg;
-	splashDlg.DoModal();
+// 	CSplash splashDlg;
+// 	splashDlg.DoModal();
 
-	CRemotroidServerDlg dlg;
+// 	CRemotroidServerDlg dlg;
+// 	m_pMainWnd = &dlg;
+
+	CImageDlg dlg;
 	m_pMainWnd = &dlg;
+
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)
 	{

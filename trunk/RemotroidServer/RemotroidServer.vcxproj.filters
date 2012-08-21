@@ -107,6 +107,9 @@
     <None Include="res\size.png">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\background.png">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RemotroidServer.h">

@@ -101,6 +101,7 @@
     <None Include="res\backbutton.bmp" />
     <None Include="res\backbutton_click.bmp" />
     <None Include="res\backbutton_over.bmp" />
+    <None Include="res\background.png" />
     <None Include="res\BACKGROUND.rgn" />
     <None Include="res\bitmap1.bmp" />
     <None Include="res\bitmap2.bmp" />

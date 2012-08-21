@@ -5,13 +5,15 @@
 // CImageDlg dialog
 #include "ResizingDlg.h"
 #include "atltypes.h"
+#include "RemotroidServerDlg.h"
 
-class CImageDlg : public CDialogEx
+
+class CImageDlg : public CDialogEx, IParentControl
 {
 	DECLARE_DYNAMIC(CImageDlg)
 
 public:
-	CImageDlg(UINT nIDTemplate, CWnd *pParent = NULL);   // standard constructor
+	CImageDlg(CWnd* pParent = NULL);   // standard constructor
 	virtual ~CImageDlg();
 
 // Dialog Data
@@ -34,41 +36,38 @@ public:
 	afx_msg void OnPaint();
 	virtual BOOL OnInitDialog();
 	
-	void OnResizeSkin(CRect * rc);
+	virtual void OnResizeSkin();
 	CBitmap m_bitmap;
 private:
 	CResizingDlg *pResizeDlg;
 protected:
-	RECT baseRect;
-public:
-	void SetResizingDlg(void);
+	CRect baseRect;
+
 	
 protected:
-	BITMAP m_bmp;
+	
 	void SetDlgPosition(void);
 
-public:
-	afx_msg LRESULT OnNcHitTest(CPoint point);
-	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
-//	afx_msg void OnNcLButtonDown(UINT nHitTest, CPoint point);
-	afx_msg void OnNcLButtonUp(UINT nHitTest, CPoint point);
 private:
 	BOOL m_bResizing;
-public:
-	afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+
 private:
 	int m_nHitTest;
-
-
-
-public:
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 private:
 	int SetSizeCursor(CPoint point);
 public:
 	CRect m_oldRect;
 private:
 	int m_CurCursorState;
+public:
+	Bitmap *m_pBkgBitmap;
+	Bitmap * PngFromResource(const LPTSTR pName, const LPTSTR pType);
+	HBITMAP Create32BitBitmap(CDC * pDC, int cx, int cy);	
+	
+private:
+	CRemotroidServerDlg *m_pControlDlg;
+public:
+	BOOL InitControlDlg(void);
+	virtual void MoveBkgDlg(CRect rect);
+	afx_msg void OnDestroy();
 };

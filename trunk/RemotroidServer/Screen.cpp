@@ -276,6 +276,8 @@ void CScreen::OnPaint()
 
 	dc.SelectObject(pOldFont);
 	
+	//m_bkgImg.ReleaseDC();
+	ReleaseDC(pDC);
 	m_bkgImg.ReleaseDC();
 	
 	m_bkgImg.BitBlt(dc.m_hDC, 0, 0);	

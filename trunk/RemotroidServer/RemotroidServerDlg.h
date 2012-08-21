@@ -7,7 +7,7 @@
 #include "MyClient.h"
 #include "FileSender.h"
 #include "screen.h"
-#include "ImageDlg.h"
+
 #include "afxwin.h"
 #include "recvfile.h"
 #include "MyBitmapBtn.h"
@@ -19,11 +19,16 @@
 #include "TrayIcon.h"
 #include "AniStatic.h"
 #include "atltypes.h"
+#include "ResizingDlg.h"
 
-
+interface IParentControl
+{
+	virtual ~IParentControl(){};
+	virtual void MoveBkgDlg(CRect rect) = 0;
+};
 
 // CRemotroidServerDlg dialog
-class CRemotroidServerDlg : public CImageDlg
+class CRemotroidServerDlg : public CDialogEx
 {
 // Construction
 public:
@@ -127,21 +132,37 @@ public:
 	afx_msg void OnClose();
 private:
 	BOOL isTray;
+	CResizingDlg *pResizeDlg;
+	int m_CurCursorState;
+	
 
 public:
 	CString m_strMyIp;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
-	afx_msg LRESULT OnNcHitTest(CPoint point);
 	
 
 	CRect mainDlgRect;
 	
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-//	afx_msg void OnNcLButtonDown(UINT nHitTest, CPoint point);
-	afx_msg void OnNcLButtonUp(UINT nHitTest, CPoint point);
-	afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
+
 	afx_msg void OnMove(int x, int y);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	
+	BOOL m_bResizing;
+public:
+	void SetResizingDlg(void);
+	int SetSizeCursor(CPoint point);
+private:
+	
+public:
+	void SetBkgDlg(IParentControl * pBkgDlg);
+private:
+	IParentControl *m_pBkgDlg;
+	virtual void PostNcDestroy();
+public:
+	afx_msg void OnMoving(UINT fwSide, LPRECT pRect);
+private:
+	BOOL m_bInit;
 };
