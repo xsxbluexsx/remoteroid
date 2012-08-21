@@ -10,13 +10,13 @@
 
 // CScreen
 #define WIDTH	360
-#define HEIGHT	600
+#define HEIGHT	599
 
 #define WIDTH_LENGTH	4
 #define HEIGHT_LENGTH	4
 
-#define LEFT	42
-#define TOP		104
+#define LEFT	32
+#define TOP		92
 #define RIGHT	LEFT+WIDTH
 #define BOTTOM	TOP+HEIGHT
 
