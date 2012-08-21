@@ -6,6 +6,8 @@
 #include "ResizingDlg.h"
 #include "afxdialogex.h"
 
+#include "RemotroidServerDlg.h"
+
 
 // CResizingDlg dialog
 
@@ -43,8 +45,8 @@ BOOL CResizingDlg::OnInitDialog()
 	// TODO:  Add extra initialization here
 
 
-	COLORREF cr = GetSysColor(COLOR_BTNFACE);
-	SetLayeredWindowAttributes(cr, 0, LWA_COLORKEY);
+	COLORREF cr = GetSysColor(COLOR_BTNFACE);	
+	SetLayeredWindowAttributes(cr, 60, LWA_ALPHA);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -125,7 +127,7 @@ void CResizingDlg::ResizingDlg(CPoint point)
 	case HTBOTTOMLEFT:
 		height = point.y - baseRect.top + yDiff;
 
-		if(height > MAXHEIGHT || height < MINHEIGHT)
+		if(height > MAXHEIGHT || height < MINHEIGHT) 
 			return;
 		
 		width = (int)((float)height*GAROSERORATIO);
@@ -163,8 +165,16 @@ void CResizingDlg::InitResizingDlg(RECT rect, CPoint point, int CursorState)
 		yDiff = baseRect.bottom - point.y;
 		break;
 	case HTBOTTOMRIGHT:
-		xDiff = baseRect.right - point.y;
+		xDiff = baseRect.right - point.x;
 		yDiff = baseRect.bottom - point.y;
 		break;
 	}	
+}
+
+
+void CResizingDlg::PostNcDestroy()
+{
+	// TODO: Add your specialized code here and/or call the base class
+	delete this;
+	CDialogEx::PostNcDestroy();
 }

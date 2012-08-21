@@ -7,26 +7,25 @@
 #include "afxdialogex.h"
 
 
+
 // CImageDlg dialog
 
 IMPLEMENT_DYNAMIC(CImageDlg, CDialogEx)
 
-CImageDlg::CImageDlg(UINT nIDTemplate, CWnd *pParent)
-	: CDialogEx(nIDTemplate, pParent), pStream(NULL)
+CImageDlg::CImageDlg(CWnd* pParent /*=NULL*/)
+	: CDialogEx(CImageDlg::IDD, pParent), pStream(NULL)
 	, pResizeDlg(NULL)
 	, m_bResizing(FALSE)
 	, m_nHitTest(0)
 	, m_CurCursorState(0)
+	, m_pBkgBitmap(NULL)	
 {
 
 }
 
 CImageDlg::~CImageDlg()
 {
-	if(pStream != NULL)
-	{
-		pStream->Release();
-	}
+	
 }
 
 void CImageDlg::DoDataExchange(CDataExchange* pDX)
@@ -36,16 +35,11 @@ void CImageDlg::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CImageDlg, CDialogEx)
-	ON_WM_PAINT()	
-	
-	ON_WM_NCHITTEST()
+	ON_WM_PAINT()		
 	ON_WM_SETCURSOR()
-//	ON_WM_NCLBUTTONDOWN()
-	ON_WM_NCLBUTTONUP()
-	ON_WM_NCMOUSEMOVE()
-	ON_WM_LBUTTONUP()
-	ON_WM_MOUSEMOVE()
-	ON_WM_LBUTTONDOWN()
+
+	
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -53,13 +47,12 @@ END_MESSAGE_MAP()
 
 
 void CImageDlg::OnPaint()
-{
+{	
 	CPaintDC dc(this); // device context for painting
 	// TODO: Add your message handler code here
 	// Do not call CDialogEx::OnPaint() for painting messages
-	CRect rc;
-	GetClientRect(&rc);
-	OnResizeSkin(&rc);
+
+	
 }
 
 
@@ -70,10 +63,23 @@ BOOL CImageDlg::OnInitDialog()
 	// TODO:  Add extra initialization here
 	///////////////////////////////
 
-	m_bitmap.LoadBitmap(IDB_BITMAP1);
-	m_bitmap.GetBitmap(&m_bmp);
+// 	m_bitmap.LoadBitmap(IDB_BITMAP1);
+// 	m_bitmap.GetBitmap(&m_bmp);
 
+	m_pBkgBitmap = PngFromResource(MAKEINTRESOURCE(IDB_PNG_BKG), _T("PNG"));
+	
+	
+	CDC *pDC = GetDC();
+	m_bitmap.Attach(Create32BitBitmap(pDC, m_pBkgBitmap->GetWidth(), m_pBkgBitmap->GetHeight()));	
+	ReleaseDC(pDC);
 
+	SetDlgPosition();
+	
+	OnResizeSkin();
+	
+
+	if(InitControlDlg() == FALSE)
+		EndDialog(IDCANCEL);
 	/*
 	hResource = FindResource(AfxGetApp()->m_hInstance,
 		MAKEINTRESOURCEW(IDB_RESIZE), _T("PNG"));
@@ -121,34 +127,76 @@ BOOL CImageDlg::OnInitDialog()
 	///////////////////////////////			
 	
 	
+	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 
 
-void CImageDlg::OnResizeSkin(CRect * rc)
+void CImageDlg::OnResizeSkin()
 {
+	/*
 	CDC *pDC = GetDC();
 	CDC MemDC;
 	MemDC.CreateCompatibleDC(pDC);	
 	
 	CBitmap * old = MemDC.SelectObject(&m_bitmap);
+
 	
+	pDC->SetStretchBltMode(HALFTONE);
+
 	pDC->StretchBlt(0,0,rc->Width(), rc->Height(), &MemDC, 0,0,
-		m_bmp.bmWidth, m_bmp.bmHeight, SRCCOPY);
-	MemDC.SelectObject(old);
-}
+  		m_bmp.bmWidth, m_bmp.bmHeight, SRCCOPY);
+	*/
 
-
-void CImageDlg::SetResizingDlg(void)
-{
-	pResizeDlg = new CResizingDlg;
-	pResizeDlg->Create(IDD_RESIZING, this);	
+// 	BLENDFUNCTION blendfunction= { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
+// 	UpdateLayeredWindow(pDC, &ptDst, &sz, &MemDC, &ptSrc, RGB(244,244,244), &blendfunction, ULW_ALPHA);
 	
-	GetWindowRect(&baseRect);
-	pResizeDlg->MoveWindow(&baseRect);
-	pResizeDlg->ShowWindow(SW_HIDE);
+//  	pDC->StretchBlt(0,0,rc->Width(), rc->Height(), &MemDC, 0,0,
+//  		m_bmp.bmWidth, m_bmp.bmHeight, SRCCOPY);
+	
+	//MemDC.SelectObject(old);
+
+	
+	CDC *pDC = GetDC();
+	CDC MemDC;
+	MemDC.CreateCompatibleDC(pDC);
+	CBitmap *pOldBitmap = MemDC.SelectObject(&m_bitmap);
+	Graphics gp(MemDC.GetSafeHdc());
+
+ 	gp.Clear( Color(0,0,0,0) );
+ 	gp.SetInterpolationMode( InterpolationModeHighQuality );
+
+	baseRect.DeflateRect(2,2,2,2);		
+	gp.DrawImage(m_pBkgBitmap, 0, 0, baseRect.Width(), baseRect.Height());
+
+	
+
+	POINT ptDst = {0};
+		
+	SIZE sz = {baseRect.Width(), baseRect.Height()};
+
+	POINT ptSrc = {0};
+	
+	HDC srcHDC = gp.GetHDC();
+
+	CDC *pSrcDC = CDC::FromHandle(srcHDC);
+		
+ 	BLENDFUNCTION blendfunction= { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA }; 				
+	
+//	BOOL tr = UpdateLayeredWindow(&dc, ((LPPOINT)&rec), &sz, pSrcDC, &ptSrc, 0, &blendfunction, ULW_ALPHA);
+
+	BOOL tr = ::UpdateLayeredWindow(GetSafeHwnd(), pDC->m_hDC, ((LPPOINT)&baseRect), &sz, srcHDC, &ptSrc, 0, &blendfunction, ULW_ALPHA);	
+
+	
+// 	dc.StretchBlt(0,0,rc->Width(), rc->Height(), &MemDC, 0,0,
+//   		m_bmp.bmWidth, m_bmp.bmHeight, SRCCOPY);
+
+	gp.ReleaseHDC(srcHDC);
+	MemDC.SelectObject(pOldBitmap);
+	DeleteDC(MemDC);	
+	ReleaseDC(pDC);
 }
 
 
@@ -159,133 +207,101 @@ void CImageDlg::SetDlgPosition(void)
 	CRect desktopRect;
 	pDesktopWnd->GetWindowRect(&desktopRect);
 	
-	int top = (desktopRect.Height()/2) - (m_bmp.bmHeight/2);
-	int left = (desktopRect.Width()/2) - (m_bmp.bmWidth/2);
-	MoveWindow(left, top, m_bmp.bmWidth, m_bmp.bmHeight);
-}
+	int top = (desktopRect.Height()/2) - (m_pBkgBitmap->GetHeight()/2);
+	int left = (desktopRect.Width()/2) - (m_pBkgBitmap->GetWidth()/2);
+	MoveWindow(left, top, m_pBkgBitmap->GetWidth(), m_pBkgBitmap->GetHeight());
 
-
-
-LRESULT CImageDlg::OnNcHitTest(CPoint point)
-{
-	// TODO: Add your message handler code here and/or call default
-
-	return CDialogEx::OnNcHitTest(point);
-}
-
-
-BOOL CImageDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
-{
-	// TODO: Add your message handler code here and/or call default
-	if(nHitTest == HTTOPLEFT || nHitTest == HTTOPRIGHT || 
-		nHitTest == HTBOTTOMLEFT || nHitTest == HTBOTTOMRIGHT)
-	{
-		switch (nHitTest)
-		{
-		case HTTOPLEFT:
-			SetCursor(LoadCursor(NULL, IDC_SIZENWSE));
-			break;
-		case HTTOPRIGHT:
-			SetCursor(LoadCursor(NULL, IDC_SIZENESW));
-			break;
-		case HTBOTTOMLEFT:
-			SetCursor(LoadCursor(NULL, IDC_SIZENESW));
-			break;
-		case HTBOTTOMRIGHT:
-			SetCursor(LoadCursor(NULL, IDC_SIZENWSE));
-			break;
-		}
-		
-		return TRUE;
-	}
-	return CDialogEx::OnSetCursor(pWnd, nHitTest, message);
-}
-
-void CImageDlg::OnNcLButtonUp(UINT nHitTest, CPoint point)
-{
-	// TODO: Add your message handler code here and/or call default
-	CDialogEx::OnNcLButtonUp(nHitTest, point);
-}
-
-
-void CImageDlg::OnNcMouseMove(UINT nHitTest, CPoint point)
-{
-	// TODO: Add your message handler code here and/or call default	
-	CDialogEx::OnNcMouseMove(nHitTest, point);
-}
-
-
-void CImageDlg::OnLButtonUp(UINT nFlags, CPoint point)
-{
-	// TODO: Add your message handler code here and/or call default
-	if(m_bResizing)
-	{
-		m_bResizing = FALSE;
-		pResizeDlg->ShowWindow(SW_HIDE);
-		ReleaseCapture();
-	}
-	CDialogEx::OnLButtonUp(nFlags, point);
-}
-
-
-void CImageDlg::OnMouseMove(UINT nFlags, CPoint point)
-{
-	// TODO: Add your message handler code here and/or call default
-
-	if(!m_bResizing)
-	{
-		SetSizeCursor(point);
-	}
-	else
-	{
-		ClientToScreen(&point);
-		pResizeDlg->ResizingDlg(point);			
-	}
 	
-	CDialogEx::OnMouseMove(nFlags, point);
+	GetWindowRect(&baseRect);
 }
 
 
-void CImageDlg::OnLButtonDown(UINT nFlags, CPoint point)
+
+
+Bitmap * CImageDlg::PngFromResource(const LPTSTR pName, const LPTSTR pType)
 {
-	// TODO: Add your message handler code here and/or call default
-	
-	if( (m_CurCursorState = SetSizeCursor(point)) != -1)
-	{
-		ClientToScreen(&point);
-		m_bResizing = TRUE;
-		pResizeDlg->InitResizingDlg(baseRect, point, m_CurCursorState);
-		pResizeDlg->ResizingDlg(point);
-		pResizeDlg->ShowWindow(SW_SHOW);
-		SetCapture();		
-	}	
+	Bitmap * bitmap = NULL;
+	HRSRC hResource = FindResource(AfxGetApp()->m_hInstance, pName, pType);
+	if (!hResource)	return NULL;
 
-	CDialogEx::OnLButtonDown(nFlags, point);
+	DWORD imageSize = SizeofResource(AfxGetApp()->m_hInstance, hResource);
+	if(!imageSize) return NULL;
+
+	const void * pResourceData = LockResource(LoadResource(AfxGetApp()->m_hInstance, hResource));
+	
+	HGLOBAL hBuffer = GlobalAlloc(GMEM_MOVEABLE, imageSize);
+	if(hBuffer)
+	{
+		void *pBuffer = GlobalLock(hBuffer);
+		if(pBuffer)
+		{
+			CopyMemory(pBuffer, pResourceData, imageSize);
+
+			IStream *pStream = NULL;
+			if(CreateStreamOnHGlobal(hBuffer, FALSE, &pStream) == S_OK)
+			{
+				bitmap = Bitmap::FromStream(pStream);
+				pStream->Release();
+				if(bitmap)
+				{
+					if(bitmap->GetLastStatus() != Ok)
+					{
+						delete bitmap;
+						bitmap = NULL;
+					}
+				}
+			}
+			GlobalUnlock(hBuffer);
+		}
+		GlobalFree(hBuffer);
+	}
+	return bitmap;
 }
 
 
-//마우스 위치가 모서리인지를 파악하고 커서 모양을 바꾼다
-int CImageDlg::SetSizeCursor(CPoint point)
-{	
-	ClientToScreen(&point);
-	int result;
-	if( (result = CResizingDlg::SearchSide(baseRect, point)) != -1)
+HBITMAP CImageDlg::Create32BitBitmap(CDC * pDC, int cx, int cy)
+{
+	BITMAPINFO bi = { 0 };
+	bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bi.bmiHeader.biWidth = cx;
+	bi.bmiHeader.biHeight = cy;
+	bi.bmiHeader.biPlanes = 1;
+	bi.bmiHeader.biBitCount = 32;
+	bi.bmiHeader.biCompression = BI_RGB;
+	bi.bmiHeader.biSizeImage = 0;
+	bi.bmiHeader.biXPelsPerMeter = 0;
+	bi.bmiHeader.biYPelsPerMeter = 0;
+	bi.bmiHeader.biClrUsed = 0;
+	bi.bmiHeader.biClrImportant = 0;
+	return CreateDIBSection(pDC->m_hDC, &bi, DIB_RGB_COLORS, NULL, NULL, 0);
+}
+
+
+BOOL CImageDlg::InitControlDlg(void)
+{
+ 	m_pControlDlg = new CRemotroidServerDlg;
+ 	BOOL rt = m_pControlDlg->Create(IDD_REMOTROIDSERVER_DIALOG, this);	
+	if(rt == FALSE)
 	{
-		switch (result)
-		{
-		case HTTOPLEFT:
-			SetCursor(LoadCursor(NULL, IDC_SIZENWSE));
-			break;
-		case HTTOPRIGHT:
-			SetCursor(LoadCursor(NULL, IDC_SIZENESW));
-			break;
-		case HTBOTTOMLEFT:
-			SetCursor(LoadCursor(NULL, IDC_SIZENESW));
-			break;
-		case HTBOTTOMRIGHT:
-			SetCursor(LoadCursor(NULL, IDC_SIZENWSE));
-			break;
-		}
+		return FALSE;
 	}
-	return result;
+	m_pControlDlg->MoveWindow(baseRect);
+	m_pControlDlg->SetResizingDlg();
+	m_pControlDlg->SetBkgDlg(this);
+	return TRUE;
+}
+
+
+void CImageDlg::MoveBkgDlg(CRect rect)
+{
+	baseRect = rect;
+	OnResizeSkin();
+}
+
+
+void CImageDlg::OnDestroy()
+{
+	__super::OnDestroy();
+	m_bitmap.DeleteObject();
+	// TODO: Add your message handler code here
 }

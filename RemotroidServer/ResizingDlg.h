@@ -3,7 +3,7 @@
 
 // CResizingDlg dialog
 
-#define SIDE					30
+#define SIDE					70
 #define GAROSERORATIO			0.55
 #define MAXHEIGHT				781
 #define MINHEIGHT				500
@@ -41,4 +41,5 @@ public:
 	void InitResizingDlg(RECT rect, CPoint point, int CursorState);
 
 
+	virtual void PostNcDestroy();
 };
