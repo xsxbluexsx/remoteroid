@@ -175,39 +175,9 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	//screen.SetFocus();	
 	screen.SetLayeredWindowAttributes(0, 255, LWA_ALPHA);
 
-	m_progressCtrl.MoveWindow(LEFT, TOP-10, WIDTH, 10);
-	m_progressCtrl.ShowWindow(SW_HIDE);
-	m_progressCtrl.SetBarBkColor(RGB(56,58,60));
-	m_progressCtrl.SetBarColor(RGB(7,215,7));
-	m_progressCtrl.SetTextColor(RGB(255,255,255));	
-	m_progressCtrl.SetRange(0, 100);
 
-	recvFileClass.SetProgressBar(&m_progressCtrl);
-	fileSender.SetProgressBar(&m_progressCtrl);
-
-	//하단 버튼 위치 설정
-	
-
-	
-	m_MenuButton.MoveWindow(60, 710, BUTTONWIDTH, BUTTONHEIGHT);
-	m_HomeButton.MoveWindow(60+BUTTONWIDTH, 710, BUTTONWIDTH, BUTTONHEIGHT);
-	m_BackButton.MoveWindow(60+BUTTONWIDTH*2, 710, BUTTONWIDTH, BUTTONHEIGHT);
-
-	m_TrayButton.MoveWindow(350, 30, 19, 16);
-	m_CloseButton.MoveWindow(350+19, 30, 19, 16);
-	
-	m_CloseButton.LoadBitmaps(IDB_BITMAP_CLOSE_MAIN);
-	m_CloseButton.SetHoverBitmapID(IDB_BITMAP_HOVER_MAIN);
-	m_TrayButton.LoadBitmaps(IDB_BITMAP_TRAYBTN);
-	m_TrayButton.SetHoverBitmapID(IDB_BITMAP_TRAY_HOVER);
-
-
-	m_HomeButton.LoadBitmaps(IDB_BITMAP_HOME, IDB_BITMAP_HOME_CLICK);
-	m_HomeButton.SetHoverBitmapID(IDB_BITMAP_HOME_OVER);
-	m_BackButton.LoadBitmaps(IDB_BITMAP_BACK,IDB_BITMAP_BACK_CLICK);
-	m_BackButton.SetHoverBitmapID(IDB_BITMAP_BACK_OVER);
-	m_MenuButton.LoadBitmaps(IDB_BITMAP_MENU, IDB_BITMAP_MENU_CLICK);
-	m_MenuButton.SetHoverBitmapID(IDB_BITMAP_MENU_OVER);
+	//버튼 위치 세팅
+	SetControlPos();
 
 /*
 	m_UDPServerSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -1109,17 +1079,13 @@ int CRemotroidServerDlg::SetSizeCursor(CPoint point)
 		switch (result)
 		{
 		case HTTOPLEFT:
-			SetCursor(LoadCursor(NULL, IDC_SIZENWSE));
-			break;
-		case HTTOPRIGHT:
-			SetCursor(LoadCursor(NULL, IDC_SIZENESW));
-			break;
-		case HTBOTTOMLEFT:
-			SetCursor(LoadCursor(NULL, IDC_SIZENESW));
-			break;
 		case HTBOTTOMRIGHT:
 			SetCursor(LoadCursor(NULL, IDC_SIZENWSE));
 			break;
+		case HTTOPRIGHT:			
+		case HTBOTTOMLEFT:
+			SetCursor(LoadCursor(NULL, IDC_SIZENESW));
+			break;		
 		}
 	}
 	return result;
@@ -1139,3 +1105,42 @@ void CRemotroidServerDlg::PostNcDestroy()
 	CDialogEx::PostNcDestroy();
 }
 
+
+void CRemotroidServerDlg::SetControlPos(void)
+{
+	m_progressCtrl.MoveWindow(LEFT, TOP-10, WIDTH, 10);
+	m_progressCtrl.ShowWindow(SW_HIDE);
+	m_progressCtrl.SetBarBkColor(RGB(56,58,60));
+	m_progressCtrl.SetBarColor(RGB(7,215,7));
+	m_progressCtrl.SetTextColor(RGB(255,255,255));	
+	m_progressCtrl.SetRange(0, 100);
+
+	recvFileClass.SetProgressBar(&m_progressCtrl);
+	fileSender.SetProgressBar(&m_progressCtrl);
+
+	//하단 버튼 위치 설정
+	
+
+	
+	m_MenuButton.MoveWindow(LEFT+20, BOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT);
+	m_HomeButton.MoveWindow(LEFT+20+BUTTONWIDTH, BOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT);
+	m_BackButton.MoveWindow(LEFT+20+BUTTONWIDTH*2, BOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT);
+
+	m_TrayButton.MoveWindow(RIGHT-41, TOP-50, 19, 16);
+	m_CloseButton.MoveWindow(RIGHT-41+19, TOP-50, 19, 16);
+	
+	m_CloseButton.LoadBitmaps(IDB_BITMAP_CLOSE_MAIN);
+	m_CloseButton.SetHoverBitmapID(IDB_BITMAP_HOVER_MAIN);
+	m_TrayButton.LoadBitmaps(IDB_BITMAP_TRAYBTN);
+	m_TrayButton.SetHoverBitmapID(IDB_BITMAP_TRAY_HOVER);
+
+
+	m_HomeButton.LoadBitmaps(IDB_BITMAP_HOME, IDB_BITMAP_HOME_CLICK);
+	m_HomeButton.SetHoverBitmapID(IDB_BITMAP_HOME_OVER);
+	m_BackButton.LoadBitmaps(IDB_BITMAP_BACK,IDB_BITMAP_BACK_CLICK);
+	m_BackButton.SetHoverBitmapID(IDB_BITMAP_BACK_OVER);
+	m_MenuButton.LoadBitmaps(IDB_BITMAP_MENU, IDB_BITMAP_MENU_CLICK);
+	m_MenuButton.SetHoverBitmapID(IDB_BITMAP_MENU_OVER);
+
+
+}

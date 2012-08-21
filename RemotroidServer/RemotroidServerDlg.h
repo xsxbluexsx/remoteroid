@@ -21,6 +21,9 @@
 #include "atltypes.h"
 #include "ResizingDlg.h"
 
+#define DLGHEIGHT	799
+#define DLGWIDTH	425
+
 interface IParentControl
 {
 	virtual ~IParentControl(){};
@@ -165,4 +168,6 @@ public:
 	afx_msg void OnMoving(UINT fwSide, LPRECT pRect);
 private:
 	BOOL m_bInit;
+public:
+	void SetControlPos(void);
 };

@@ -168,7 +168,7 @@ void CImageDlg::OnResizeSkin()
  	gp.Clear( Color(0,0,0,0) );
  	gp.SetInterpolationMode( InterpolationModeHighQuality );
 
-	baseRect.DeflateRect(2,2,2,2);		
+	baseRect.DeflateRect(1,1,1,1);		
 	gp.DrawImage(m_pBkgBitmap, 0, 0, baseRect.Width(), baseRect.Height());
 
 	
