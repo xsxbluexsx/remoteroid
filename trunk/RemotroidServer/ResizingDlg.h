@@ -4,7 +4,7 @@
 // CResizingDlg dialog
 
 #define SIDE					70
-#define GAROSERORATIO			0.55
+#define GAROSERORATIO			0.545
 #define MAXHEIGHT				781
 #define MINHEIGHT				500
 

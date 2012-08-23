@@ -20,14 +20,33 @@
 #include "AniStatic.h"
 #include "atltypes.h"
 #include "ResizingDlg.h"
+#include "ResizeControlMgr.h"
 
-#define DLGHEIGHT	799
-#define DLGWIDTH	425
+
+
+#define DLGHEIGHT		781
+#define DLGWIDTH		427
+	
+#define SCREENWIDTH		358
+#define SCREENHEIGHT	598
+
+#define WIDTH_LENGTH	4
+#define HEIGHT_LENGTH	4
+
+#define SCREENLEFT		34
+#define SCREENTOP		93
+#define SCREENRIGHT		LEFT+WIDTH
+#define SCREENBOTTOM	TOP+HEIGHT
+
+#define BUTTONWIDTH		107
+#define BUTTONHEIGHT	60
+
 
 interface IParentControl
 {
 	virtual ~IParentControl(){};
 	virtual void MoveBkgDlg(CRect rect) = 0;
+	virtual void TurnGaroSero(int garosero)=0;
 };
 
 // CRemotroidServerDlg dialog
@@ -168,6 +187,8 @@ public:
 	afx_msg void OnMoving(UINT fwSide, LPRECT pRect);
 private:
 	BOOL m_bInit;
+	CResizeControlMgr m_ResizeContolMgr;
 public:
 	void SetControlPos(void);
+	int m_GaroSeroState;
 };

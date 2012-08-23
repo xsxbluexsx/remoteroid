@@ -69,6 +69,7 @@ void CMyBitmapBtn::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 	pBitmap->GetBitmap(&bm);
 // 	CRect rt;
 // 	GetClientRect(&rt);
+	pDC->SetStretchBltMode(HALFTONE);
 	pDC->StretchBlt(0,0,rect.Width(), rect.Height(), &memDC, 0, 0, bm.bmWidth, bm.bmHeight,SRCCOPY);
 // 	pDC->BitBlt(rect.left, rect.top, rect.Width(), rect.Height(),
 // 		&memDC, 0, 0, SRCCOPY);
