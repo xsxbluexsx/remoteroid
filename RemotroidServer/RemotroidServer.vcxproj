@@ -103,6 +103,7 @@
     <None Include="res\backbutton_over.bmp" />
     <None Include="res\background.png" />
     <None Include="res\BACKGROUND.rgn" />
+    <None Include="res\background_garo.png" />
     <None Include="res\bitmap1.bmp" />
     <None Include="res\bitmap2.bmp" />
     <None Include="res\byYeongHo_00.bmp" />
@@ -146,6 +147,8 @@
     <ClInclude Include="RecvFile.h" />
     <ClInclude Include="RemotroidServer.h" />
     <ClInclude Include="RemotroidServerDlg.h" />
+    <ClInclude Include="ResizeControlMgr.h" />
+    <ClInclude Include="ResizingControl.h" />
     <ClInclude Include="ResizingDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Screen.h" />
@@ -170,6 +173,8 @@
     <ClCompile Include="RecvFile.cpp" />
     <ClCompile Include="RemotroidServer.cpp" />
     <ClCompile Include="RemotroidServerDlg.cpp" />
+    <ClCompile Include="ResizeControlMgr.cpp" />
+    <ClCompile Include="ResizingControl.cpp" />
     <ClCompile Include="ResizingDlg.cpp" />
     <ClCompile Include="Screen.cpp" />
     <ClCompile Include="Splash.cpp" />

@@ -59,6 +59,7 @@ CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
 	, m_bResizing(FALSE)	
 	, m_pBkgDlg(NULL)
 	, m_bInit(FALSE)
+	, m_GaroSeroState(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	
@@ -166,17 +167,14 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 // 	ModifyStyleEx(0, dwExStyle );
 	
  	//COLORREF cr = GetSysColor(COLOR_BTNFACE);
+
+
+	//컨트롤을 제외한 다이얼로그 배경 투명하게
 	SetBackgroundColor(RGB(1,50,100));
  	SetLayeredWindowAttributes(RGB(1,50,100),0, LWA_COLORKEY);		
 
 	
-	screen.CreateEx(WS_EX_TOPMOST
-		, _T("STATIC"), NULL, WS_CHILD|WS_VISIBLE|SS_NOTIFY, CRect(LEFT, TOP, RIGHT, BOTTOM), this, 1234);
-	//screen.SetFocus();	
-	screen.SetLayeredWindowAttributes(0, 255, LWA_ALPHA);
-
-
-	//버튼 위치 세팅
+	//버튼 및 스크린 위치 세팅
 	SetControlPos();
 
 /*
@@ -817,7 +815,7 @@ void CRemotroidServerDlg::OnClickedBtnBack()
 	// TODO: Add your control notification handler code here
 	SetFocus();
 	
-
+	m_progressCtrl.SetGaroSero(GARO);
 
 	if(m_pClient == NULL)
 		return;
@@ -842,7 +840,7 @@ void CRemotroidServerDlg::OnClickedBtnHome()
 void CRemotroidServerDlg::OnClickedBtnMenu()
 {
 	// TODO: Add your control notification handler code here
-	SetFocus();
+	SetFocus();	
 
 	if(m_pClient == NULL)
 		return;
@@ -984,6 +982,11 @@ void CRemotroidServerDlg::OnSize(UINT nType, int cx, int cy)
 	if(m_bInit == FALSE)
 		return;
 	
+	
+			
+	m_ResizeContolMgr.ResizingControl(cx, cy);
+
+	
 	GetWindowRect(&mainDlgRect);
  	m_pBkgDlg->MoveBkgDlg(mainDlgRect);
 	
@@ -1013,7 +1016,8 @@ void CRemotroidServerDlg::OnMoving(UINT fwSide, LPRECT pRect)
 void CRemotroidServerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
-
+	
+	
 	//모서리를 마우스가 클릭 했을경우 크기 변경 테두리 다이럴로그 초기화
 	if( (m_CurCursorState = SetSizeCursor(point)) != -1)
 	{
@@ -1108,7 +1112,12 @@ void CRemotroidServerDlg::PostNcDestroy()
 
 void CRemotroidServerDlg::SetControlPos(void)
 {
-	m_progressCtrl.MoveWindow(LEFT, TOP-10, WIDTH, 10);
+	screen.CreateEx(WS_EX_TOPMOST
+		, _T("STATIC"), NULL, WS_CHILD|WS_VISIBLE|SS_NOTIFY, CRect(LEFT, TOP, RIGHT, BOTTOM), this, 1234);	
+	screen.SetLayeredWindowAttributes(0, 255, LWA_ALPHA);
+
+	
+	
 	m_progressCtrl.ShowWindow(SW_HIDE);
 	m_progressCtrl.SetBarBkColor(RGB(56,58,60));
 	m_progressCtrl.SetBarColor(RGB(7,215,7));
@@ -1118,16 +1127,8 @@ void CRemotroidServerDlg::SetControlPos(void)
 	recvFileClass.SetProgressBar(&m_progressCtrl);
 	fileSender.SetProgressBar(&m_progressCtrl);
 
-	//하단 버튼 위치 설정
 	
-
 	
-	m_MenuButton.MoveWindow(LEFT+20, BOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT);
-	m_HomeButton.MoveWindow(LEFT+20+BUTTONWIDTH, BOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT);
-	m_BackButton.MoveWindow(LEFT+20+BUTTONWIDTH*2, BOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT);
-
-	m_TrayButton.MoveWindow(RIGHT-41, TOP-50, 19, 16);
-	m_CloseButton.MoveWindow(RIGHT-41+19, TOP-50, 19, 16);
 	
 	m_CloseButton.LoadBitmaps(IDB_BITMAP_CLOSE_MAIN);
 	m_CloseButton.SetHoverBitmapID(IDB_BITMAP_HOVER_MAIN);
@@ -1143,4 +1144,22 @@ void CRemotroidServerDlg::SetControlPos(void)
 	m_MenuButton.SetHoverBitmapID(IDB_BITMAP_MENU_OVER);
 
 
+
+	//다이얼로그 크기 조정시 비율 계산및 컨트롤 메니저에 등록
+	screen.InitRatio(screen.m_hWnd, LEFT, TOP, WIDTH, HEIGHT, DLGWIDTH, DLGHEIGHT);
+	m_progressCtrl.InitRatio(m_progressCtrl.m_hWnd, SCREENLEFT, SCREENTOP-10, SCREENWIDTH, 10, DLGWIDTH, DLGHEIGHT);
+	m_MenuButton.InitRatio(m_MenuButton.m_hWnd, SCREENLEFT+20, SCREENBOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT,DLGWIDTH, DLGHEIGHT);
+	m_HomeButton.InitRatio(m_HomeButton.m_hWnd, SCREENLEFT+20+BUTTONWIDTH, SCREENBOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT,DLGWIDTH, DLGHEIGHT);
+	m_BackButton.InitRatio(m_BackButton.m_hWnd, SCREENLEFT+20+BUTTONWIDTH*2, SCREENBOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT,DLGWIDTH, DLGHEIGHT);
+	m_TrayButton.InitRatio(m_TrayButton.m_hWnd, SCREENRIGHT-41, SCREENTOP-50, 19, 16,DLGWIDTH, DLGHEIGHT);
+	m_CloseButton.InitRatio(m_CloseButton.m_hWnd, SCREENRIGHT-41+19, SCREENTOP-50, 19, 16,DLGWIDTH, DLGHEIGHT);
+
+	m_ResizeContolMgr.InsertControl(&m_progressCtrl);
+	m_ResizeContolMgr.InsertControl(&m_MenuButton);
+	m_ResizeContolMgr.InsertControl(&m_HomeButton);
+	m_ResizeContolMgr.InsertControl(&m_BackButton);
+	m_ResizeContolMgr.InsertControl(&m_TrayButton);
+	m_ResizeContolMgr.InsertControl(&m_CloseButton);
+	m_ResizeContolMgr.InsertControl(&screen);
+		
 }

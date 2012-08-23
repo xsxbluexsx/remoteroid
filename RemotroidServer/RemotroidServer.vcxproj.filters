@@ -110,6 +110,9 @@
     <None Include="res\background.png">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\background_garo.png">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RemotroidServer.h">
@@ -187,6 +190,12 @@
     <ClInclude Include="ResizingDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ResizingControl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResizeControlMgr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RemotroidServer.cpp">
@@ -247,6 +256,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ResizingDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResizingControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResizeControlMgr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

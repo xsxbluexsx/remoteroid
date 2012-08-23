@@ -203,7 +203,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 // CTextProgressCtrl class
 
-class CTextProgressCtrl : public CProgressCtrl
+#include "ResizingControl.h"
+
+class CTextProgressCtrl : public CProgressCtrl, public CResizingControl
 {
 	// Constructor / Destructor
 	public:
@@ -294,6 +296,7 @@ public:
 	
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	virtual void PreSubclassWindow();
+	void SetGaroSero(int garosero);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

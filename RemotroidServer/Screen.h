@@ -6,6 +6,7 @@
 #include "atlimage.h"
 #include "afxwin.h"
 
+#include "ResizingControl.h"
 
 
 // CScreen
@@ -15,14 +16,14 @@
 #define WIDTH_LENGTH	4
 #define HEIGHT_LENGTH	4
 
-#define LEFT	32
+#define LEFT	34
 #define TOP		92
 #define RIGHT	LEFT+WIDTH
 #define BOTTOM	TOP+HEIGHT
 
 #define COORDINATE_TRANSFORM(position, length, resolution)	position * (resolution/length)
 
-class CScreen : public CStatic
+class CScreen : public CStatic, public CResizingControl
 {
 	DECLARE_DYNAMIC(CScreen)
 
@@ -79,6 +80,8 @@ public:
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };
 
 

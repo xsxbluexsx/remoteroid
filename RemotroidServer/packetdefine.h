@@ -10,6 +10,9 @@
 #define FILESIZESIZE		100
 #define JPGSIZELEGNTH		10
 
+#define SERO				0
+#define GARO				1
+
 
 
 #define OP_SENDFILEINFO		1
@@ -38,6 +41,3 @@
 #define WM_CLOSEPOPDLG		WM_USER+108
 #define WM_ICON_NOTIFY		WM_USER+109
 #define WM_MYDBLCLKTRAY		WM_USER+110
-
-#define BUTTONWIDTH			107
-#define BUTTONHEIGHT		60

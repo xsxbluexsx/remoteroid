@@ -1,9 +1,10 @@
 #pragma once
 
+#include "ResizingControl.h"
 
 // CMyBitmapBtn
 
-class CMyBitmapBtn : public CBitmapButton
+class CMyBitmapBtn : public CBitmapButton, public CResizingControl
 {
 	DECLARE_DYNAMIC(CMyBitmapBtn)
 

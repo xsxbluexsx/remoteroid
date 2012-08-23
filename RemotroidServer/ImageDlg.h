@@ -8,6 +8,7 @@
 #include "RemotroidServerDlg.h"
 
 
+
 class CImageDlg : public CDialogEx, IParentControl
 {
 	DECLARE_DYNAMIC(CImageDlg)
@@ -36,8 +37,9 @@ public:
 	afx_msg void OnPaint();
 	virtual BOOL OnInitDialog();
 	
-	virtual void OnResizeSkin();
-	CBitmap m_bitmap;
+	virtual void OnResizeSkin(int garosero = 0);
+	CBitmap m_bitmap[2];
+	
 private:
 	CResizingDlg *pResizeDlg;
 protected:
@@ -60,7 +62,8 @@ public:
 private:
 	int m_CurCursorState;
 public:
-	Bitmap *m_pBkgBitmap;
+	Bitmap *m_pBkgBitmap[2];
+	
 	Bitmap * PngFromResource(const LPTSTR pName, const LPTSTR pType);
 	HBITMAP Create32BitBitmap(CDC * pDC, int cx, int cy);	
 	
@@ -70,4 +73,6 @@ public:
 	BOOL InitControlDlg(void);
 	virtual void MoveBkgDlg(CRect rect);
 	afx_msg void OnDestroy();
+	
+	void TurnGaroSero(int garosero);
 };

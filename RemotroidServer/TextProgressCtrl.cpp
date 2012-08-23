@@ -655,3 +655,12 @@ void CTextProgressCtrl::PreSubclassWindow()
 	SetRoundRect();
 	CProgressCtrl::PreSubclassWindow();
 }
+
+
+void CTextProgressCtrl::SetGaroSero(int garosero)
+{
+	if(garosero == GARO)
+		SetWindowLong(GetSafeHwnd(), GWL_STYLE, GetWindowLong(GetSafeHwnd(), GWL_STYLE) | PBS_VERTICAL );
+	else
+		SetWindowLong(GetSafeHwnd(), GWL_STYLE, GetWindowLong(GetSafeHwnd(), GWL_STYLE) & ~PBS_VERTICAL );
+}

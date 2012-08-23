@@ -51,6 +51,8 @@ BEGIN_MESSAGE_MAP(CScreen, CStatic)
 		
 	ON_WM_MOUSEWHEEL()
 	ON_WM_ERASEBKGND()
+	
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
  
 
@@ -66,9 +68,7 @@ void CScreen::InitDrawJpg(void)
 	GetClientRect(&rect);	
 	width = rect.Width();
 	height = rect.Height();
-	drawJpg.InitDrawJpg(GetSafeHwnd(), width, height);	
-
-	
+	drawJpg.InitDrawJpg(GetSafeHwnd(), width, height);		
 }
 
 
@@ -277,10 +277,18 @@ void CScreen::OnPaint()
 	dc.SelectObject(pOldFont);
 	
 	//m_bkgImg.ReleaseDC();
+	CRect rt;
+	GetClientRect(&rt);
+
+	dc.SetStretchBltMode(HALFTONE);
+	m_bkgImg.StretchBlt(dc.m_hDC, rt);
+
+
 	ReleaseDC(pDC);
 	m_bkgImg.ReleaseDC();
 	
-	m_bkgImg.BitBlt(dc.m_hDC, 0, 0);	
+	
+	//m_bkgImg.BitBlt(dc.m_hDC, 0, 0);		
 }
 
 
@@ -334,4 +342,14 @@ BOOL CScreen::OnEraseBkgnd(CDC* pDC)
 
 	//return CStatic::OnEraseBkgnd(pDC);
 	return false;
+}
+
+
+void CScreen::OnSize(UINT nType, int cx, int cy)
+{
+	CStatic::OnSize(nType, cx, cy);
+	width = cx;
+	height = cy;
+	drawJpg.InitDrawJpg(GetSafeHwnd(), cx, cy);
+	// TODO: Add your message handler code here
 }

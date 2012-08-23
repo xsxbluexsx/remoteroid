@@ -17,10 +17,9 @@ CImageDlg::CImageDlg(CWnd* pParent /*=NULL*/)
 	, pResizeDlg(NULL)
 	, m_bResizing(FALSE)
 	, m_nHitTest(0)
-	, m_CurCursorState(0)
-	, m_pBkgBitmap(NULL)	
+	, m_CurCursorState(0)	
 {
-
+	memset(m_pBkgBitmap, 0, sizeof(m_pBkgBitmap));
 }
 
 CImageDlg::~CImageDlg()
@@ -66,11 +65,12 @@ BOOL CImageDlg::OnInitDialog()
 // 	m_bitmap.LoadBitmap(IDB_BITMAP1);
 // 	m_bitmap.GetBitmap(&m_bmp);
 
-	m_pBkgBitmap = PngFromResource(MAKEINTRESOURCE(IDB_PNG_BKG), _T("PNG"));
-	
+	m_pBkgBitmap[SERO] = PngFromResource(MAKEINTRESOURCE(IDB_PNG_BKG), _T("PNG"));
+	m_pBkgBitmap[GARO] = PngFromResource(MAKEINTRESOURCE(IDB_PNG_BKG_GARO), _T("PNG"));
 	
 	CDC *pDC = GetDC();
-	m_bitmap.Attach(Create32BitBitmap(pDC, m_pBkgBitmap->GetWidth(), m_pBkgBitmap->GetHeight()));	
+	m_bitmap[SERO].Attach(Create32BitBitmap(pDC, m_pBkgBitmap[SERO]->GetWidth(), m_pBkgBitmap[SERO]->GetHeight()));	
+	m_bitmap[GARO].Attach(Create32BitBitmap(pDC, m_pBkgBitmap[GARO]->GetWidth(), m_pBkgBitmap[GARO]->GetHeight()));	
 	ReleaseDC(pDC);
 
 	SetDlgPosition();
@@ -134,7 +134,7 @@ BOOL CImageDlg::OnInitDialog()
 
 
 
-void CImageDlg::OnResizeSkin()
+void CImageDlg::OnResizeSkin(int garosero)
 {
 	/*
 	CDC *pDC = GetDC();
@@ -162,14 +162,14 @@ void CImageDlg::OnResizeSkin()
 	CDC *pDC = GetDC();
 	CDC MemDC;
 	MemDC.CreateCompatibleDC(pDC);
-	CBitmap *pOldBitmap = MemDC.SelectObject(&m_bitmap);
+	CBitmap *pOldBitmap = MemDC.SelectObject(&m_bitmap[garosero]);
 	Graphics gp(MemDC.GetSafeHdc());
 
  	gp.Clear( Color(0,0,0,0) );
  	gp.SetInterpolationMode( InterpolationModeHighQuality );
 
 	baseRect.DeflateRect(1,1,1,1);		
-	gp.DrawImage(m_pBkgBitmap, 0, 0, baseRect.Width(), baseRect.Height());
+	gp.DrawImage(m_pBkgBitmap[garosero], 0, 0, baseRect.Width(), baseRect.Height());
 
 	
 
@@ -207,9 +207,9 @@ void CImageDlg::SetDlgPosition(void)
 	CRect desktopRect;
 	pDesktopWnd->GetWindowRect(&desktopRect);
 	
-	int top = (desktopRect.Height()/2) - (m_pBkgBitmap->GetHeight()/2);
-	int left = (desktopRect.Width()/2) - (m_pBkgBitmap->GetWidth()/2);
-	MoveWindow(left, top, m_pBkgBitmap->GetWidth(), m_pBkgBitmap->GetHeight());
+	int top = (desktopRect.Height()/2) - (m_pBkgBitmap[SERO]->GetHeight()/2);
+	int left = (desktopRect.Width()/2) - (m_pBkgBitmap[SERO]->GetWidth()/2);
+	MoveWindow(left, top, m_pBkgBitmap[SERO]->GetWidth(), m_pBkgBitmap[SERO]->GetHeight());
 
 	
 	GetWindowRect(&baseRect);
@@ -302,6 +302,25 @@ void CImageDlg::MoveBkgDlg(CRect rect)
 void CImageDlg::OnDestroy()
 {
 	__super::OnDestroy();
-	m_bitmap.DeleteObject();
+	m_bitmap[SERO].DeleteObject();
+	
 	// TODO: Add your message handler code here
+}
+
+
+void CImageDlg::TurnGaroSero(int garosero)
+{
+	CRect newRect;
+	if(garosero == GARO)
+	{
+		newRect.left = (baseRect.left + baseRect.Width()/2) - (baseRect.Height()/2);
+		newRect.top = (baseRect.top + baseRect.Height()/2) - (baseRect.Width()/2);
+		newRect.right = newRect.left + baseRect.Height();
+		newRect.bottom = newRect.top + baseRect.Width();
+		baseRect = newRect;
+	}
+	else
+	{
+	}
+	OnResizeSkin(garosero);
 }
