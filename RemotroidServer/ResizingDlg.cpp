@@ -15,6 +15,8 @@ IMPLEMENT_DYNAMIC(CResizingDlg, CDialogEx)
 
 CResizingDlg::CResizingDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CResizingDlg::IDD, pParent)
+	, m_garoSeroRatio(0)
+	, m_garoSeroState(0)
 {
 
 }
@@ -57,7 +59,8 @@ BOOL CResizingDlg::OnInitDialog()
 void CResizingDlg::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 {
 	CDialogEx::OnWindowPosChanging(lpwndpos);
-	
+
+		
 	// TODO: Add your message handler code here
 }
 
@@ -103,53 +106,69 @@ int CResizingDlg::SearchSide(CRect rc, CPoint point)
 //크기조절하는 마우스 위치별로 테두리 다이얼로그 위치가 달라짐
 void CResizingDlg::ResizingDlg(CPoint point)
 {
-	int width, height;	
+	int width, height;		
 	switch(m_CurCursorState)
 	{
 	case HTTOPLEFT:			
 		height = baseRect.bottom - point.y - yDiff;
 
- 		if(height > MAXHEIGHT || height < MINHEIGHT)
- 			return;			
+  		if(m_garoSeroState == SERO && (height > MAXHEIGHT || height < MINHEIGHT))
+  			return;	
+		if(m_garoSeroState == GARO && (height > MAXHEIGHT_GARO || height < MINHEIGHT_GARO))
+  			return;	
 
-		width = (int)((float)height*GAROSERORATIO);
+		width = (int)((float)height*m_garoSeroRatio);
 		MoveWindow(baseRect.right-width, point.y+yDiff, width, height);
 		break;
 	case HTTOPRIGHT:
 		height = baseRect.bottom - point.y - yDiff;
 
-		if(height > MAXHEIGHT || height < MINHEIGHT)
-			return;
+		if(m_garoSeroState == SERO && (height > MAXHEIGHT || height < MINHEIGHT))
+ 			return;
+		if(m_garoSeroState == GARO && (height > MAXHEIGHT_GARO || height < MINHEIGHT_GARO))
+  			return;	
 
-		width = (int)((float)height*GAROSERORATIO);
+		width = (int)((float)height*m_garoSeroRatio);
 		MoveWindow(baseRect.left, point.y+yDiff, width, height);
 		break;
 	case HTBOTTOMLEFT:
 		height = point.y - baseRect.top + yDiff;
 
-		if(height > MAXHEIGHT || height < MINHEIGHT) 
-			return;
+		if(m_garoSeroState == SERO && (height > MAXHEIGHT || height < MINHEIGHT) )
+ 			return;
+		if(m_garoSeroState == GARO && (height > MAXHEIGHT_GARO || height < MINHEIGHT_GARO))
+  			return;	
 		
-		width = (int)((float)height*GAROSERORATIO);
+		width = (int)((float)height*m_garoSeroRatio);
 		MoveWindow(baseRect.right-width, baseRect.top, width, height);
 		break;
 	case HTBOTTOMRIGHT:
 		height = point.y - baseRect.top + yDiff;
 		
-		if(height > MAXHEIGHT || height < MINHEIGHT)
+		if(m_garoSeroState == SERO && (height > MAXHEIGHT || height < MINHEIGHT))
 			return;
+		if(m_garoSeroState == GARO && (height > MAXHEIGHT_GARO || height < MINHEIGHT_GARO))
+  			return;	
 
-		width = (int)((float)height*GAROSERORATIO);
+		width = (int)((float)height*m_garoSeroRatio);
 		MoveWindow(baseRect.left, baseRect.top, width, height);
 		break;
 	}	
 }
 
 
-void CResizingDlg::InitResizingDlg(RECT rect, CPoint point, int CursorState)
+void CResizingDlg::InitResizingDlg(CRect rect, CPoint point, int CursorState)
 {
 	baseRect = rect;
 	m_CurCursorState = CursorState;
+
+	m_garoSeroRatio = (float) ( (float)rect.Width() / rect.Height() );
+
+	if(rect.Width() > rect.Height())
+		m_garoSeroState = GARO;
+	else
+		m_garoSeroState = SERO;
+
 	switch(m_CurCursorState)
 	{
 	case HTTOPLEFT:			

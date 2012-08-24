@@ -145,6 +145,7 @@ void CScreen::OnLButtonDown(UINT nFlags, CPoint point)
 	CVitualEventPacket event(TOUCHDOWN, point.x, point.y);
 	pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
 
+	
 	CStatic::OnLButtonDown(nFlags, point);
 }
 
@@ -173,6 +174,7 @@ void CScreen::OnLButtonUp(UINT nFlags, CPoint point)
 	CVitualEventPacket event(TOUCHUP);
 	pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);	
 
+	
 	CStatic::OnLButtonUp(nFlags, point);
 }
 
@@ -281,7 +283,7 @@ void CScreen::OnPaint()
 	GetClientRect(&rt);
 
 	dc.SetStretchBltMode(HALFTONE);
-	m_bkgImg.StretchBlt(dc.m_hDC, rt);
+	//m_bkgImg.StretchBlt(dc.m_hDC, rt);
 
 
 	ReleaseDC(pDC);

@@ -26,6 +26,9 @@
 
 #define DLGHEIGHT		781
 #define DLGWIDTH		427
+
+#define DLGHEIGHT_GARO	427
+#define DLGWIDTH_GARO	781
 	
 #define SCREENWIDTH		358
 #define SCREENHEIGHT	598
@@ -38,14 +41,24 @@
 #define SCREENRIGHT		LEFT+WIDTH
 #define SCREENBOTTOM	TOP+HEIGHT
 
-#define BUTTONWIDTH		107
-#define BUTTONHEIGHT	60
+#define SCREENWIDTH_GARO	598
+#define SCREENHEIGHT_GARO	358
+
+
+#define BUTTONWIDTH			107
+#define BUTTONHEIGHT		60
+
+#define BUTTONWIDTH_GARO	60
+#define BUTTONHEIGHT_GARO	107
+
+#define SIDEBTNWIDTH		9
+#define SIDEBTNHEIGHT		81
 
 
 interface IParentControl
 {
 	virtual ~IParentControl(){};
-	virtual void MoveBkgDlg(CRect rect) = 0;
+	virtual void MoveBkgDlg(CRect rect, int garosero) = 0;
 	virtual void TurnGaroSero(int garosero)=0;
 };
 
@@ -135,6 +148,9 @@ public:
 	CMyBitmapBtn m_MenuButton;
 	CMyBitmapBtn m_TrayButton;
 	CMyBitmapBtn m_CloseButton;
+	CMyBitmapBtn m_PowerButton;
+	CMyBitmapBtn m_VolumeDownButton;
+	CMyBitmapBtn m_VolumeUpButton;
 
 	CTextProgressCtrl m_progressCtrl;
 	CTrayIcon m_TrayIcon;
@@ -142,6 +158,10 @@ public:
 	afx_msg void OnClickedBtnBack();
 	afx_msg void OnClickedBtnHome();
 	afx_msg void OnClickedBtnMenu();	
+
+	afx_msg void OnBnClickedBtnVolumnup();
+	afx_msg void OnBnClickedBtnVolumedown();
+	afx_msg void OnBnClickedBtnPower();
 	
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	LRESULT OnAnimation(WPARAM wParam, LPARAM lParam);
@@ -191,4 +211,7 @@ private:
 public:
 	void SetControlPos(void);
 	int m_GaroSeroState;
+	void TurnGaroSero(int garosero);
+	
+	
 };

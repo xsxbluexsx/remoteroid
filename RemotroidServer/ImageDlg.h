@@ -71,7 +71,7 @@ private:
 	CRemotroidServerDlg *m_pControlDlg;
 public:
 	BOOL InitControlDlg(void);
-	virtual void MoveBkgDlg(CRect rect);
+	virtual void MoveBkgDlg(CRect rect, int garosero);
 	afx_msg void OnDestroy();
 	
 	void TurnGaroSero(int garosero);
