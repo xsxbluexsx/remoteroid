@@ -296,7 +296,7 @@ public:
 	
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	virtual void PreSubclassWindow();
-	void SetGaroSero(int garosero);
+	void SetGaroSero();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -42,16 +42,17 @@ void CMyBitmapBtn::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 	ASSERT(m_bitmap.m_hObject != NULL);     // required
 
 	// use the main bitmap for up, the selected bitmap for down
-	CBitmap* pBitmap = &m_bitmap;
+	CBitmap* pBitmap = (m_garoSeroState == SERO ? &m_bitmap : &m_cBitmapGaro);
 	UINT state = lpDIS->itemState;
-	if ((state & ODS_SELECTED) && m_bitmapSel.m_hObject != NULL)
-		pBitmap = &m_bitmapSel;	
+
+	if ((state & ODS_SELECTED) && m_bitmapSel.m_hObject != NULL && m_cBitmapGaroSelect.m_hObject != NULL)
+		pBitmap = (m_garoSeroState == SERO ? &m_bitmapSel : &m_cBitmapGaroSelect);	
 	else if ((state & ODS_FOCUS) && m_bitmapFocus.m_hObject != NULL)
 		pBitmap = &m_bitmapFocus;   // third image for focused
 	else if ((state & ODS_DISABLED) && m_bitmapDisabled.m_hObject != NULL)
 		pBitmap = &m_bitmapDisabled;   // last image for disabled
-	else if ((TRUE == m_bMouseHover) && NULL != m_cBitmapHover.GetSafeHandle())
-		pBitmap = &m_cBitmapHover;
+	else if ((TRUE == m_bMouseHover) && NULL != m_cBitmapHover.GetSafeHandle() && m_cBitmapGaroHover.m_hObject != NULL)
+		pBitmap = (m_garoSeroState == SERO ? &m_cBitmapHover : &m_cBitmapGaroHover);
 	
 	
 	// draw the whole button
@@ -109,6 +110,20 @@ VOID CMyBitmapBtn::SetHoverBitmapID(IN UINT nIDBitmapResourceHover)
 		m_cBitmapHover.LoadBitmap(m_nIDBitmapResourceHover);
 	}
 }
+
+void CMyBitmapBtn::SetGaroBitmapID(UINT nIDNormal, UINT nIDHover, UINT nIDSelect)
+{
+	m_cBitmapGaro.DeleteObject();
+	m_cBitmapGaroHover.DeleteObject();
+	m_cBitmapGaroSelect.DeleteObject();
+
+	m_cBitmapGaro.LoadBitmap(nIDNormal);
+	if(nIDSelect != NULL)
+		m_cBitmapGaroSelect.LoadBitmap(nIDSelect);
+	if(nIDHover != NULL)
+		m_cBitmapGaroHover.LoadBitmap(nIDHover);
+}
+
 int CMyBitmapBtn::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CBitmapButton::OnCreate(lpCreateStruct) == -1)
@@ -132,3 +147,5 @@ void CMyBitmapBtn::OnSetFocus(CWnd* pOldWnd)
 	
 	// TODO: Add your message handler code here
 }
+
+

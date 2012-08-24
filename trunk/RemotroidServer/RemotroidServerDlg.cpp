@@ -79,6 +79,9 @@ void CRemotroidServerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PROGRESS1, m_progressCtrl);
 	DDX_Control(pDX, IDC_BTN_TRAY, m_TrayButton);
 	DDX_Control(pDX, IDC_BTN_CLOSE, m_CloseButton);
+	DDX_Control(pDX, IDC_BTN_POWER, m_PowerButton);
+	DDX_Control(pDX, IDC_BTN_VOLUMEDOWN, m_VolumeDownButton);
+	DDX_Control(pDX, IDC_BTN_VOLUMNUP, m_VolumeUpButton);
 }
 
 BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
@@ -124,6 +127,9 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_WM_MOVE()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_MOVING()
+	ON_BN_CLICKED(IDC_BTN_VOLUMNUP, &CRemotroidServerDlg::OnBnClickedBtnVolumnup)
+	ON_BN_CLICKED(IDC_BTN_VOLUMEDOWN, &CRemotroidServerDlg::OnBnClickedBtnVolumedown)
+	ON_BN_CLICKED(IDC_BTN_POWER, &CRemotroidServerDlg::OnBnClickedBtnPower)
 END_MESSAGE_MAP()
 
 
@@ -815,7 +821,7 @@ void CRemotroidServerDlg::OnClickedBtnBack()
 	// TODO: Add your control notification handler code here
 	SetFocus();
 	
-	m_progressCtrl.SetGaroSero(GARO);
+	TurnGaroSero(GARO);
 
 	if(m_pClient == NULL)
 		return;
@@ -828,6 +834,8 @@ void CRemotroidServerDlg::OnClickedBtnHome()
 {
 	// TODO: Add your control notification handler code here
 	SetFocus();
+
+	TurnGaroSero(SERO);
 
 	if(m_pClient == NULL)
 		return;
@@ -848,6 +856,28 @@ void CRemotroidServerDlg::OnClickedBtnMenu()
 	CVitualEventPacket event(MENUBUTTON);
 	m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
 }
+
+
+void CRemotroidServerDlg::OnBnClickedBtnVolumnup()
+{
+	// TODO: Add your control notification handler code here
+	SetFocus();	
+}
+
+
+void CRemotroidServerDlg::OnBnClickedBtnVolumedown()
+{
+	// TODO: Add your control notification handler code here
+	SetFocus();	
+}
+
+
+void CRemotroidServerDlg::OnBnClickedBtnPower()
+{
+	// TODO: Add your control notification handler code here
+	SetFocus();	
+}
+
 
 
 LRESULT CRemotroidServerDlg::OnCreatePopupDlg(WPARAM wParam, LPARAM lParam)
@@ -921,7 +951,7 @@ void CRemotroidServerDlg::OnBnClickedBtnTray()
 	if(m_pClient != NULL)
 		m_pClient->SendPacket(OP_REQSTOPSCREEN, NULL, 0);
 	CUtil::AniMinimizeToTray(GetSafeHwnd());	
-	ShowWindow(SW_HIDE);
+	ShowWindow(SW_HIDE);	
 }
 
 
@@ -984,11 +1014,11 @@ void CRemotroidServerDlg::OnSize(UINT nType, int cx, int cy)
 	
 	
 			
-	m_ResizeContolMgr.ResizingControl(cx, cy);
+	m_ResizeContolMgr.ResizingControl(cx, cy, m_GaroSeroState);
 
 	
 	GetWindowRect(&mainDlgRect);
- 	m_pBkgDlg->MoveBkgDlg(mainDlgRect);
+ 	m_pBkgDlg->MoveBkgDlg(mainDlgRect, m_GaroSeroState);
 	
 	// TODO: Add your message handler code here
 }
@@ -1006,7 +1036,7 @@ void CRemotroidServerDlg::OnMoving(UINT fwSide, LPRECT pRect)
 {
 	CDialogEx::OnMoving(fwSide, pRect);
 	mainDlgRect = *pRect;
-	m_pBkgDlg->MoveBkgDlg(pRect);	
+	m_pBkgDlg->MoveBkgDlg(pRect, m_GaroSeroState);	
 	// TODO: Add your message handler code here
 }
 
@@ -1125,34 +1155,56 @@ void CRemotroidServerDlg::SetControlPos(void)
 	m_progressCtrl.SetRange(0, 100);
 
 	recvFileClass.SetProgressBar(&m_progressCtrl);
-	fileSender.SetProgressBar(&m_progressCtrl);
-
-	
+	fileSender.SetProgressBar(&m_progressCtrl);	
 	
 	
 	m_CloseButton.LoadBitmaps(IDB_BITMAP_CLOSE_MAIN);
 	m_CloseButton.SetHoverBitmapID(IDB_BITMAP_HOVER_MAIN);
+	m_CloseButton.SetGaroBitmapID(IDB_BITMAP_CLOSE_MAIN_GARO, IDB_BITMAP_HOVER_MAIN_GARO);
+	
+
 	m_TrayButton.LoadBitmaps(IDB_BITMAP_TRAYBTN);
 	m_TrayButton.SetHoverBitmapID(IDB_BITMAP_TRAY_HOVER);
+	m_TrayButton.SetGaroBitmapID(IDB_BITMAP_TRAY_GARO, IDB_BITMAP_TRAY_HOVER_GARO);
 
 
 	m_HomeButton.LoadBitmaps(IDB_BITMAP_HOME, IDB_BITMAP_HOME_CLICK);
 	m_HomeButton.SetHoverBitmapID(IDB_BITMAP_HOME_OVER);
+	m_HomeButton.SetGaroBitmapID(IDB_BITMAP_HOME_GARO, IDB_BITMAP_HOME_OVER_GARO, IDB_BITMAP_HOME_CLICK_GARO);
+	
 	m_BackButton.LoadBitmaps(IDB_BITMAP_BACK,IDB_BITMAP_BACK_CLICK);
 	m_BackButton.SetHoverBitmapID(IDB_BITMAP_BACK_OVER);
+	m_BackButton.SetGaroBitmapID(IDB_BITMAP_BACK_GARO, IDB_BITMAP_BACK_OVER_GARO, IDB_BITMAP_BACK_CLICK_GARO);
+
+
 	m_MenuButton.LoadBitmaps(IDB_BITMAP_MENU, IDB_BITMAP_MENU_CLICK);
 	m_MenuButton.SetHoverBitmapID(IDB_BITMAP_MENU_OVER);
+	m_MenuButton.SetGaroBitmapID(IDB_BITMAP_MENU_GARO, IDB_BITMAP_MENU_OVER_GARO, IDB_BITMAP_MENU_CLICK_GARO);
 
+	m_VolumeUpButton.LoadBitmaps(IDB_BITMAP_VOLUME, IDB_BITMAP_VOLUME_CLICK);
+	m_VolumeUpButton.SetHoverBitmapID(IDB_BITMAP_VOLUME_HOVER);
+	m_VolumeUpButton.SetGaroBitmapID(IDB_BITMAP_VOLUME_GARO, IDB_BITMAP_VOLUME_HOVER_GARO, IDB_BITMAP_VOLUME_CLICK_GARO);
+
+	m_VolumeDownButton.LoadBitmaps(IDB_BITMAP_VOLUME, IDB_BITMAP_VOLUME_CLICK);
+	m_VolumeDownButton.SetHoverBitmapID(IDB_BITMAP_VOLUME_HOVER);
+	m_VolumeDownButton.SetGaroBitmapID(IDB_BITMAP_VOLUME_GARO, IDB_BITMAP_VOLUME_HOVER_GARO, IDB_BITMAP_VOLUME_CLICK_GARO);
+
+	m_PowerButton.LoadBitmaps(IDB_BITMAP_POWER, IDB_BITMAP_POWER_CLICK);
+	m_PowerButton.SetHoverBitmapID(IDB_BITMAP_POWER_HOVER);
+	m_PowerButton.SetGaroBitmapID(IDB_BITMAP_POWER_GARO, IDB_BITMAP_POWER_HOVER_GARO, IDB_BITMAP_POWER_CLICK_GARO);
 
 
 	//다이얼로그 크기 조정시 비율 계산및 컨트롤 메니저에 등록
-	screen.InitRatio(screen.m_hWnd, LEFT, TOP, WIDTH, HEIGHT, DLGWIDTH, DLGHEIGHT);
+	screen.InitRatio(screen.m_hWnd, SCREENLEFT, SCREENTOP, SCREENWIDTH, SCREENHEIGHT, DLGWIDTH, DLGHEIGHT);
 	m_progressCtrl.InitRatio(m_progressCtrl.m_hWnd, SCREENLEFT, SCREENTOP-10, SCREENWIDTH, 10, DLGWIDTH, DLGHEIGHT);
 	m_MenuButton.InitRatio(m_MenuButton.m_hWnd, SCREENLEFT+20, SCREENBOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT,DLGWIDTH, DLGHEIGHT);
 	m_HomeButton.InitRatio(m_HomeButton.m_hWnd, SCREENLEFT+20+BUTTONWIDTH, SCREENBOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT,DLGWIDTH, DLGHEIGHT);
 	m_BackButton.InitRatio(m_BackButton.m_hWnd, SCREENLEFT+20+BUTTONWIDTH*2, SCREENBOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT,DLGWIDTH, DLGHEIGHT);
 	m_TrayButton.InitRatio(m_TrayButton.m_hWnd, SCREENRIGHT-41, SCREENTOP-50, 19, 16,DLGWIDTH, DLGHEIGHT);
 	m_CloseButton.InitRatio(m_CloseButton.m_hWnd, SCREENRIGHT-41+19, SCREENTOP-50, 19, 16,DLGWIDTH, DLGHEIGHT);
+	m_VolumeUpButton.InitRatio(m_VolumeUpButton.m_hWnd, 1, 156, SIDEBTNWIDTH, SIDEBTNHEIGHT, DLGWIDTH, DLGHEIGHT);
+	m_VolumeDownButton.InitRatio(m_VolumeDownButton.m_hWnd, 1, 242, SIDEBTNWIDTH, SIDEBTNHEIGHT, DLGWIDTH, DLGHEIGHT);
+	m_PowerButton.InitRatio(m_PowerButton.m_hWnd, 416, 163, 10, 52, DLGWIDTH, DLGHEIGHT);
 
 	m_ResizeContolMgr.InsertControl(&m_progressCtrl);
 	m_ResizeContolMgr.InsertControl(&m_MenuButton);
@@ -1161,5 +1213,27 @@ void CRemotroidServerDlg::SetControlPos(void)
 	m_ResizeContolMgr.InsertControl(&m_TrayButton);
 	m_ResizeContolMgr.InsertControl(&m_CloseButton);
 	m_ResizeContolMgr.InsertControl(&screen);
+	m_ResizeContolMgr.InsertControl(&m_VolumeUpButton);
+	m_ResizeContolMgr.InsertControl(&m_VolumeDownButton);
+	m_ResizeContolMgr.InsertControl(&m_PowerButton);
 		
 }
+
+
+void CRemotroidServerDlg::TurnGaroSero(int garosero)
+{
+	m_GaroSeroState = garosero;
+
+	CRect newRect;
+	
+	newRect.left = (mainDlgRect.left + mainDlgRect.Width()/2) - (mainDlgRect.Height()/2);
+	newRect.top = (mainDlgRect.top + mainDlgRect.Height()/2) - (mainDlgRect.Width()/2);
+	newRect.right = newRect.left + mainDlgRect.Height();
+	newRect.bottom = newRect.top + mainDlgRect.Width();
+	mainDlgRect = newRect;
+	
+
+	MoveWindow(mainDlgRect);
+}
+
+

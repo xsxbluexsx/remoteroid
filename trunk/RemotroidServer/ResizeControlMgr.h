@@ -15,6 +15,6 @@ private:
 	
 public:
 	void InsertControl(CResizingControl *pControl);
-	void ResizingControl(int cx, int cy);
+	void ResizingControl(int cx, int cy, int garosero);	
 };
 

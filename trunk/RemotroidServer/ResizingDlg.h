@@ -3,11 +3,16 @@
 
 // CResizingDlg dialog
 
-#define SIDE					70
-#define GAROSERORATIO			0.545
+#define SIDE					30
+
 #define MAXHEIGHT				781
 #define MINHEIGHT				500
 
+#define MAXHEIGHT_GARO				426
+#define MINHEIGHT_GARO				273
+
+#define SERO	0
+#define GARO	1
 
 class CResizingDlg : public CDialogEx
 {
@@ -33,13 +38,15 @@ public:
 	
 private:
 	int m_CurCursorState;
-	RECT baseRect;
+	CRect baseRect;
 	int xDiff;
 	int yDiff;
 public:
 	void ResizingDlg(CPoint point);
-	void InitResizingDlg(RECT rect, CPoint point, int CursorState);
+	void InitResizingDlg(CRect rect, CPoint point, int CursorState);
 
 
 	virtual void PostNcDestroy();
+	float m_garoSeroRatio;
+	int m_garoSeroState;
 };

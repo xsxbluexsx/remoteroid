@@ -113,6 +113,81 @@
     <None Include="res\background_garo.png">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\backbutton_click_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\backbutton_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\backbutton_over_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\homebutton_down_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\homebutton_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\homebutton_over_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\menubutton_click_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\menubutton_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\menubutton_over_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\traybtn_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\traybtn_hover_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\XBtn_main_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\XBtn_main_hover_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\powerbtn.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\powerbtn_click.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\powerbtn_hover.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\volumebtn.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\volumebtn_click.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\volumebtn_hover.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\powerbtn_click_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\powerbtn_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\powerbtn_hover_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\volumebtn_click_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\volumebtn_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\volumebtn_hover_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RemotroidServer.h">

@@ -22,6 +22,10 @@ protected:
 	UINT				m_nIDBitmapResourceHover;
 	CBitmap				m_cBitmapHover;
 
+	CBitmap				m_cBitmapGaro;
+	CBitmap				m_cBitmapGaroSelect;
+	CBitmap				m_cBitmapGaroHover;
+
 public:
 	virtual void DrawItem(LPDRAWITEMSTRUCT /*lpDrawItemStruct*/);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
@@ -30,6 +34,7 @@ public:
 	afx_msg void OnMouseLeave();	
 
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
+	void SetGaroBitmapID(UINT nIDNormal, UINT nIDHover = NULL, UINT nIDSelect = NULL);
 };
 
 

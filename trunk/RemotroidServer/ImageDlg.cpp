@@ -292,10 +292,10 @@ BOOL CImageDlg::InitControlDlg(void)
 }
 
 
-void CImageDlg::MoveBkgDlg(CRect rect)
+void CImageDlg::MoveBkgDlg(CRect rect, int garosero)
 {
 	baseRect = rect;
-	OnResizeSkin();
+	OnResizeSkin(garosero);
 }
 
 
