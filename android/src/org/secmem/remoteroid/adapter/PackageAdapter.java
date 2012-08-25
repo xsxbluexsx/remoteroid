@@ -1,15 +1,19 @@
 package org.secmem.remoteroid.adapter;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.data.PackageList;
 import org.secmem.remoteroid.util.FilterUtil;
+import org.secmem.remoteroid.util.HongUtil;
 import org.secmem.remoteroid.util.PackageSoundSearcher;
 
+import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,18 +28,19 @@ public class PackageAdapter extends BaseAdapter{
 	private Context mContext;
 	private ArrayList<PackageInfo> mPackageList = new ArrayList<PackageInfo>();
 	
+	private ArrayList<PackageInfo> sPackageList = new ArrayList<PackageInfo>();
+	
 	private PackageManager mPkgManager;
 	private FilterUtil mFilterUtil;
-	private ArrayList<PackageList> packageList = new ArrayList<PackageList>();
 	
-	private boolean isSearch = false;
 	
+	private String strInitial="";
+	private String afterStr="";
 
 	public PackageAdapter(Context context){
 		mContext = context;
 		mPkgManager = mContext.getPackageManager();
 		mPackageList = (ArrayList<PackageInfo>)mPkgManager.getInstalledPackages(0);
-		setmPackageList(mPackageList);
 		mFilterUtil = new FilterUtil(mContext);
 		mFilterUtil.open();
 	}
@@ -48,12 +53,27 @@ public class PackageAdapter extends BaseAdapter{
 
 	@Override
 	public int getCount() {
-		return mPackageList.size();
+		if(strInitial.equals("") || strInitial==null){
+			return mPackageList.size();
+		}
+		else{
+			if(strInitial.equals(afterStr)){
+				return sPackageList.size();
+			}
+			else{
+				return searchSoundInitial(this.strInitial);
+			}
+		}
 	}
 
 	@Override
 	public PackageInfo getItem(int position) {
-		return mPackageList.get(position);
+		if(strInitial.equals("") || strInitial==null){
+			return mPackageList.get(position);
+		}
+		else{
+			return sPackageList.get(position);
+		}
 	}
 
 	@Override
@@ -88,6 +108,11 @@ public class PackageAdapter extends BaseAdapter{
 
 			@Override
 			public void onClick(View v) {
+				try {
+					HongUtil.UseKakaoLink.sendLinkMessage(mContext, "Remoteroid", "ok");
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
 				ListView lv = (ListView)parent;
 				lv.getOnItemClickListener().onItemClick(null, null, position, 0);
 			}
@@ -96,31 +121,34 @@ public class PackageAdapter extends BaseAdapter{
 		
 		return convertView;
 	}
-	
-	public ArrayList<PackageInfo> getmPackageList() {
-		return mPackageList;
+	public String getStrInitial() {
+		return strInitial;
 	}
-
-	public void setmPackageList(ArrayList<PackageInfo> mPackageList) {
-		for(int i = 0 ; i<=mPackageList.size() ; i++){
-			this.packageList.add(new PackageList(mPackageList.get(i)));
-		}
-		this.mPackageList = mPackageList;
+	public void setStrInitial(String strInitial) {
+		this.strInitial = strInitial;
 	}
-	public boolean isSearch() {
-		return isSearch;
+	public String getAfterStr() {
+		return afterStr;
 	}
-
-	public void setSearch(boolean isSearch) {
-		this.isSearch = isSearch;
+	public void setAfterStr(String afterStr) {
+		this.afterStr = afterStr;
 	}
 	
-	public void searchSoundInitial(String msg){
-		for(int i = 0 ; i <= mPackageList.size() ; i++){
+	public int searchSoundInitial(String msg){
+		int count = 0 ;
+		setAfterStr(msg);
+		sPackageList.clear();
+		Log.i("qq","searchSoundInitial");
+		for(int i = 0 ; i < mPackageList.size() ; i++){
+			
 			if(PackageSoundSearcher.matchString((mPackageList.get(i).applicationInfo.loadLabel(mPkgManager)).toString(), msg)){
-				packageList.get(i).setSearch(true);
+				sPackageList.add(mPackageList.get(i));
+				count++;
+			}
+			else{
 			}
 		}
+		return count;
 	}
 
 }

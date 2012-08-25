@@ -32,7 +32,9 @@ public class Tranceiver  implements PacketListener{
 	private VirtualEventListener mVirtEventListener;
 	private ScreenTransmissionListener mScreenTransListener;
 	private ServerConnectionListener mServerConnectionListener;
+	private AddOptionListener mAddOptionListener;
 	
+
 	public Tranceiver(ServerConnectionListener listener){
 		mServerConnectionListener = listener;
 	}
@@ -55,6 +57,9 @@ public class Tranceiver  implements PacketListener{
 	public void setFrameBufferListener(ScreenTransmissionListener listener){
 		mScreenTransListener = listener;
 	}
+	public void setAddOptionListener(AddOptionListener listner) {
+		mAddOptionListener = listner;
+	}
 	
 	/**
 	 * Connect to specified host.
@@ -66,7 +71,7 @@ public class Tranceiver  implements PacketListener{
 			socket = new Socket();
 	
 			socket.connect(new InetSocketAddress(ipAddr, PORT), 5000); // Set timeout to 5 seconds
-	
+			
 			// Open outputStream
 			sendStream = socket.getOutputStream();
 			
@@ -158,7 +163,8 @@ public class Tranceiver  implements PacketListener{
 	//width, heigth resolution send to host 
 	public void sendDeviceInfo(DisplayMetrics dm){
 		try{
-			fileTransReceiver.send(new DeviceInfoPacket(dm));
+			if(fileTransReceiver!=null)
+				fileTransReceiver.send(new DeviceInfoPacket(dm));
 		}catch(IOException e){
 			e.printStackTrace();
 			onInterrupt();
@@ -189,6 +195,14 @@ public class Tranceiver  implements PacketListener{
 			break;
 		case OpCode.SCREEN_STOP_REQUESTED:			
 			mScreenTransListener.onScreenTransferStopRequested();
+			break;
+		case OpCode.OPTION_START_EXPLORER:
+			mAddOptionListener.onStartFileExplorer();
+			break;
+		case OpCode.OPTION_SEND_KAKAOTALK:
+			
+			/** add message packet */
+			//mAddOptionListener.onSendKakaotalkMessage(msg);
 			break;
 		}
 	}

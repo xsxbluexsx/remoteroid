@@ -41,12 +41,13 @@ public class PackageSelector extends SherlockListActivity{
 	private FilterUtil mFilterUtil;
 	
 	private EditText edtSearch;
+	
+	private String currentSearchStr="";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_package_selector);
-		
 		edtSearch = (EditText)findViewById(R.id.activity_package_edt_search);
 		
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -63,24 +64,22 @@ public class PackageSelector extends SherlockListActivity{
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				Log.i("qq","onTextChanged");
+				mPackageAdapter.setStrInitial(s.toString());
+				mPackageAdapter.notifyDataSetChanged();
 			}
 			
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 				Log.i("qq","beforeTextChanged");
+				
 			}
 			
 			@Override
 			public void afterTextChanged(Editable s) {
-				Log.i("qq","afterTextChanged");
-				if(edtSearch.getText().toString().length() == 0 ){
-					mPackageAdapter.setSearch(false);
-				}
-				else{
-					mPackageAdapter.setSearch(true);
-				}
-				mPackageAdapter.notifyDataSetChanged();
+				
+				
 			}
+				
 		});
 	}
 	
