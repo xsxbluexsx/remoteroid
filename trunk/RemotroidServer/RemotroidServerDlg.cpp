@@ -82,6 +82,8 @@ void CRemotroidServerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BTN_POWER, m_PowerButton);
 	DDX_Control(pDX, IDC_BTN_VOLUMEDOWN, m_VolumeDownButton);
 	DDX_Control(pDX, IDC_BTN_VOLUMNUP, m_VolumeUpButton);
+	DDX_Control(pDX, IDC_BTN_EXPLORER, m_ExplorerBtn);
+	
 }
 
 BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
@@ -130,6 +132,8 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_VOLUMNUP, &CRemotroidServerDlg::OnBnClickedBtnVolumnup)
 	ON_BN_CLICKED(IDC_BTN_VOLUMEDOWN, &CRemotroidServerDlg::OnBnClickedBtnVolumedown)
 	ON_BN_CLICKED(IDC_BTN_POWER, &CRemotroidServerDlg::OnBnClickedBtnPower)
+	ON_BN_CLICKED(IDC_BTN_EXPLORER, &CRemotroidServerDlg::OnBnClickedBtnExplorer)
+	
 END_MESSAGE_MAP()
 
 
@@ -280,10 +284,10 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	TOGGLEKEYS tk;
 	SystemParametersInfo(SPI_SETBEEP, false, &tk, 0);	
 
-	SetTimer(0, 0, NULL);	
+	//SetTimer(0, 0, NULL);	
 
 	m_bInit = TRUE;
-
+	
 	
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }
@@ -326,7 +330,7 @@ void CRemotroidServerDlg::OnPaint()
 	}
 	else
 	{			
-		//OnResizeSkin();
+		GetDlgItem(IDC_EDIT1)->RedrawWindow();		
 		CDialogEx::OnPaint();			
 	}
 }
@@ -417,6 +421,8 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 	CRemotroidServerDlg *pDlg = (CRemotroidServerDlg *)pParam;
 	CMyClient *pClient = pDlg->GetClientSocket();
 
+	
+
 	char bPacket[MAXSIZE];			
 
 	CRecvFile& recvFileClass = pDlg->recvFileClass;	
@@ -484,6 +490,8 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 			}
 		}
 	}
+
+	
 
 	recvFileClass.CloseFileHandle();		
 	pDlg->fileSender.DeleteFileList();
@@ -665,7 +673,8 @@ HBRUSH CRemotroidServerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	{
 		pDC->SetBkMode(TRANSPARENT);
 		return (HBRUSH)GetStockObject(BLACK_BRUSH);
-	}
+	}		
+	
 	// TODO:  Return a different brush if the default is not desired
 	return hbr;
 }
@@ -819,7 +828,7 @@ void CRemotroidServerDlg::OnLButtonUp(UINT nFlags, CPoint point)
 void CRemotroidServerDlg::OnClickedBtnBack()
 {
 	// TODO: Add your control notification handler code here
-	SetFocus();
+	SetFocus();	
 	
 	TurnGaroSero(GARO);
 
@@ -833,7 +842,7 @@ void CRemotroidServerDlg::OnClickedBtnBack()
 void CRemotroidServerDlg::OnClickedBtnHome()
 {
 	// TODO: Add your control notification handler code here
-	SetFocus();
+	SetFocus();	
 
 	TurnGaroSero(SERO);
 
@@ -848,6 +857,7 @@ void CRemotroidServerDlg::OnClickedBtnHome()
 void CRemotroidServerDlg::OnClickedBtnMenu()
 {
 	// TODO: Add your control notification handler code here
+	
 	SetFocus();	
 
 	if(m_pClient == NULL)
@@ -877,6 +887,13 @@ void CRemotroidServerDlg::OnBnClickedBtnPower()
 	// TODO: Add your control notification handler code here
 	SetFocus();	
 }
+
+void CRemotroidServerDlg::OnBnClickedBtnExplorer()
+{
+	// TODO: Add your control notification handler code here
+	SetFocus();	
+}
+
 
 
 
@@ -1010,12 +1027,9 @@ void CRemotroidServerDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize(nType, cx, cy);
 	if(m_bInit == FALSE)
-		return;
-	
-	
+		return;	
 			
 	m_ResizeContolMgr.ResizingControl(cx, cy, m_GaroSeroState);
-
 	
 	GetWindowRect(&mainDlgRect);
  	m_pBkgDlg->MoveBkgDlg(mainDlgRect, m_GaroSeroState);
@@ -1145,9 +1159,10 @@ void CRemotroidServerDlg::SetControlPos(void)
 	screen.CreateEx(WS_EX_TOPMOST
 		, _T("STATIC"), NULL, WS_CHILD|WS_VISIBLE|SS_NOTIFY, CRect(LEFT, TOP, RIGHT, BOTTOM), this, 1234);	
 	screen.SetLayeredWindowAttributes(0, 255, LWA_ALPHA);
+	
+	
 
-	
-	
+
 	m_progressCtrl.ShowWindow(SW_HIDE);
 	m_progressCtrl.SetBarBkColor(RGB(56,58,60));
 	m_progressCtrl.SetBarColor(RGB(7,215,7));
@@ -1167,6 +1182,9 @@ void CRemotroidServerDlg::SetControlPos(void)
 	m_TrayButton.SetHoverBitmapID(IDB_BITMAP_TRAY_HOVER);
 	m_TrayButton.SetGaroBitmapID(IDB_BITMAP_TRAY_GARO, IDB_BITMAP_TRAY_HOVER_GARO);
 
+	m_ExplorerBtn.LoadBitmaps(IDB_BITMAP_EXPLORER, IDB_BITMAP_EXPLORER_CLICK);
+	m_ExplorerBtn.SetHoverBitmapID(IDB_BITMAP_EXPLORER_HOVER); 
+	m_ExplorerBtn.SetGaroBitmapID(IDB_BITMAP_EXPLORER_GARO, IDB_BITMAP_EXPLORER_HOVER_GARO, IDB_BITMAP_EXPLORER_CLICK_GARO);
 
 	m_HomeButton.LoadBitmaps(IDB_BITMAP_HOME, IDB_BITMAP_HOME_CLICK);
 	m_HomeButton.SetHoverBitmapID(IDB_BITMAP_HOME_OVER);
@@ -1194,17 +1212,22 @@ void CRemotroidServerDlg::SetControlPos(void)
 	m_PowerButton.SetGaroBitmapID(IDB_BITMAP_POWER_GARO, IDB_BITMAP_POWER_HOVER_GARO, IDB_BITMAP_POWER_CLICK_GARO);
 
 
+	
+
+
 	//다이얼로그 크기 조정시 비율 계산및 컨트롤 메니저에 등록
 	screen.InitRatio(screen.m_hWnd, SCREENLEFT, SCREENTOP, SCREENWIDTH, SCREENHEIGHT, DLGWIDTH, DLGHEIGHT);
 	m_progressCtrl.InitRatio(m_progressCtrl.m_hWnd, SCREENLEFT, SCREENTOP-10, SCREENWIDTH, 10, DLGWIDTH, DLGHEIGHT);
 	m_MenuButton.InitRatio(m_MenuButton.m_hWnd, SCREENLEFT+20, SCREENBOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT,DLGWIDTH, DLGHEIGHT);
 	m_HomeButton.InitRatio(m_HomeButton.m_hWnd, SCREENLEFT+20+BUTTONWIDTH, SCREENBOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT,DLGWIDTH, DLGHEIGHT);
 	m_BackButton.InitRatio(m_BackButton.m_hWnd, SCREENLEFT+20+BUTTONWIDTH*2, SCREENBOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT,DLGWIDTH, DLGHEIGHT);
-	m_TrayButton.InitRatio(m_TrayButton.m_hWnd, SCREENRIGHT-41, SCREENTOP-50, 19, 16,DLGWIDTH, DLGHEIGHT);
-	m_CloseButton.InitRatio(m_CloseButton.m_hWnd, SCREENRIGHT-41+19, SCREENTOP-50, 19, 16,DLGWIDTH, DLGHEIGHT);
+	m_ExplorerBtn.InitRatio(m_ExplorerBtn.m_hWnd, SCREENRIGHT-(23*3), SCREENTOP-70, 23, 20, DLGWIDTH, DLGHEIGHT);
+	m_TrayButton.InitRatio(m_TrayButton.m_hWnd, SCREENRIGHT-(23*2), SCREENTOP-70, 19, 16,DLGWIDTH, DLGHEIGHT);
+	m_CloseButton.InitRatio(m_CloseButton.m_hWnd, SCREENRIGHT-23, SCREENTOP-70, 19, 16,DLGWIDTH, DLGHEIGHT);
 	m_VolumeUpButton.InitRatio(m_VolumeUpButton.m_hWnd, 1, 156, SIDEBTNWIDTH, SIDEBTNHEIGHT, DLGWIDTH, DLGHEIGHT);
 	m_VolumeDownButton.InitRatio(m_VolumeDownButton.m_hWnd, 1, 242, SIDEBTNWIDTH, SIDEBTNHEIGHT, DLGWIDTH, DLGHEIGHT);
 	m_PowerButton.InitRatio(m_PowerButton.m_hWnd, 416, 163, 10, 52, DLGWIDTH, DLGHEIGHT);
+	
 
 	m_ResizeContolMgr.InsertControl(&m_progressCtrl);
 	m_ResizeContolMgr.InsertControl(&m_MenuButton);
@@ -1216,7 +1239,11 @@ void CRemotroidServerDlg::SetControlPos(void)
 	m_ResizeContolMgr.InsertControl(&m_VolumeUpButton);
 	m_ResizeContolMgr.InsertControl(&m_VolumeDownButton);
 	m_ResizeContolMgr.InsertControl(&m_PowerButton);
-		
+	m_ResizeContolMgr.InsertControl(&m_ExplorerBtn);	
+
+	
+	
+	
 }
 
 
@@ -1235,5 +1262,6 @@ void CRemotroidServerDlg::TurnGaroSero(int garosero)
 
 	MoveWindow(mainDlgRect);
 }
+
 
 

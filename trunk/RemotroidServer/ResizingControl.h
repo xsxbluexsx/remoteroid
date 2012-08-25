@@ -33,5 +33,6 @@ public:
 		return n;
 	}
 	int m_garoSeroState;
+	
 };
 
