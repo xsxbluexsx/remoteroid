@@ -72,7 +72,7 @@ private:
 public:
 	BOOL InitControlDlg(void);
 	virtual void MoveBkgDlg(CRect rect, int garosero);
-	afx_msg void OnDestroy();
-	
-	void TurnGaroSero(int garosero);
+	afx_msg void OnDestroy();	
+	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
+
 };

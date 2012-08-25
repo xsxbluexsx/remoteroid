@@ -188,6 +188,25 @@
     <None Include="res\volumebtn_hover_garo.bmp">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\explorerbtn_click_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\explorerbtn_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\explorerbtn_hover_garo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\explorerbtn.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\explorerbtn_click.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\explorerbtn_hover.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RemotroidServer.h">

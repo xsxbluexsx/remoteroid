@@ -26,6 +26,7 @@ CScreen::CScreen()
 	ZeroMemory(&lf, sizeof(lf));
 	lf.lfHeight = 45;
 	lf.lfWeight = FW_BOLD;
+	
 	wsprintf(lf.lfFaceName, _T("HY견고딕"));
 	
 	newFont.CreateFontIndirect(&lf);
@@ -53,6 +54,7 @@ BEGIN_MESSAGE_MAP(CScreen, CStatic)
 	ON_WM_ERASEBKGND()
 	
 	ON_WM_SIZE()
+	
 END_MESSAGE_MAP()
  
 
@@ -80,7 +82,7 @@ void CScreen::OnDestroy()
 }
 
 
-
+//마우스 포인터와 스마트폰 해상도의 차이를 맞추기 위해
 LRESULT CScreen::OnSetResolution(WPARAM wParam, LPARAM lParam)
 {
 	char *data = (char *)lParam;
@@ -264,6 +266,8 @@ void CScreen::OnPaint()
 	CPaintDC dc(this); // device context for painting
 	// TODO: Add your message handler code here
 	// Do not call CStatic::OnPaint() for painting messages
+
+	
 	
 	if(m_isConnect)
 		return;
@@ -283,7 +287,7 @@ void CScreen::OnPaint()
 	GetClientRect(&rt);
 
 	dc.SetStretchBltMode(HALFTONE);
-	//m_bkgImg.StretchBlt(dc.m_hDC, rt);
+	m_bkgImg.StretchBlt(dc.m_hDC, rt);
 
 
 	ReleaseDC(pDC);
@@ -302,7 +306,9 @@ int CScreen::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// TODO:  Add your specialized creation code here
 	aniWait.Create(_T(""), WS_CHILD|WS_VISIBLE,CRect(60,330,290,500), this, 0);
 	aniWait.myRect = CRect(80,350,280,480);
-	aniWait.SetAnimation(TRUE);
+	//aniWait.SetAnimation(TRUE);
+
+	
 	
 	return 0;
 }
@@ -355,3 +361,4 @@ void CScreen::OnSize(UINT nType, int cx, int cy)
 	drawJpg.InitDrawJpg(GetSafeHwnd(), cx, cy);
 	// TODO: Add your message handler code here
 }
+

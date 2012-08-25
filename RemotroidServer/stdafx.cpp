@@ -5,4 +5,6 @@
 
 #include "stdafx.h"
 
+//컨트롤 다시 그릴때 깜빡임 방지 BeginDeferWindowPos이용
+HDWP hdwp;
 

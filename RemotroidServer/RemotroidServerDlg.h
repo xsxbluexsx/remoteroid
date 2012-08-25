@@ -59,7 +59,7 @@ interface IParentControl
 {
 	virtual ~IParentControl(){};
 	virtual void MoveBkgDlg(CRect rect, int garosero) = 0;
-	virtual void TurnGaroSero(int garosero)=0;
+	/*virtual void TurnGaroSero(int garosero)=0;*/
 };
 
 // CRemotroidServerDlg dialog
@@ -151,6 +151,7 @@ public:
 	CMyBitmapBtn m_PowerButton;
 	CMyBitmapBtn m_VolumeDownButton;
 	CMyBitmapBtn m_VolumeUpButton;
+	CMyBitmapBtn m_ExplorerBtn;
 
 	CTextProgressCtrl m_progressCtrl;
 	CTrayIcon m_TrayIcon;
@@ -162,6 +163,7 @@ public:
 	afx_msg void OnBnClickedBtnVolumnup();
 	afx_msg void OnBnClickedBtnVolumedown();
 	afx_msg void OnBnClickedBtnPower();
+	afx_msg void OnBnClickedBtnExplorer();
 	
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	LRESULT OnAnimation(WPARAM wParam, LPARAM lParam);
@@ -212,6 +214,7 @@ public:
 	void SetControlPos(void);
 	int m_GaroSeroState;
 	void TurnGaroSero(int garosero);
+	
 	
 	
 };

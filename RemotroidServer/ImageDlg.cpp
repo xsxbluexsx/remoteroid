@@ -35,10 +35,10 @@ void CImageDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CImageDlg, CDialogEx)
 	ON_WM_PAINT()		
-	ON_WM_SETCURSOR()
-
-	
-	ON_WM_DESTROY()
+	ON_WM_SETCURSOR()	
+	ON_WM_DESTROY()	
+	ON_WM_TIMER()	
+	ON_WM_ACTIVATE()	
 END_MESSAGE_MAP()
 
 
@@ -124,11 +124,11 @@ BOOL CImageDlg::OnInitDialog()
 // 		}
 // 	}
 // 	if(hBackGlobal) ::FreeResource(hBackGlobal);
-	///////////////////////////////			
+	///////////////////////////////				
 	
+	SetTimer(0, 1000, 0);
 	
-	
-	return TRUE;  // return TRUE unless you set the focus to a control
+	return FALSE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
@@ -279,7 +279,7 @@ HBITMAP CImageDlg::Create32BitBitmap(CDC * pDC, int cx, int cy)
 
 BOOL CImageDlg::InitControlDlg(void)
 {
- 	m_pControlDlg = new CRemotroidServerDlg;
+ 	m_pControlDlg = new CRemotroidServerDlg;	
  	BOOL rt = m_pControlDlg->Create(IDD_REMOTROIDSERVER_DIALOG, this);	
 	if(rt == FALSE)
 	{
@@ -288,6 +288,7 @@ BOOL CImageDlg::InitControlDlg(void)
 	m_pControlDlg->MoveWindow(baseRect);
 	m_pControlDlg->SetResizingDlg();
 	m_pControlDlg->SetBkgDlg(this);
+	
 	return TRUE;
 }
 
@@ -303,24 +304,21 @@ void CImageDlg::OnDestroy()
 {
 	__super::OnDestroy();
 	m_bitmap[SERO].DeleteObject();
-	
+	m_bitmap[GARO].DeleteObject();
+	delete m_pBkgBitmap[GARO];
+	delete m_pBkgBitmap[SERO];
+// 	
 	// TODO: Add your message handler code here
 }
 
 
-void CImageDlg::TurnGaroSero(int garosero)
+//포커스를 컨트롤 다이얼로그로 옮긴다
+void CImageDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 {
-	CRect newRect;
-	if(garosero == GARO)
+	__super::OnActivate(nState, pWndOther, bMinimized);
+	if(m_pControlDlg != NULL && m_pControlDlg->m_hWnd != NULL)
 	{
-		newRect.left = (baseRect.left + baseRect.Width()/2) - (baseRect.Height()/2);
-		newRect.top = (baseRect.top + baseRect.Height()/2) - (baseRect.Width()/2);
-		newRect.right = newRect.left + baseRect.Height();
-		newRect.bottom = newRect.top + baseRect.Width();
-		baseRect = newRect;
+		m_pControlDlg->SetFocus();
 	}
-	else
-	{
-	}
-	OnResizeSkin(garosero);
+	// TODO: Add your message handler code here
 }

@@ -47,5 +47,9 @@ void CResizingControl::ResizingControl(int cx, int cy)
 
 	::MoveWindow(m_hReszingWnd, round(ratio[m_garoSeroState][LEFTRATIO]*cx), round(ratio[m_garoSeroState][TOPRATIO]*cy), 
 		round(ratio[m_garoSeroState][WIDTHRATIO]*cx), round(ratio[m_garoSeroState][HEIGHTRATIO]*cy), TRUE);
-	//::RedrawWindow(m_hReszingWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+	::RedrawWindow(m_hReszingWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+
+// 	::DeferWindowPos(hdwp, m_hReszingWnd, HWND_TOP, ratio[m_garoSeroState][LEFTRATIO]*cx, round(ratio[m_garoSeroState][TOPRATIO]*cy), 
+//  		round(ratio[m_garoSeroState][WIDTHRATIO]*cx), round(ratio[m_garoSeroState][HEIGHTRATIO]*cy), SWP_NOZORDER);
+
 }

@@ -56,6 +56,9 @@ using namespace Gdiplus;
 #pragma comment(lib, "imm32.lib")
 #include <imm.h>
 
+//컨트롤 다시 그릴때 깜빡임 방지 BeginDeferWindowPos이용
+extern HDWP hdwp;
+
 #ifdef _UNICODE
 #if defined _M_IX86
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
