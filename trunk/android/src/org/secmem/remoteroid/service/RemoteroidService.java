@@ -21,6 +21,7 @@ package org.secmem.remoteroid.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import org.secmem.remoteroid.data.RDSmsMessage;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
 import org.secmem.remoteroid.natives.FrameHandler;
 import org.secmem.remoteroid.natives.InputHandler;
+import org.secmem.remoteroid.network.AddOptionListener;
 import org.secmem.remoteroid.network.FileTransmissionListener;
 import org.secmem.remoteroid.network.ScreenTransmissionListener;
 import org.secmem.remoteroid.network.ServerConnectionListener;
@@ -38,10 +40,12 @@ import org.secmem.remoteroid.network.Tranceiver;
 import org.secmem.remoteroid.network.VirtualEventListener;
 import org.secmem.remoteroid.receiver.SmsReceiver;
 import org.secmem.remoteroid.util.CommandLine;
+import org.secmem.remoteroid.util.HongUtil;
 
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.PendingIntent.CanceledException;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -61,7 +65,7 @@ import android.util.Log;
  *
  */
 public class RemoteroidService extends Service 
-					implements ServerConnectionListener, FileTransmissionListener, VirtualEventListener, ScreenTransmissionListener{
+					implements ServerConnectionListener, FileTransmissionListener, VirtualEventListener, ScreenTransmissionListener, AddOptionListener{
 	public enum ServiceState{IDLE, CONNECTING, CONNECTED};
 	
 	private Tranceiver mTransmitter;
@@ -172,6 +176,8 @@ public class RemoteroidService extends Service
 		mTransmitter.setFileTransmissionListener(this);
 		mTransmitter.setVirtualEventListener(this);
 		mTransmitter.setFrameBufferListener(this);
+		mTransmitter.setAddOptionListener(this);
+		
 		mInputHandler = new InputHandler(this);
 		frameHandler = new FrameHandler(getApplicationContext());
 	}
@@ -428,6 +434,24 @@ public class RemoteroidService extends Service
 	public void onScreenTransferInterrupted() {
 		Log.i(DEBUG_STATE,"onScreenTransferInterrupted()");
 		
+	}
+
+	@Override
+	public void onStartFileExplorer() {
+		try {
+			HongUtil.excExplorer(getApplicationContext());
+		} catch (CanceledException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void onSendKakaotalkMessage(String msg) {
+		try {
+			HongUtil.UseKakaoLink.sendLinkMessage(getApplicationContext(), "Remoteroid", msg);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

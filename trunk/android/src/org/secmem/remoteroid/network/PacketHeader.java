@@ -33,6 +33,8 @@ public class PacketHeader{
 		public static final int NOTIFICATION_SEND = 10;
 		public static final int SCREEN_SEND_REQUESTED = 11;
 		public static final int SCREEN_STOP_REQUESTED = 12;
+		public static final int OPTION_START_EXPLORER = 13;
+		public static final int OPTION_SEND_KAKAOTALK = 14;
 	}
 	
 	/**

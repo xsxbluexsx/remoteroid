@@ -19,6 +19,8 @@
 
 package org.secmem.remoteroid.activity;
 
+import java.io.UnsupportedEncodingException;
+
 import org.secmem.remoteroid.IRemoteroid;
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.fragment.AuthenticateFragment;
@@ -30,6 +32,7 @@ import org.secmem.remoteroid.intent.RemoteroidIntent;
 import org.secmem.remoteroid.service.RemoteroidService;
 import org.secmem.remoteroid.service.RemoteroidService.ServiceState;
 import org.secmem.remoteroid.util.CommandLine;
+import org.secmem.remoteroid.util.HongUtil;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -176,6 +179,7 @@ public class Main extends SherlockFragmentActivity implements
         	mDriverFragment = new DriverInstallationFragment(this);
         }
         isDriverInstalled = CommandLine.isDriverExists(getApplicationContext());     
+        
     }
     
 	@Override

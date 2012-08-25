@@ -8,4 +8,5 @@ interface IRemoteroid{
 	void disconnect();
 	void onNotificationCatched(String notificationText, long when);
 	void onSendFile(in List<String> pathlist);
+	
 }
