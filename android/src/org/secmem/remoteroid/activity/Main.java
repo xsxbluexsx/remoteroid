@@ -224,7 +224,7 @@ public class Main extends SherlockFragmentActivity implements
 		.add(R.id.container, mDriverFragment).commit();
     
     	//Check driver existence
-        if(isDriverInstalled){
+        if(!isDriverInstalled){
             showFragment(mDriverFragment);
         }else{
         	bindService(new Intent(this, RemoteroidService.class), conn, Context.BIND_AUTO_CREATE);
