@@ -37,6 +37,7 @@
         <string name="ip_address">IP Address</string>
         <string name="password">Password</string>
         <string name="connect">Connect</string>
+        <string name="sign_up">Sign Up</string>
         <string name="auto_connect">Auto connect</string>
         <string name="connecting">Connecting…</string>
         <string name="filtering_mode">Filtering mode</string>
@@ -84,4 +85,7 @@
         <string name="disconnecting">Disconnecting...</string>
         <string name="back_finished">\'뒤로가기\'를 한번더 누르면 종료가 됩니다.</string>
         <string name="incoming_call_from_s">Incoming call from %s</string>
+        <string name="dialog_sign_up_title">e-mail과 password를 입력해주세요.</string>
+        <string name="dialog_sign_up_input_email">input email</string>
+        <string name="dialog_sign_up_input_pwd">input Password</string>
 </resources>

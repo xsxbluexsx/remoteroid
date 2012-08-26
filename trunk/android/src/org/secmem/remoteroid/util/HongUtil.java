@@ -39,6 +39,7 @@ import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -414,6 +415,12 @@ public class HongUtil {
 		return result;
 	}
 	
+	public static void excExplorer(Context context) throws CanceledException{
+		Intent i = new Intent(context, ExplorerActivity.class);
+		PendingIntent pi = PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_ONE_SHOT);
+		pi.send();
+	}
+	
 	// Feature - KakaoTalk Message Sending
 	public static class UseKakaoLink{
 		
@@ -429,10 +436,30 @@ public class HongUtil {
 		}
 	}
 	
-	public static void excExplorer(Context context) throws CanceledException{
-		Intent i = new Intent(context, ExplorerActivity.class);
-		PendingIntent pi = PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_ONE_SHOT);
-		pi.send();
+	
+	
+	public static class Pref 
+	{
+		public static final String MYPREFS = "Remoteroid_Preference";
+		
+		public static void setMyPreferences(String key, String value, Context c) 
+		{
+			int mode = Activity.MODE_PRIVATE;
+			SharedPreferences mySharedPreferences = c.getSharedPreferences(MYPREFS,mode);
+			SharedPreferences.Editor editor = mySharedPreferences.edit();
+			
+			editor.putString(key, value);
+			editor.commit();
+		}
+
+		public static String getMyPreferences(String key, Context c) 
+		{
+			String result="";
+			int mode = Activity.MODE_PRIVATE;
+			SharedPreferences mySharedPreferences = c.getSharedPreferences(MYPREFS,mode);
+			result=mySharedPreferences.getString(key,null);
+			return result;
+		}
 	}
 	
 }

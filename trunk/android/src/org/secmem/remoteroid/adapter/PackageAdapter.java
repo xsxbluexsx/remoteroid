@@ -1,15 +1,11 @@
 package org.secmem.remoteroid.adapter;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import org.secmem.remoteroid.R;
-import org.secmem.remoteroid.data.PackageList;
 import org.secmem.remoteroid.util.FilterUtil;
-import org.secmem.remoteroid.util.HongUtil;
 import org.secmem.remoteroid.util.PackageSoundSearcher;
 
-import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -108,11 +104,7 @@ public class PackageAdapter extends BaseAdapter{
 
 			@Override
 			public void onClick(View v) {
-				try {
-					HongUtil.UseKakaoLink.sendLinkMessage(mContext, "Remoteroid", "ok");
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				}
+				
 				ListView lv = (ListView)parent;
 				lv.getOnItemClickListener().onItemClick(null, null, position, 0);
 			}
