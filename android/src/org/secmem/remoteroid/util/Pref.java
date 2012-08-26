@@ -24,7 +24,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class Pref {
-	public static final String MYPREFS = "MyPreference";
+	public static final String MYPREFS = "Remoteroid_Preference";
+	
+	public static final String KEY_GCM_REGISTRATION = "REGISTRATION";
 	
 	public static void setMyPreferences(String key, String value, Context c) {
 		int mode = Activity.MODE_PRIVATE;

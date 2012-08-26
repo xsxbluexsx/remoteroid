@@ -4,7 +4,7 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="9" />
+    <uses-sdk android:minSdkVersion="9"/>
     <uses-permission android:name="android.permission.GET_TASKS"/>
     <uses-permission android:name="android.permission.RECEIVE_SMS"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
@@ -13,6 +13,15 @@
     <uses-permission android:name="android.permission.CALL_PHONE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    
+    <!-- Permission for request GCM Service -->
+    <permission android:name="org.secmem.remoteroid.permission.C2D_MESSAGE" android:protectionLevel="signature"/>
+    <uses-permission android:name="org.secmem.remoteroid.permission.C2D_MESSAGE"/>
+    
+    <!-- Permission for receive Message-->
+    <uses-permission  android:name="com.google.android.c2dm.permission.RECEIVE"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -78,6 +87,14 @@
 				android:resource="@xml/remoteroid_ime" />
 		</service>
         <service android:name=".service.FrameBufferService"></service>
+        <receiver android:name=".gcm.GCM_Receiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter >
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
+                <category android:name="org.secmem.remoteroid"/>
+            </intent-filter>
+        </receiver>
         
     </application>
 

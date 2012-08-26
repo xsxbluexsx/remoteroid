@@ -47,5 +47,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/connect" android:layout_marginTop="5dp" android:enabled="false"/>
+    <Button
+        android:id="@+id/signup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_up" android:layout_marginTop="5dp"/>
 
 </LinearLayout>

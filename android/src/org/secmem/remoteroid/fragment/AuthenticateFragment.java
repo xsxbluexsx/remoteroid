@@ -19,13 +19,22 @@
 
 package org.secmem.remoteroid.fragment;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.regex.Pattern;
 
 import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.lib.api.Codes;
+import org.secmem.remoteroid.lib.request.Response;
 import org.secmem.remoteroid.util.HongUtil;
 import org.secmem.remoteroid.util.Util;
+import org.secmem.remoteroid.web.RemoteroidWeb;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent.CanceledException;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -37,6 +46,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 
@@ -46,11 +56,14 @@ public class AuthenticateFragment extends Fragment {
 	private EditText mEdtPassword;
 	private CheckBox mCbAutoConn;
 	private Button mBtnConnect;
+	private Button mBtnSignUp;
 
 	private boolean isIpValid=false;
 	private boolean isPwValid=false;
 	
 	private ConnectionStateListener mListener;
+	
+	private ProgressDialog mProgress;
 	
 	public AuthenticateFragment(){
 		
@@ -73,6 +86,7 @@ public class AuthenticateFragment extends Fragment {
 		mEdtPassword = (EditText)view.findViewById(R.id.password);
 		mCbAutoConn = (CheckBox)view.findViewById(R.id.auto_connect);
 		mBtnConnect = (Button)view.findViewById(R.id.connect);
+		mBtnSignUp = (Button)view.findViewById(R.id.signup);
 		
 		mEdtIpAddr.addTextChangedListener(new TextWatcher(){
 
@@ -150,12 +164,98 @@ public class AuthenticateFragment extends Fragment {
 				
 			}
 		});
+		mBtnSignUp.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				ShowDialog();
+			}
+		});
 		
 //		if(Util.Connection.isAutoConnectEnabled(getActivity())){
 //			getFragmentManager().beginTransaction().replace(R.id.container, 
 //					new ConnectingFragment(Util.Connection.getIpAddress(getActivity()), Util.Connection.getPassword(getActivity())))
 //					.commit();
 //		}
+	}
+	
+	public void ShowDialog(){
+		final LinearLayout linear = (LinearLayout)View.inflate(getActivity(), R.layout.dialog_sign_up, null);
+		new AlertDialog.Builder(getActivity())
+		.setTitle(getString(R.string.dialog_sign_up_title))
+		.setIcon(R.drawable.ic_launcher)
+		.setView(linear)
+		.setPositiveButton("Account", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				EditText edtEmail = (EditText)linear.findViewById(R.id.dialog_sign_up_edt_email);
+				EditText edtPw = (EditText)linear.findViewById(R.id.dialog_sign_up_edt_pw);
+				
+				if(edtEmail.getText().length()==0 || edtPw.getText().length()==0){
+					if(edtEmail.getText().length()==0)
+						HongUtil.makeToast(getActivity(), getActivity().getString(R.string.dialog_sign_up_input_email));
+					else
+						HongUtil.makeToast(getActivity(), getActivity().getString(R.string.dialog_sign_up_input_pwd));
+					ShowDialog();
+				}
+				else{
+					new SignUpAsync().execute(edtEmail.getText().toString(), edtPw.getText().toString());
+				}
+				
+			}
+		})
+		.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+			}
+		})
+		.show();
+	}
+	
+	public class SignUpAsync extends AsyncTask<String, Void, Integer>{
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			mProgress = new ProgressDialog(getActivity());
+			mProgress.setTitle("Loading...");
+			mProgress.setMessage("Sign Up.......");
+			mProgress.show();
+		}
+		
+		@Override
+		protected Integer doInBackground(String... params) {
+			String email = params[0];
+			String pw = params[1];
+			Response response = null;
+			try {
+				response = RemoteroidWeb.addAccount(email, pw);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			return (response !=null && response.isSucceed())? Codes.Result.OK : Codes.Result.FAILED;
+		}
+		
+		@Override
+		protected void onPostExecute(Integer result) {
+			super.onPostExecute(result);
+			
+			mProgress.dismiss();
+			if(result == Codes.Result.OK){
+				HongUtil.makeToast(getActivity(), "Success.");
+			}
+			else if(result == Codes.Result.FAILED){
+				HongUtil.makeToast(getActivity(), "Please check your email again");
+				ShowDialog();
+			}
+			
+		}
 	}
 
 }

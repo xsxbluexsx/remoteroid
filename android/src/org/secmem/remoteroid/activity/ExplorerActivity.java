@@ -19,6 +19,7 @@
 
 package org.secmem.remoteroid.activity;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -162,6 +163,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		
 		adapterFilter = new IntentFilter();
 		adapterFilter.addAction(RemoteroidIntent.ACTION_FILE_TRANSMISSION_SECCESS);
+		
 //		Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
 //		i = new Intent(ExplorerActivity.this, FrameBufferService.class);
 //		startService(i);

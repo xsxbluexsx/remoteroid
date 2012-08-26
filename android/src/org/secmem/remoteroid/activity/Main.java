@@ -19,7 +19,8 @@
 
 package org.secmem.remoteroid.activity;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
 import org.secmem.remoteroid.IRemoteroid;
 import org.secmem.remoteroid.R;
@@ -28,12 +29,16 @@ import org.secmem.remoteroid.fragment.ConnectedFragment;
 import org.secmem.remoteroid.fragment.ConnectingFragment;
 import org.secmem.remoteroid.fragment.ConnectionStateListener;
 import org.secmem.remoteroid.fragment.DriverInstallationFragment;
+import org.secmem.remoteroid.gcm.GcmActionType;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
+import org.secmem.remoteroid.lib.request.Response;
 import org.secmem.remoteroid.service.RemoteroidService;
 import org.secmem.remoteroid.service.RemoteroidService.ServiceState;
 import org.secmem.remoteroid.util.CommandLine;
-import org.secmem.remoteroid.util.HongUtil;
+import org.secmem.remoteroid.util.Pref;
+import org.secmem.remoteroid.web.RemoteroidWeb;
 
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -44,6 +49,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -180,6 +186,9 @@ public class Main extends SherlockFragmentActivity implements
         }
         isDriverInstalled = CommandLine.isDriverExists(getApplicationContext());     
         
+        if(Pref.getMyPreferences(Pref.KEY_GCM_REGISTRATION, Main.this)==null){
+        	getGcmAuth();
+        }
     }
     
 	@Override
@@ -215,7 +224,7 @@ public class Main extends SherlockFragmentActivity implements
 		.add(R.id.container, mDriverFragment).commit();
     
     	//Check driver existence
-        if(!isDriverInstalled){
+        if(isDriverInstalled){
             showFragment(mDriverFragment);
         }else{
         	bindService(new Intent(this, RemoteroidService.class), conn, Context.BIND_AUTO_CREATE);
@@ -234,9 +243,16 @@ public class Main extends SherlockFragmentActivity implements
 	    filter.addAction(RemoteroidIntent.ACTION_INTERRUPTED);
 	    filter.addAction(RemoteroidIntent.ACTION_DISCONNECTED);
 	    registerReceiver(serviceConnReceiver, filter);
-	    
+
 	    if(!isDriverInstalled)
 	    	showLastFragment();
+	    
+	    // Remote Login
+	    if(getIntent().getStringExtra(GcmActionType.ActionMessage.ACTION_MESSAGE_IP) !=null){
+	    	String ip = getIntent().getStringExtra(GcmActionType.ActionMessage.ACTION_MESSAGE_IP);
+	    	String pw = getIntent().getStringExtra(GcmActionType.ActionMessage.ACTION_MESSAGE_PASSWORD);
+	    	onConnectRequested(ip, pw);
+	    }
 	}
 	
 	@Override
@@ -251,6 +267,13 @@ public class Main extends SherlockFragmentActivity implements
 		
 		if(mRemoteroidSvc!=null)
 			unbindService(conn);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if(Gcm_BR.isOrderedBroadcast())
+			unregisterReceiver(Gcm_BR);
 	}
 
 	@Override
@@ -358,5 +381,30 @@ public class Main extends SherlockFragmentActivity implements
 		// Bind to remoteroid service
 		bindService(new Intent(this, RemoteroidService.class), conn, Context.BIND_AUTO_CREATE);
 	}
+	
+	public void getGcmAuth(){
+		
+		Intent res = new Intent(GcmActionType.RegistrationToServer.RESISTER);
+		res.putExtra("app",  PendingIntent.getBroadcast(this, 0, new Intent(), 0));
+		res.putExtra("sender", "godgjdgjd@gmail.com");
+		startService(res);
+		
+		IntentFilter filter = new IntentFilter();
+		filter.addAction("org.secmem.remoteroid.REGI"); //
+		registerReceiver(Gcm_BR, filter);
+	}
+	
+	BroadcastReceiver Gcm_BR = new BroadcastReceiver() {
+		@SuppressWarnings("unchecked")
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+
+			if (intent.getAction().equals("org.secmem.remoteroid.REGI")) {
+				Pref.setMyPreferences(Pref.KEY_GCM_REGISTRATION, intent.getExtras().getString("regi_id"), Main.this);
+			}
+		}
+	};
 
 }
