@@ -10,6 +10,8 @@ import org.secmem.remoteroid.lib.request.Request;
 import org.secmem.remoteroid.lib.request.Request.RequestFactory;
 import org.secmem.remoteroid.lib.request.Response;
 
+import android.util.Log;
+
 public class RemoteroidWeb {
 	
 	public static Response addAccount(String email, String password) throws MalformedURLException, IOException{
@@ -35,10 +37,29 @@ public class RemoteroidWeb {
 				
 	}
 	
+	public static Response addDevice(String nickname, String email, String pwd, String reg) throws MalformedURLException, IOException{
+		Request req = RequestFactory.getRequest(API.Device.ADD_DEVICE);
+		Account account = new Account();
+		account.setEmail(email);
+		account.setPassword(pwd);
+		
+		Device dev = new Device();
+		dev.setNickname(nickname);
+		dev.setRegistrationKey(reg);
+		dev.setOwnerAccount(account);
+		
+		Log.i("qq","nickname = "+nickname);
+		Log.i("qq","email = "+email);
+		Log.i("qq","pwd = "+pwd);
+		Log.i("qq","reg = "+reg);
+		
+		return req.attachPayload(dev).sendRequest();
+	}
+	
 	public static void deleteAccount(){
 		Request req = RequestFactory.getRequest(API.Account.DELETE_ACCOUNT);
 		
-		
+//		authentication
 	}
 	
 	

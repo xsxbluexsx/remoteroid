@@ -236,7 +236,6 @@ public class HongUtil {
 //				mediaData, null, null, null);
 		
 		//	MediaStore.Audio.Media.TITLE + " asc"    타이틀순 정렬
-//		Log.i("qq", ""+cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
 		
 		if (cursor != null && cursor.moveToFirst()){
              String path;
@@ -391,7 +390,6 @@ public class HongUtil {
 		
 		result = String.format("%.1f", re);
 		
-//		Log.i("parse","final result = = "+result);
 		return result;
 	}
 	
@@ -401,7 +399,6 @@ public class HongUtil {
 		
 		result = String.format("%.1f", re);
 		
-//		Log.i("parse","final result = = "+result);
 		return result;
 	}
 	

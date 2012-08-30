@@ -48,7 +48,6 @@ public class FrameBufferService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.i("qq","onStartCommand");
 		
 //		transmitter = new Tranceiver();
 		Intent bIntent = new Intent("connecting_fragment_connect");
@@ -70,7 +69,6 @@ public class FrameBufferService extends Service {
 //			}
 //		}
 		fHandler = new FrameHandler(getApplicationContext());
-		Log.i("qq","onstr2");
 		suPermission();
 		flag=true;
 		Thread thread = new Thread(){
@@ -102,7 +100,6 @@ public class FrameBufferService extends Service {
 					
 					
 					count++;
-					Log.i("qq","Service");
 					SystemClock.sleep(3000);
 				}
 				
@@ -137,7 +134,6 @@ public class FrameBufferService extends Service {
 //	
 //	
 //	count++;
-//	Log.i("qq","Service");
 	
 	public void suPermission() {
 		try {

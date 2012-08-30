@@ -29,17 +29,22 @@ import org.secmem.remoteroid.adapter.DataList;
 import org.secmem.remoteroid.adapter.ExplorerAdapter;
 import org.secmem.remoteroid.data.CategoryList;
 import org.secmem.remoteroid.dialog.CategoryDialog;
+import org.secmem.remoteroid.dialog.DialogListener;
+import org.secmem.remoteroid.dialog.DialogMenu;
 import org.secmem.remoteroid.expinterface.OnFileLongClickListener;
 import org.secmem.remoteroid.expinterface.OnFileSelectedListener;
 import org.secmem.remoteroid.expinterface.OnPathChangedListener;
+import org.secmem.remoteroid.fragment.AuthenticateFragment.SignUpAsync;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
 import org.secmem.remoteroid.service.RemoteroidService;
 import org.secmem.remoteroid.util.HongUtil;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -58,12 +63,14 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockActivity;
 
-public class ExplorerActivity extends SherlockActivity implements OnScrollListener {
+public class ExplorerActivity extends SherlockActivity implements OnScrollListener, DialogListener {
 	
 	public static boolean SCROLL_STATE = false;
 	public static ArrayList<CategoryList> searchList = new ArrayList<CategoryList>();
@@ -229,10 +236,12 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 				}
 				break;
 			
-			case R.id.explorer_btn_category:			
+			case R.id.explorer_btn_category:	
 				
-				Intent intent = new Intent(ExplorerActivity.this, CategoryDialog.class);
-				startActivityForResult(intent, CODE_CATEGORY);
+				DialogMenu.categoryDialog(ExplorerActivity.this, ExplorerActivity.this);
+				
+//				Intent intent = new Intent(ExplorerActivity.this, CategoryDialog.class);
+//				startActivityForResult(intent, CODE_CATEGORY);
 				break;
 				
 			case R.id.explorer_btn_exit:
@@ -447,6 +456,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		this.gridview = gridview;
 	}
 	
+	
 	private BroadcastReceiver adapter_BR = new BroadcastReceiver() {
 		
 		@Override
@@ -459,6 +469,16 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 				adapter.notifyDataSetChanged();
 			}
 		}
-	}; 
+	};
+
+
+	@Override
+	public void onSearchCategory(String type, String result) {
+		if(searchList.size()!=0){
+			searchList.clear();
+		}
+		
+		new SearchAsync().execute(result,type);
+	} 
 	
 }

@@ -34,6 +34,7 @@ import org.secmem.remoteroid.natives.FrameHandler;
 import org.secmem.remoteroid.natives.InputHandler;
 import org.secmem.remoteroid.network.AddOptionListener;
 import org.secmem.remoteroid.network.FileTransmissionListener;
+import org.secmem.remoteroid.network.PacketHeader.OpCode;
 import org.secmem.remoteroid.network.ScreenTransmissionListener;
 import org.secmem.remoteroid.network.ServerConnectionListener;
 import org.secmem.remoteroid.network.Tranceiver;
@@ -79,14 +80,14 @@ public class RemoteroidService extends Service
 	private IBinder mBinder = new IRemoteroid.Stub() {
 		
 		@Override
-		public void onNotificationCatched(final String notificationText, long when)
+		public void onNotificationCatched(final String notificationText, long when, final int type)
 				throws RemoteException {
 			if(mTransmitter!=null && mTransmitter.isConnected()){
 				new AsyncTask<Void, Void, Void>(){
 	
 					@Override
 					protected Void doInBackground(Void... params) {
-						mTransmitter.sendNotification(notificationText);
+						mTransmitter.sendNotification(notificationText,type);
 						return null;
 					}
 					
@@ -101,7 +102,7 @@ public class RemoteroidService extends Service
 		}
 
 		@Override
-		public void connect(final String ipAddress, final String password)
+		public void connect(final String ipAddress)
 				throws RemoteException {
 			
 			new AsyncTask<Void, Void, Void>(){
@@ -193,7 +194,7 @@ public class RemoteroidService extends Service
 		
 						@Override
 						protected Void doInBackground(Void... params) {
-							mTransmitter.sendNotification(String.format(getString(R.string.incoming_call_from_s), incomingNumber));
+							mTransmitter.sendNotification(String.format(getString(R.string.incoming_call_from_s), incomingNumber), OpCode.NOTIFICATION_SEND);
 							return null;
 						}
 						
@@ -375,7 +376,6 @@ public class RemoteroidService extends Service
 			public void run() {
 				while(isTransmission){
 					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
-					Log.i("sendscreen","sendScreen");
 					mTransmitter.screenTransmission(frameStream.toByteArray());
 				}
 			}

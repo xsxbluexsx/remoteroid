@@ -25,20 +25,24 @@ import java.util.regex.Pattern;
 
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.lib.api.Codes;
+import org.secmem.remoteroid.lib.data.Account;
 import org.secmem.remoteroid.lib.request.Response;
 import org.secmem.remoteroid.util.HongUtil;
+import org.secmem.remoteroid.util.Pref;
 import org.secmem.remoteroid.util.Util;
 import org.secmem.remoteroid.web.RemoteroidWeb;
 
 import android.app.AlertDialog;
-import android.app.PendingIntent.CanceledException;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -46,9 +50,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 public class AuthenticateFragment extends Fragment {
 	
@@ -160,7 +164,8 @@ public class AuthenticateFragment extends Fragment {
 			public void onClick(View v) {
 				
 				Util.Connection.saveConnectionData(getActivity(), mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString());
-				mListener.onConnectRequested(mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString());
+//				mListener.onConnectRequested(mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString());
+				mListener.onConnectRequested(mEdtIpAddr.getText().toString());
 				
 			}
 		});
@@ -238,8 +243,14 @@ public class AuthenticateFragment extends Fragment {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			if(response != null && response.isSucceed()){
+				Account account = response.getPayloadAsAccount();
+				Pref.setMyPreferences(Pref.UseWebPref.Account.EMAIL, account.getEmail(), getActivity());
+				Pref.setMyPreferences(Pref.UseWebPref.Account.PASSWORD, pw, getActivity());
+				Pref.setMyPreferences(Pref.UseWebPref.Account.SECURITY_PASSWORD, account.getPassword(), getActivity());
+			}
 			
-			return (response !=null && response.isSucceed())? Codes.Result.OK : Codes.Result.FAILED;
+			return (response !=null && response.isSucceed())? Codes.Result.OK : response.getErrorCode();
 		}
 		
 		@Override
@@ -248,14 +259,72 @@ public class AuthenticateFragment extends Fragment {
 			
 			mProgress.dismiss();
 			if(result == Codes.Result.OK){
-				HongUtil.makeToast(getActivity(), "Success.");
+//				HongUtil.makeToast(getActivity(), "Success.");
+				new AddDeviceAsync().execute();
 			}
-			else if(result == Codes.Result.FAILED){
-				HongUtil.makeToast(getActivity(), "Please check your email again");
+			else {
+				if(result == Codes.Error.Account.DUPLICATE_EMAIL){
+					HongUtil.makeToast(getActivity(), "email is duplicate");
+				}
+				else if(result == Codes.Error.Account.AUTH_FAILED){
+					HongUtil.makeToast(getActivity(), "Auth failed..");
+				}
 				ShowDialog();
 			}
 			
 		}
+	}
+	
+	public class AddDeviceAsync extends AsyncTask<String, Void, Integer>{
+
+		@Override
+		protected void onPreExecute() {
+			
+			super.onPreExecute();
+			SystemClock.sleep(300);
+			mProgress.setTitle("Loading...");
+			mProgress.setMessage("Setting Device Info.......");
+			mProgress.show();
+		}
+
+		@Override
+		protected Integer doInBackground(String... params) {
+			
+			Response response = null;
+			String email = Pref.getMyPreferences(Pref.UseWebPref.Account.EMAIL, getActivity());
+			String pwd = Pref.getMyPreferences(Pref.UseWebPref.Account.SECURITY_PASSWORD, getActivity());
+			String reg = Pref.getMyPreferences(Pref.KEY_GCM_REGISTRATION, getActivity());
+			
+			try {
+				response = RemoteroidWeb.addDevice(Build.MODEL, email, pwd, reg);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			return (response !=null && response.isSucceed())? Codes.Result.OK : response.getErrorCode();
+		}
+		
+		@Override
+		protected void onPostExecute(Integer result) {
+			super.onPostExecute(result);
+			
+			mProgress.dismiss();
+			if(result == Codes.Result.OK){
+				Pref.setMyPreferences(Pref.ConfirmCommunication.IS_ADD_DEVICE, true, getActivity());
+				HongUtil.makeToast(getActivity(), "Success.");
+			}
+			else {
+				if(result == Codes.Error.Device.DUPLICATE_NAME){
+					HongUtil.makeToast(getActivity(), "Email is duplicate");
+				}
+				else if(result == Codes.Error.Device.DEVICE_NOT_FOUND){
+					HongUtil.makeToast(getActivity(), "Device not found");
+				}
+			}
+		}
+		
 	}
 
 }

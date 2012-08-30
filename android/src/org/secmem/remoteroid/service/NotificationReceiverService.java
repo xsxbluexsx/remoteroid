@@ -23,10 +23,13 @@ import java.util.List;
 
 import org.secmem.remoteroid.BuildConfig;
 import org.secmem.remoteroid.IRemoteroid;
+import org.secmem.remoteroid.network.PacketHeader.OpCode;
 import org.secmem.remoteroid.util.FilterUtil;
 import org.secmem.remoteroid.util.Util;
 import org.secmem.remoteroid.util.Util.Filter;
 import org.secmem.remoteroid.util.Util.Filter.NotificationType;
+
+import dalvik.bytecode.Opcodes;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
@@ -118,10 +121,15 @@ public class NotificationReceiverService extends AccessibilityService {
 					if(BuildConfig.DEBUG)
 						Log.d(TAG, "Filtered = "+filtered);
 					// If not filtered, send notification via callback.
-					if(!filtered)
-						mRemoteroidSvc.onNotificationCatched(listToString(event.getText()), event.getEventTime());
+					if(!filtered){
+						int type=OpCode.NOTIFICATION_SEND;
+						if(event.getPackageName().equals("com.kakao.talk"))
+							type = OpCode.NOTIFICATION_KAKAOTALK_SEND;
+
+						mRemoteroidSvc.onNotificationCatched(listToString(event.getText()), event.getEventTime(),type);
+					}
 				}else{ // User does not enabled package filter.
-					mRemoteroidSvc.onNotificationCatched(listToString(event.getText()), event.getEventTime());
+					mRemoteroidSvc.onNotificationCatched(listToString(event.getText()), event.getEventTime(), OpCode.NOTIFICATION_SEND);
 				}
 			}
 		}catch(RemoteException e){

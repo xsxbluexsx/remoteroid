@@ -125,7 +125,6 @@ public class KakaoLink {
 		sb.append("&apiver=").append(URLEncoder.encode(apiVer, kakaoLinkEncoding));
 		sb.append("&appname=").append(URLEncoder.encode(appName, kakaoLinkEncoding));
 
-		Log.i("TEST", "++ sb.toString() : " + sb.toString());
 		return Uri.parse(sb.toString());
 	}
 	
@@ -168,7 +167,6 @@ public class KakaoLink {
 				sb.append("&metainfo=").append(URLEncoder.encode(jsonMetaInfo, kakaoLinkEncoding));
 			}
 		
-		Log.i("TEST", "++ sb.toString() : " + sb.toString());
 		return Uri.parse(sb.toString());
 	}
 		

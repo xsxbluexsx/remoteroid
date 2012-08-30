@@ -24,9 +24,28 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class Pref {
+	
 	public static final String MYPREFS = "Remoteroid_Preference";
 	
 	public static final String KEY_GCM_REGISTRATION = "REGISTRATION";
+	
+	public class ConfirmCommunication{
+		
+		public static final String IS_LOGIN = "IS_LOGIN";
+		public static final String IS_ADD_DEVICE = "IS_ADD_DEVICE";
+		
+	}
+	
+	public class UseWebPref{
+		
+		public class Account{
+			public static final String EMAIL = "ACCOUNT_EMAIL";
+			public static final String SECURITY_PASSWORD = "ACCOUNT_SECURITY_PWD";
+			public static final String PASSWORD = "ACCOUNT_PWD";
+		}
+		
+	}
+	
 	
 	public static void setMyPreferences(String key, String value, Context c) {
 		int mode = Activity.MODE_PRIVATE;
@@ -36,12 +55,29 @@ public class Pref {
 		editor.putString(key, value);
 		editor.commit();
 	}
+	
+	public static void setMyPreferences(String key, boolean value, Context c) {
+		int mode = Activity.MODE_PRIVATE;
+		SharedPreferences mySharedPreferences = c.getSharedPreferences(MYPREFS,mode);
+		SharedPreferences.Editor editor = mySharedPreferences.edit();
+		
+		editor.putBoolean(key, value);
+		editor.commit();
+	}
 
 	public static String getMyPreferences(String key, Context c) {
 		String result="";
 		int mode = Activity.MODE_PRIVATE;
 		SharedPreferences mySharedPreferences = c.getSharedPreferences(MYPREFS,mode);
 		result=mySharedPreferences.getString(key,null);
+		return result;
+	}
+	
+	public static boolean getMyBooleanPreferences(String key, Context c) {
+		boolean result=false;
+		int mode = Activity.MODE_PRIVATE;
+		SharedPreferences mySharedPreferences = c.getSharedPreferences(MYPREFS,mode);
+		result=mySharedPreferences.getBoolean(key,false);
 		return result;
 	}
 }
