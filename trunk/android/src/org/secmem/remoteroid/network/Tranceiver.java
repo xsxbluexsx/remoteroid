@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import org.secmem.remoteroid.data.NativeKeyCode;
 import org.secmem.remoteroid.network.PacketHeader.OpCode;
+import org.secmem.remoteroid.service.NotificationReceiverService;
 
 import android.os.Build;
 import android.util.DisplayMetrics;
@@ -139,10 +140,10 @@ public class Tranceiver  implements PacketListener{
 	}
 	
 	//Send notification to Host
-	public void sendNotification(String str){
+	public void sendNotification(String str,int opcode){
 		try{
 			fileTransReceiver.send(
-					new Packet(OpCode.NOTIFICATION_SEND, str.getBytes(), str.getBytes().length));
+					new Packet(opcode, str.getBytes(), str.getBytes().length));
 		}catch(IOException e){
 			e.printStackTrace();
 		}

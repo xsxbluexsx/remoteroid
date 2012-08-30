@@ -31,25 +31,33 @@ import org.secmem.remoteroid.fragment.ConnectionStateListener;
 import org.secmem.remoteroid.fragment.DriverInstallationFragment;
 import org.secmem.remoteroid.gcm.GcmActionType;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
+import org.secmem.remoteroid.lib.api.Codes;
 import org.secmem.remoteroid.lib.request.Response;
 import org.secmem.remoteroid.service.RemoteroidService;
 import org.secmem.remoteroid.service.RemoteroidService.ServiceState;
 import org.secmem.remoteroid.util.CommandLine;
+import org.secmem.remoteroid.util.HongUtil;
 import org.secmem.remoteroid.util.Pref;
 import org.secmem.remoteroid.web.RemoteroidWeb;
 
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
+import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -65,6 +73,11 @@ public class Main extends SherlockFragmentActivity implements
 	private static Fragment mConnectingFragment;
 	private static Fragment mConnectedFragment;
 	private static Fragment mDriverFragment;
+	
+	private ProgressDialog mProgress;
+	
+	private String remoteIp=null;
+	private PowerManager.WakeLock wl;
 	
 	private IRemoteroid mRemoteroidSvc;
 	private ServiceConnection conn = new ServiceConnection() {
@@ -91,6 +104,8 @@ public class Main extends SherlockFragmentActivity implements
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
+			if(remoteIp !=null)
+				onConnectRequested(remoteIp);
 		}
 
 		@Override
@@ -189,6 +204,10 @@ public class Main extends SherlockFragmentActivity implements
         if(Pref.getMyPreferences(Pref.KEY_GCM_REGISTRATION, Main.this)==null){
         	getGcmAuth();
         }
+        if(getIntent().getStringExtra(GcmActionType.ActionMessage.ACTION_MESSAGE_IP) !=null){
+        	getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+	    	remoteIp = getIntent().getStringExtra(GcmActionType.ActionMessage.ACTION_MESSAGE_IP);
+        }
     }
     
 	@Override
@@ -229,6 +248,7 @@ public class Main extends SherlockFragmentActivity implements
         }else{
         	bindService(new Intent(this, RemoteroidService.class), conn, Context.BIND_AUTO_CREATE);
        	}
+        // Remote Login
     }
 
 	@Override
@@ -247,12 +267,7 @@ public class Main extends SherlockFragmentActivity implements
 	    if(!isDriverInstalled)
 	    	showLastFragment();
 	    
-	    // Remote Login
-	    if(getIntent().getStringExtra(GcmActionType.ActionMessage.ACTION_MESSAGE_IP) !=null){
-	    	String ip = getIntent().getStringExtra(GcmActionType.ActionMessage.ACTION_MESSAGE_IP);
-	    	String pw = getIntent().getStringExtra(GcmActionType.ActionMessage.ACTION_MESSAGE_PASSWORD);
-	    	onConnectRequested(ip, pw);
-	    }
+	   
 	}
 	
 	@Override
@@ -320,16 +335,17 @@ public class Main extends SherlockFragmentActivity implements
 	};
 
 	@Override
-	public void onConnectRequested(String ipAddress, String password) {
+	public void onConnectRequested(String ipAddress) {
 		showFragment(mConnectingFragment);
-	
+
 		try {
-			mRemoteroidSvc.connect(ipAddress, password);
+			mRemoteroidSvc.connect(ipAddress);
 		} catch (RemoteException e) {
 			e.printStackTrace();
-			
+
 			showFragment(mAuthFragment);
 		}
+
 	}
 	
 	@Override
@@ -386,7 +402,8 @@ public class Main extends SherlockFragmentActivity implements
 		
 		Intent res = new Intent(GcmActionType.RegistrationToServer.RESISTER);
 		res.putExtra("app",  PendingIntent.getBroadcast(this, 0, new Intent(), 0));
-		res.putExtra("sender", "godgjdgjd@gmail.com");
+//		res.putExtra("sender", "godgjdgjd@gmail.com");
+		res.putExtra("sender", "816046818963");
 		startService(res);
 		
 		IntentFilter filter = new IntentFilter();
@@ -406,5 +423,69 @@ public class Main extends SherlockFragmentActivity implements
 			}
 		}
 	};
+	
+	private class LoginAsync extends AsyncTask<String, Void, Integer>{
+		
+		private String ip;
+		private String pwd;
+		
+		public LoginAsync(String ip, String pwd) {
+			this.ip = ip;
+			this.pwd = pwd;
+		}
 
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+			mProgress = new ProgressDialog(Main.this);
+			mProgress.setTitle("Loading...");
+			mProgress.setMessage("Sign in to Server...");
+			mProgress.show();
+		}
+
+		@Override
+		protected Integer doInBackground(String... params) {
+			
+			TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+			String reg = (Pref.getMyPreferences(Pref.KEY_GCM_REGISTRATION, Main.this)!=null)? Pref.getMyPreferences(Pref.KEY_GCM_REGISTRATION, Main.this) : "";
+			
+			Response response = null;
+			try {
+				response = RemoteroidWeb.doLogin(Build.MODEL, reg, tm.getDeviceId());
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			return (response !=null && response.isSucceed())? Codes.Result.OK : response.getErrorCode();
+		}
+		
+		@Override
+		protected void onPostExecute(Integer result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			mProgress.dismiss();
+			if(result == Codes.Result.OK){
+				HongUtil.makeToast(Main.this, "Success.");
+				showFragment(mConnectingFragment);
+				
+				try {
+					mRemoteroidSvc.connect(this.ip);
+				} catch (RemoteException e) {
+					e.printStackTrace();
+					
+					showFragment(mAuthFragment);
+				}
+			}
+			else {
+				HongUtil.makeToast(Main.this, "auth failed");
+			}
+			
+			
+		}
+		
+	}
+	
 }

@@ -88,4 +88,5 @@
         <string name="dialog_sign_up_title">e-mail과 password를 입력해주세요.</string>
         <string name="dialog_sign_up_input_email">input email</string>
         <string name="dialog_sign_up_input_pwd">input Password</string>
+        <string name="dialog_category_title">Select the wanted category</string>
 </resources>

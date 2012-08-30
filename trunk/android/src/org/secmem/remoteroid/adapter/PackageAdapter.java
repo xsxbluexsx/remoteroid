@@ -130,7 +130,6 @@ public class PackageAdapter extends BaseAdapter{
 		int count = 0 ;
 		setAfterStr(msg);
 		sPackageList.clear();
-		Log.i("qq","searchSoundInitial");
 		for(int i = 0 ; i < mPackageList.size() ; i++){
 			
 			if(PackageSoundSearcher.matchString((mPackageList.get(i).applicationInfo.loadLabel(mPkgManager)).toString(), msg)){
