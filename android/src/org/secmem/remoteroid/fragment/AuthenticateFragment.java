@@ -245,9 +245,9 @@ public class AuthenticateFragment extends Fragment {
 			}
 			if(response != null && response.isSucceed()){
 				Account account = response.getPayloadAsAccount();
-				Pref.setMyPreferences(Pref.UseWebPref.Account.EMAIL, account.getEmail(), getActivity());
-				Pref.setMyPreferences(Pref.UseWebPref.Account.PASSWORD, pw, getActivity());
-				Pref.setMyPreferences(Pref.UseWebPref.Account.SECURITY_PASSWORD, account.getPassword(), getActivity());
+				Pref.setMyPreferences(Pref.Account.EMAIL, account.getEmail(), getActivity());
+				Pref.setMyPreferences(Pref.Account.PASSWORD, pw, getActivity());
+				Pref.setMyPreferences(Pref.Account.SECURITY_PASSWORD, account.getPassword(), getActivity());
 			}
 			
 			return (response !=null && response.isSucceed())? Codes.Result.OK : response.getErrorCode();
@@ -291,9 +291,9 @@ public class AuthenticateFragment extends Fragment {
 		protected Integer doInBackground(String... params) {
 			
 			Response response = null;
-			String email = Pref.getMyPreferences(Pref.UseWebPref.Account.EMAIL, getActivity());
-			String pwd = Pref.getMyPreferences(Pref.UseWebPref.Account.SECURITY_PASSWORD, getActivity());
-			String reg = Pref.getMyPreferences(Pref.KEY_GCM_REGISTRATION, getActivity());
+			String email = Pref.getMyPreferences(Pref.Account.EMAIL, getActivity());
+			String pwd = Pref.getMyPreferences(Pref.Account.SECURITY_PASSWORD, getActivity());
+			String reg = Pref.getMyPreferences(Pref.GCM.KEY_GCM_REGISTRATION, getActivity());
 			
 			try {
 				response = RemoteroidWeb.addDevice(Build.MODEL, email, pwd, reg);
@@ -312,7 +312,7 @@ public class AuthenticateFragment extends Fragment {
 			
 			mProgress.dismiss();
 			if(result == Codes.Result.OK){
-				Pref.setMyPreferences(Pref.ConfirmCommunication.IS_ADD_DEVICE, true, getActivity());
+				Pref.setMyPreferences(Pref.Authentication.IS_ADD_DEVICE, true, getActivity());
 				HongUtil.makeToast(getActivity(), "Success.");
 			}
 			else {

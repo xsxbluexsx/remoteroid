@@ -89,4 +89,5 @@
         <string name="dialog_sign_up_input_email">input email</string>
         <string name="dialog_sign_up_input_pwd">input Password</string>
         <string name="dialog_category_title">Select the wanted category</string>
+        <string name="authentication_title">If your ID have existing, input your ID &amp; PASSWORD</string>
 </resources>
