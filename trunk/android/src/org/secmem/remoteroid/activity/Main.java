@@ -24,11 +24,13 @@ import java.net.MalformedURLException;
 
 import org.secmem.remoteroid.IRemoteroid;
 import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.dialog.SignUpDialog;
 import org.secmem.remoteroid.fragment.AuthenticateFragment;
 import org.secmem.remoteroid.fragment.ConnectedFragment;
 import org.secmem.remoteroid.fragment.ConnectingFragment;
 import org.secmem.remoteroid.fragment.ConnectionStateListener;
 import org.secmem.remoteroid.fragment.DriverInstallationFragment;
+import org.secmem.remoteroid.fragment.AuthenticateFragment.SignUpAsync;
 import org.secmem.remoteroid.gcm.GcmActionType;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
 import org.secmem.remoteroid.lib.api.Codes;
@@ -40,11 +42,13 @@ import org.secmem.remoteroid.util.HongUtil;
 import org.secmem.remoteroid.util.Pref;
 import org.secmem.remoteroid.web.RemoteroidWeb;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -54,10 +58,14 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -201,9 +209,11 @@ public class Main extends SherlockFragmentActivity implements
         }
         isDriverInstalled = CommandLine.isDriverExists(getApplicationContext());     
         
-        if(Pref.getMyPreferences(Pref.KEY_GCM_REGISTRATION, Main.this)==null){
+        if(Pref.getMyPreferences(Pref.GCM.KEY_GCM_REGISTRATION, Main.this)==null){
         	getGcmAuth();
         }
+        
+        // remote connect
         if(getIntent().getStringExtra(GcmActionType.ActionMessage.ACTION_MESSAGE_IP) !=null){
         	getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 	    	remoteIp = getIntent().getStringExtra(GcmActionType.ActionMessage.ACTION_MESSAGE_IP);
@@ -248,7 +258,11 @@ public class Main extends SherlockFragmentActivity implements
         }else{
         	bindService(new Intent(this, RemoteroidService.class), conn, Context.BIND_AUTO_CREATE);
        	}
-        // Remote Login
+        
+        if(!Pref.getMyBooleanPreferences(Pref.Authentication.isExecute, Main.this)){
+        	ShowAuthDialog();
+        	Pref.setMyPreferences(Pref.Authentication.isExecute, true, Main.this);
+        }
     }
 
 	@Override
@@ -267,7 +281,6 @@ public class Main extends SherlockFragmentActivity implements
 	    if(!isDriverInstalled)
 	    	showLastFragment();
 	    
-	   
 	}
 	
 	@Override
@@ -419,21 +432,58 @@ public class Main extends SherlockFragmentActivity implements
 			// TODO Auto-generated method stub
 
 			if (intent.getAction().equals("org.secmem.remoteroid.REGI")) {
-				Pref.setMyPreferences(Pref.KEY_GCM_REGISTRATION, intent.getExtras().getString("regi_id"), Main.this);
+				Pref.setMyPreferences(Pref.GCM.KEY_GCM_REGISTRATION, intent.getExtras().getString("regi_id"), Main.this);
 			}
 		}
 	};
 	
+	public void ShowAuthDialog(){
+		final LinearLayout linear = (LinearLayout)View.inflate(Main.this, R.layout.dialog_sign_up, null);
+		new AlertDialog.Builder(Main.this)
+		.setTitle(getString(R.string.authentication_title))
+		.setIcon(R.drawable.ic_launcher)
+		.setView(linear)
+		.setCancelable(true)
+		.setPositiveButton("Authentication", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				EditText edtEmail = (EditText)linear.findViewById(R.id.dialog_sign_up_edt_email);
+				EditText edtPw = (EditText)linear.findViewById(R.id.dialog_sign_up_edt_pw);
+				
+				if(edtEmail.getText().length()==0 || edtPw.getText().length()==0){
+					if(edtEmail.getText().length()==0)
+						HongUtil.makeToast(Main.this, getString(R.string.dialog_sign_up_input_email));
+					else
+						HongUtil.makeToast(Main.this, getString(R.string.dialog_sign_up_input_pwd));
+					ShowAuthDialog();
+				}
+				else{
+					new LoginAsync().execute(edtEmail.getText().toString(), edtPw.getText().toString());
+				}
+				
+			}
+		})
+		.setNeutralButton("Sign up", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				SignUpDialog.ShowDialog(Main.this);
+				
+			}
+		})
+		.setNegativeButton("Later...", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+			}
+		})
+		.show();
+	}
+	
 	private class LoginAsync extends AsyncTask<String, Void, Integer>{
 		
-		private String ip;
-		private String pwd;
-		
-		public LoginAsync(String ip, String pwd) {
-			this.ip = ip;
-			this.pwd = pwd;
-		}
-
 		@Override
 		protected void onPreExecute() {
 			// TODO Auto-generated method stub
@@ -447,12 +497,71 @@ public class Main extends SherlockFragmentActivity implements
 		@Override
 		protected Integer doInBackground(String... params) {
 			
-			TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-			String reg = (Pref.getMyPreferences(Pref.KEY_GCM_REGISTRATION, Main.this)!=null)? Pref.getMyPreferences(Pref.KEY_GCM_REGISTRATION, Main.this) : "";
+			String email = params[0];
+			String password = params[1];
 			
 			Response response = null;
 			try {
-				response = RemoteroidWeb.doLogin(Build.MODEL, reg, tm.getDeviceId());
+				response = RemoteroidWeb.doLogin(email, password);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			if(response.isSucceed()){
+				Pref.setMyPreferences(Pref.Account.SECURITY_PASSWORD, response.getPayloadAsAccount().getPassword(), Main.this);
+				Pref.setMyPreferences(Pref.Account.EMAIL, response.getPayloadAsAccount().getEmail(), Main.this);
+			}
+			
+			return (response !=null && response.isSucceed())? Codes.Result.OK : response.getErrorCode();
+		}
+		
+		@Override
+		protected void onPostExecute(Integer result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			mProgress.dismiss();
+			if(result == Codes.Result.OK){
+				SystemClock.sleep(300);
+				HongUtil.makeToast(Main.this, "Success.");
+			}
+			else if(result == Codes.NONE){
+				HongUtil.makeToast(Main.this, "Network not available.");
+			}
+			else {
+				HongUtil.makeToast(Main.this, "Auth failed");
+				ShowAuthDialog();
+			}
+		}
+	}
+	
+	private class UpdateInfoAsync extends AsyncTask<String, Void, Integer>{
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+			mProgress = new ProgressDialog(Main.this);
+			mProgress.setTitle("Loading...");
+			mProgress.setMessage("Update information...");
+			mProgress.show();
+		}
+
+		@Override
+		protected Integer doInBackground(String... params) {
+			
+			String uid = HongUtil.getDeviceId(Main.this);
+			String model = Build.MODEL;
+			String email = Pref.getMyPreferences(Pref.Account.EMAIL, Main.this);
+			String password = Pref.getMyPreferences(Pref.Account.PASSWORD, Main.this);
+			String reg = Pref.getMyPreferences(Pref.GCM.KEY_GCM_REGISTRATION, Main.this);
+			
+			
+			Response response = null;
+			
+			try {
+				response = RemoteroidWeb.updateInfo(uid, model, email, password, reg);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -469,21 +578,14 @@ public class Main extends SherlockFragmentActivity implements
 			mProgress.dismiss();
 			if(result == Codes.Result.OK){
 				HongUtil.makeToast(Main.this, "Success.");
-				showFragment(mConnectingFragment);
-				
-				try {
-					mRemoteroidSvc.connect(this.ip);
-				} catch (RemoteException e) {
-					e.printStackTrace();
-					
-					showFragment(mAuthFragment);
-				}
+			}
+			else if(result == Codes.NONE){
+				HongUtil.makeToast(Main.this, "Network not available.");
 			}
 			else {
-				HongUtil.makeToast(Main.this, "auth failed");
+				HongUtil.makeToast(Main.this, "Auth failed");
+				ShowAuthDialog();
 			}
-			
-			
 		}
 		
 	}

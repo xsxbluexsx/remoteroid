@@ -27,23 +27,23 @@ public class Pref {
 	
 	public static final String MYPREFS = "Remoteroid_Preference";
 	
-	public static final String KEY_GCM_REGISTRATION = "REGISTRATION";
+	public class GCM{
+		public static final String KEY_GCM_REGISTRATION = "REGISTRATION";
+	}
 	
-	public class ConfirmCommunication{
+	public class Authentication{
 		
+		public static final String isExecute = "AUTHENTICATION_EXECUTE";
 		public static final String IS_LOGIN = "IS_LOGIN";
 		public static final String IS_ADD_DEVICE = "IS_ADD_DEVICE";
 		
 	}
 	
-	public class UseWebPref{
-		
-		public class Account{
-			public static final String EMAIL = "ACCOUNT_EMAIL";
-			public static final String SECURITY_PASSWORD = "ACCOUNT_SECURITY_PWD";
-			public static final String PASSWORD = "ACCOUNT_PWD";
-		}
-		
+	public class Account {
+		public static final String EMAIL = "ACCOUNT_EMAIL";
+		public static final String SECURITY_PASSWORD = "ACCOUNT_SECURITY_PWD";
+		public static final String PASSWORD = "ACCOUNT_PWD";
+
 	}
 	
 	

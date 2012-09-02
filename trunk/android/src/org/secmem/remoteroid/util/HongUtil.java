@@ -49,6 +49,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.telephony.TelephonyManager;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.webkit.MimeTypeMap;
@@ -412,11 +413,17 @@ public class HongUtil {
 		return result;
 	}
 	
+	public static String getDeviceId(Context context){
+		TelephonyManager tm = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+		return tm.getDeviceId();
+	}
+	
 	public static void excExplorer(Context context) throws CanceledException{
 		Intent i = new Intent(context, ExplorerActivity.class);
 		PendingIntent pi = PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_ONE_SHOT);
 		pi.send();
 	}
+
 	
 	// Feature - KakaoTalk Message Sending
 	public static class UseKakaoLink{
@@ -430,32 +437,6 @@ public class HongUtil {
 			if(link.isAvailable()){
 				context.startActivity(link.getIntent());
 			}
-		}
-	}
-	
-	
-	
-	public static class Pref 
-	{
-		public static final String MYPREFS = "Remoteroid_Preference";
-		
-		public static void setMyPreferences(String key, String value, Context c) 
-		{
-			int mode = Activity.MODE_PRIVATE;
-			SharedPreferences mySharedPreferences = c.getSharedPreferences(MYPREFS,mode);
-			SharedPreferences.Editor editor = mySharedPreferences.edit();
-			
-			editor.putString(key, value);
-			editor.commit();
-		}
-
-		public static String getMyPreferences(String key, Context c) 
-		{
-			String result="";
-			int mode = Activity.MODE_PRIVATE;
-			SharedPreferences mySharedPreferences = c.getSharedPreferences(MYPREFS,mode);
-			result=mySharedPreferences.getString(key,null);
-			return result;
 		}
 	}
 	

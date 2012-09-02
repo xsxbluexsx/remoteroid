@@ -25,15 +25,15 @@ public class RemoteroidWeb {
 		
 	}
 	
-	public static Response doLogin(String nickname, String registrationKey, String deviceUUID) throws MalformedURLException, IOException{
+	public static Response doLogin(String email, String password) throws MalformedURLException, IOException{
 		Request req = RequestFactory.getRequest(API.Account.LOGIN);
 		
-		Device device = new Device();
-		device.setNickname(nickname);
-		device.setRegistrationKey(registrationKey);
-		device.setDeviceUUID(deviceUUID);
+		Account account = new Account();
+		account.setEmail(email);
+		account.setPassword(password);
 		
-		return req.attachPayload(device).sendRequest();
+		
+		return req.attachPayload(account).sendRequest();
 				
 	}
 	
@@ -60,6 +60,23 @@ public class RemoteroidWeb {
 		Request req = RequestFactory.getRequest(API.Account.DELETE_ACCOUNT);
 		
 //		authentication
+	}
+	
+	public static Response updateInfo(String uuid, String nickname, String email, String pwd, String reg) throws MalformedURLException, IOException{
+		
+		Request req = RequestFactory.getRequest(API.Device.UPDATE_DEVICE_INFO);
+		
+		Account account = new Account();
+		account.setEmail(email);
+		account.setPassword(pwd);
+		
+		Device dev = new Device();
+		dev.setNickname(nickname);
+		dev.setDeviceUUID(uuid);
+		dev.setRegistrationKey(reg);
+		dev.setOwnerAccount(account);
+		
+		return req.attachPayload(dev).sendRequest();
 	}
 	
 	
