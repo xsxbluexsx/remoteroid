@@ -32,7 +32,7 @@ int CUtil::GetPacketSize(char * packet)
 
 void CUtil::UniToUtf(TCHAR * uni, char * utf)
 {
-	int nLen = WideCharToMultiByte(CP_UTF8, 0, uni, _tcslen(uni)+1, NULL, NULL, NULL, NULL);
+	int nLen = WideCharToMultiByte(CP_UTF8, 0, uni, _tcslen(uni)+1, NULL, NULL, NULL, NULL);	
 	WideCharToMultiByte(CP_UTF8, 0, uni, _tcslen(uni)+1, utf, nLen, NULL, NULL);
 }
 
@@ -42,6 +42,53 @@ void CUtil::UtfToUni(TCHAR * uni, char * utf)
 	int nLen = MultiByteToWideChar(CP_UTF8, 0, utf, strlen(utf)+1, NULL, NULL);
 	MultiByteToWideChar(CP_UTF8, 0, utf, strlen(utf)+1, uni, nLen);
 }
+
+TCHAR * CUtil::UtfToUniEx(const char * utf)
+{
+	int nLen = MultiByteToWideChar(CP_UTF8, 0, utf, strlen(utf)+1, NULL, NULL);
+	TCHAR *uniTemp = new TCHAR[nLen+1];
+	memset(uniTemp, 0, nLen+1);
+	MultiByteToWideChar(CP_UTF8, 0, utf, strlen(utf)+1, uniTemp, nLen);
+	return uniTemp;
+}
+
+char * CUtil::UniToUtfEx(const CString uni)
+{
+	int nLen = WideCharToMultiByte(CP_UTF8, 0, uni, _tcslen(uni)+1, NULL, NULL, NULL, NULL);
+	char *utf = new char[nLen + 1];
+	WideCharToMultiByte(CP_UTF8, 0, uni, _tcslen(uni)+1, utf, nLen, NULL, NULL);
+	return utf;
+}
+
+
+
+char * CUtil::UniToAnsi(const CString uni)
+{
+	int nLen = WideCharToMultiByte(CP_ACP, 0, uni, _tcslen(uni)+1, NULL, NULL, NULL, NULL);
+	char *ansi = new char[nLen+1];
+	memset(ansi, 0, nLen+1);
+	WideCharToMultiByte(CP_UTF8, 0, uni, _tcslen(uni)+1, ansi, nLen, NULL, NULL);
+	return ansi;
+}
+
+
+TCHAR * CUtil::AnsiToUni(const char * ansi)
+{
+	int nLen = MultiByteToWideChar(CP_ACP, 0, ansi, strlen(ansi)+1, NULL, NULL);
+	TCHAR *uni = new TCHAR[nLen+1];
+	MultiByteToWideChar(CP_ACP, 0, ansi, strlen(ansi)+1, uni, nLen);
+	return uni;
+}
+
+
+char *  CUtil::AnsiToUtf(const char *ansi)
+{
+	TCHAR *uni = AnsiToUni(ansi);
+	char *utf = UniToUtfEx(uni);
+	delete uni;
+	return utf;
+}
+
 
 //트래이로 이동하는 애니메이션
 void CUtil::AniMinimizeToTray(HWND hwnd)
@@ -103,3 +150,9 @@ void CUtil::SetHanEngMode(HWND hFocusWnd)
 		ImmReleaseContext(hFocusWnd, hImc);
 	}
 }
+
+
+
+
+
+

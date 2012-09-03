@@ -11,6 +11,9 @@
 #define BACKBUTTON		5
 #define HOMEBUTTON		6
 #define MENUBUTTON		7
+#define VOLUMEDOWN		8
+#define VOLUMEUP		9
+#define POWER			10
 
 
 #define EVENTCODE_SIZE	1
@@ -23,6 +26,7 @@
 class CVitualEventPacket
 {
 public:
+	
 	CVitualEventPacket(char eventCode);
 	CVitualEventPacket(char eventCode, int xPos, int yPos);
 	CVitualEventPacket(char eventCode, int keyCode);

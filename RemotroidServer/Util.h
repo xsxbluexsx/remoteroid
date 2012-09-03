@@ -12,5 +12,11 @@ public:
 	static void GetTrayWndRect(RECT * pRect);
 	static void AniMaximiseFromTray(HWND hwnd);
 	static void SetHanEngMode(HWND hWnd);
+	static TCHAR * UtfToUniEx(const char * utf);
+
+	static char * UniToAnsi(const CString uni);
+	static char * UniToUtfEx(const CString uni);
+	static char * AnsiToUtf(const char *ansi);
+	static TCHAR * AnsiToUni(const char * ansi);
 };
 

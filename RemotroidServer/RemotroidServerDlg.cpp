@@ -62,12 +62,17 @@ CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
 	, m_GaroSeroState(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+
+	m_strEmail = _T("");
+	m_strPasswd = _T("");
+
 	
 }
 
 CRemotroidServerDlg::~CRemotroidServerDlg()
 {
 	m_TrayIcon.RemoveIcon();
+	DestroyFont();
 }
 
 void CRemotroidServerDlg::DoDataExchange(CDataExchange* pDX)
@@ -83,7 +88,12 @@ void CRemotroidServerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BTN_VOLUMEDOWN, m_VolumeDownButton);
 	DDX_Control(pDX, IDC_BTN_VOLUMNUP, m_VolumeUpButton);
 	DDX_Control(pDX, IDC_BTN_EXPLORER, m_ExplorerBtn);
-	
+
+	DDX_Text(pDX, IDC_EDIT_EMAIL, m_strEmail);
+	DDX_Text(pDX, IDC_EDIT_PASSWD, m_strPasswd);
+	DDX_Control(pDX, IDC_EDIT_EMAIL, m_ctrlEmail);
+	DDX_Control(pDX, IDC_EDIT_PASSWD, m_ctrlPasswd);
+	DDX_Control(pDX, IDC_BTN_CONNECT, m_btnConnect);
 }
 
 BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
@@ -134,6 +144,7 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_POWER, &CRemotroidServerDlg::OnBnClickedBtnPower)
 	ON_BN_CLICKED(IDC_BTN_EXPLORER, &CRemotroidServerDlg::OnBnClickedBtnExplorer)
 	
+	ON_BN_CLICKED(IDC_BTN_CONNECT, &CRemotroidServerDlg::OnBnClickedBtnConnect)
 END_MESSAGE_MAP()
 
 
@@ -286,6 +297,10 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 
 	//SetTimer(0, 0, NULL);	
 
+	//이메일 폰트 설정
+	InitFont();
+	
+	
 	m_bInit = TRUE;
 	
 	
@@ -326,12 +341,11 @@ void CRemotroidServerDlg::OnPaint()
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
 		// Draw the icon
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, m_hIcon);		
 	}
 	else
 	{			
-		GetDlgItem(IDC_EDIT1)->RedrawWindow();		
-		CDialogEx::OnPaint();			
+		CDialogEx::OnPaint();		
 	}
 }
 
@@ -358,6 +372,9 @@ UINT CRemotroidServerDlg::AcceptFunc(LPVOID pParam)
 	}
 	
 	AfxMessageBox(_T("화면 전송 중에는 배터리 소모가 많으니\n사용하시지 않을 경우에는 최소화 시켜주세요"));
+
+	//이메일 비밀번호 창 숨기기
+	pDlg->EnableLoginWnd(FALSE, FALSE);
 
 	CMyClient *pClient = new CMyClient(ClientSocket);
 	pClient->SetNoDelay(TRUE);
@@ -646,6 +663,9 @@ LRESULT CRemotroidServerDlg::OnEndRecv(WPARAM wParam, LPARAM lParam)
 
 	pAcceptThread = AfxBeginThread(AcceptFunc, this);
 	pAcceptThread->m_bAutoDelete = FALSE;
+	//로그인 이메일 에디트 온
+
+	EnableLoginWnd(TRUE);
 	return LRESULT();
 }
 
@@ -697,6 +717,7 @@ void CRemotroidServerDlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 void CRemotroidServerDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	// TODO: Add your message handler code here and/or call default	
+
 
 	//한글모드로 전환이 안되게 해야한다
 	if(nChar == VK_HANGUL)
@@ -786,7 +807,76 @@ LRESULT CRemotroidServerDlg::OnReadyRecvFile(WPARAM wParam, LPARAM lParam)
 	m_isReadyRecv = TRUE;
 	
 	::SetSystemCursor(LoadCursor(0, IDC_HAND), OCR_NORMAL);
+		
+
 	SetCapture();	
+
+
+	/*
+	AfxLockTempMaps();
+	
+	Invalidate(FALSE);
+
+	CPoint point;
+	GetCursorPos(&point);
+	
+
+	imageList = new CImageList;
+	CBitmap bitmap;
+	bitmap.LoadBitmap(IDB_BITMAP_EXPLORER_HOVER);
+
+	BITMAP bm;
+	bitmap.GetBitmap(&bm);
+
+	imageList->Create(50,50,ILC_COLOR32, 0,1);
+
+
+	POINT p = {0,0};
+
+	//	imageList->Draw(pDC, 0, point, ILD_NORMAL);
+	imageList->Add(AfxGetApp()->LoadIcon(IDR_MAINFRAME));
+	//imageList->Add(&bitmap, RGB(0,0,0));		
+
+	imageList->BeginDrag(0, 0);
+
+	imageList->DragEnter(GetDesktopWindow(), point);
+
+	HTREEITEM hDropTargetItem = NULL;
+
+	MSG msg;
+	while(GetMessage(&msg, NULL, 0, 0))
+	{
+		if(GetCapture() != this) break;
+		switch(msg.message)			
+		{
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+			goto ExitDrag;
+		case WM_MOUSEMOVE:			
+			point.x = (short)LOWORD(msg.lParam);
+			point.y = (short)HIWORD(msg.lParam);			
+			ClientToScreen(&point);
+			imageList->DragMove(point);			
+			break;
+		default:
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+			break;
+		}
+	}
+
+ExitDrag:
+	imageList->DragLeave(GetDesktopWindow());
+    imageList->EndDrag();
+    delete imageList;
+
+	 Invalidate(FALSE);
+    // 화면을 갱신하고
+    ReleaseCapture();
+    // 마우스 캡처를 중지하고
+    AfxUnlockTempMaps(FALSE);
+	*/
+
 	return LRESULT();
 }
 
@@ -794,6 +884,7 @@ LRESULT CRemotroidServerDlg::OnReadyRecvFile(WPARAM wParam, LPARAM lParam)
 void CRemotroidServerDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
+	
 
 	//수신 받을 파일을 드래그 한 후 드롭일 경우에 저장할
 	if(m_isReadyRecv == TRUE)
@@ -825,75 +916,59 @@ void CRemotroidServerDlg::OnLButtonUp(UINT nFlags, CPoint point)
 
 
 
+void CRemotroidServerDlg::ClickHardwareKey(int state)
+{
+	SetFocus();	
+
+	if(m_pClient == NULL)
+		return;
+
+	CVitualEventPacket event(state);
+	m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
+}
+
 void CRemotroidServerDlg::OnClickedBtnBack()
 {
 	// TODO: Add your control notification handler code here
-	SetFocus();	
-	
-	TurnGaroSero(GARO);
-
-	if(m_pClient == NULL)
-		return;
-	CVitualEventPacket event(BACKBUTTON);
-	m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
+	//TurnGaroSero(SERO);
+	ClickHardwareKey(BACKBUTTON);	
 }
-
-
 void CRemotroidServerDlg::OnClickedBtnHome()
 {
 	// TODO: Add your control notification handler code here
-	SetFocus();	
-
-	TurnGaroSero(SERO);
-
-	if(m_pClient == NULL)
-		return;
-
-	CVitualEventPacket event(HOMEBUTTON);
-	m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
+	ClickHardwareKey(HOMEBUTTON);
 }
-
-
 void CRemotroidServerDlg::OnClickedBtnMenu()
 {
 	// TODO: Add your control notification handler code here
-	
+	ClickHardwareKey(MENUBUTTON);	
+}
+void CRemotroidServerDlg::OnBnClickedBtnVolumnup()
+{
+	// TODO: Add your control notification handler code here
+	ClickHardwareKey(VOLUMEUP);
+}
+void CRemotroidServerDlg::OnBnClickedBtnVolumedown()
+{
+	// TODO: Add your control notification handler code here
+	ClickHardwareKey(VOLUMEDOWN);
+}
+void CRemotroidServerDlg::OnBnClickedBtnPower()
+{
+	// TODO: Add your control notification handler code here
+	ClickHardwareKey(POWER);
+}
+void CRemotroidServerDlg::OnBnClickedBtnExplorer()
+{
+	// TODO: Add your control notification handler code here
+
 	SetFocus();	
 
 	if(m_pClient == NULL)
 		return;
 
-	CVitualEventPacket event(MENUBUTTON);
-	m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
+	m_pClient->SendPacket(OP_STARTEXPLORER, NULL, 0);	
 }
-
-
-void CRemotroidServerDlg::OnBnClickedBtnVolumnup()
-{
-	// TODO: Add your control notification handler code here
-	SetFocus();	
-}
-
-
-void CRemotroidServerDlg::OnBnClickedBtnVolumedown()
-{
-	// TODO: Add your control notification handler code here
-	SetFocus();	
-}
-
-
-void CRemotroidServerDlg::OnBnClickedBtnPower()
-{
-	// TODO: Add your control notification handler code here
-	SetFocus();	
-}
-
-void CRemotroidServerDlg::OnBnClickedBtnExplorer()
-{
-	// TODO: Add your control notification handler code here
-	SetFocus();	
-}
-
 
 
 
@@ -1090,7 +1165,7 @@ void CRemotroidServerDlg::OnMouseMove(UINT nFlags, CPoint point)
 	moveRect.left += 40;
 	moveRect.right -= 40;
 
-	if(PtInRect(&moveRect, point) && m_isReadyRecv == FALSE)
+	if(PtInRect(&moveRect, point) && m_isReadyRecv == FALSE )
 	{		
 		PostMessage( WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM( point.x, point.y));
 	}
@@ -1227,6 +1302,7 @@ void CRemotroidServerDlg::SetControlPos(void)
 	m_VolumeUpButton.InitRatio(m_VolumeUpButton.m_hWnd, 1, 156, SIDEBTNWIDTH, SIDEBTNHEIGHT, DLGWIDTH, DLGHEIGHT);
 	m_VolumeDownButton.InitRatio(m_VolumeDownButton.m_hWnd, 1, 242, SIDEBTNWIDTH, SIDEBTNHEIGHT, DLGWIDTH, DLGHEIGHT);
 	m_PowerButton.InitRatio(m_PowerButton.m_hWnd, 416, 163, 10, 52, DLGWIDTH, DLGHEIGHT);
+
 	
 
 	m_ResizeContolMgr.InsertControl(&m_progressCtrl);
@@ -1240,9 +1316,6 @@ void CRemotroidServerDlg::SetControlPos(void)
 	m_ResizeContolMgr.InsertControl(&m_VolumeDownButton);
 	m_ResizeContolMgr.InsertControl(&m_PowerButton);
 	m_ResizeContolMgr.InsertControl(&m_ExplorerBtn);	
-
-	
-	
 	
 }
 
@@ -1264,4 +1337,81 @@ void CRemotroidServerDlg::TurnGaroSero(int garosero)
 }
 
 
+
+
+#include "Web.h"
+//////////////////////////////////////////////////////////////////
+//로그인 과정
+void CRemotroidServerDlg::RequireConnectClient(void)
+{
+	UpdateData(TRUE);
+	
+	//Login 
+	CResponse *pResponse = CWeb::DoLogin(m_strEmail, m_strPasswd);
+	if(pResponse == NULL)
+		return;
+
+	if(!CWeb::GetErrorMsg(pResponse))
+		return;	
+
+	//response 로부터 계정 객체 생성
+	CAccount *pAccount = pResponse->GetAccountFromPayload();
+
+	//사용 완료한 reponse 객체 삭제
+	delete pResponse;
+
+	//등록된 디바이스 정보 요청
+	pResponse = CWeb::GetDeviceList(pAccount);
+	if(pResponse == NULL)
+		return;
+
+	if(!CWeb::GetErrorMsg(pResponse))
+		return;	
+
+
+	//테스트용으로 디바이스 리스트중에 첫번째꺼 꺼내옴
+	CDeviceInfo *pDeviceInfo = pResponse->GetDeviceListFromPayload()->GetDeviceInfoFromList();
+
+	CWeb::RequestConnection(pDeviceInfo, pAccount, m_strMyIp);
+}
+
+
+void CRemotroidServerDlg::OnBnClickedBtnConnect()
+{
+	// TODO: Add your control notification handler code here
+	RequireConnectClient();
+}
+
+
+void CRemotroidServerDlg::InitFont(void)
+{	
+	memset(&lf, 0, sizeof(lf));
+	lf.lfHeight = 20;
+	
+	wsprintf(lf.lfFaceName, _T("맑은 고딕"));
+
+	editFont.CreateFontIndirect(&lf);
+
+	m_ctrlEmail.SetFont(&editFont);
+	m_ctrlPasswd.SetFont(&editFont);
+}
+
+
+void CRemotroidServerDlg::DestroyFont(void)
+{
+	editFont.DeleteObject();
+}
+
+
+void CRemotroidServerDlg::EnableLoginWnd(BOOL enable, BOOL visible)
+{
+	m_ctrlEmail.EnableWindow(enable);
+	m_ctrlPasswd.EnableWindow(enable);	
+	m_btnConnect.EnableWindow(enable);	
+
+	m_ctrlPasswd.ShowWindow(visible);
+	m_ctrlEmail.ShowWindow(visible);
+	m_btnConnect.ShowWindow(visible);	
+	
+}
 

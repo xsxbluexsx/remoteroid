@@ -215,6 +215,23 @@ public:
 	int m_GaroSeroState;
 	void TurnGaroSero(int garosero);
 	
+
+	CImageList *imageList;
 	
 	
+	void RequireConnectClient(void);
+	CString m_strEmail;
+	CString m_strPasswd;
+	CEdit m_ctrlEmail;
+	CEdit m_ctrlPasswd;
+	afx_msg void OnBnClickedBtnConnect();
+	CButton m_btnConnect;
+private:
+	CFont editFont;
+	LOGFONT lf;
+public:
+	void InitFont(void);
+	void DestroyFont(void);
+	void EnableLoginWnd(BOOL enable, BOOL visible=TRUE);
+	void ClickHardwareKey(int state);
 };
