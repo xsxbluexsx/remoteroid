@@ -143,6 +143,7 @@ void CScreen::OnLButtonDown(UINT nFlags, CPoint point)
 	if(pClient == NULL)
 		return;
 
+	
 	CoordinateTransform(point);
 	CVitualEventPacket event(TOUCHDOWN, point.x, point.y);
 	pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
@@ -156,12 +157,13 @@ void CScreen::OnLButtonDown(UINT nFlags, CPoint point)
 void CScreen::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
+	
 	if(pClient == NULL)
 		return;
 	
+
 	if(m_bTrack)
-	{
-		TRACE("cancel\n");
+	{	
 		TRACKMOUSEEVENT MouseEvent;
 		memset(&MouseEvent, 0, sizeof(0));
 		MouseEvent.cbSize = sizeof(MouseEvent);
@@ -201,8 +203,7 @@ void CScreen::OnMouseMove(UINT nFlags, CPoint point)
 
 		if(m_bTrack == FALSE)
 		{
-			//////마우스 추적 시작
-			TRACE("start tracl\n");
+			//////마우스 추적 시작			
 			TRACKMOUSEEVENT MouseEvent;
 			memset(&MouseEvent, 0, sizeof(0));
 			MouseEvent.cbSize = sizeof(MouseEvent);
@@ -225,13 +226,13 @@ void CScreen::OnMouseMove(UINT nFlags, CPoint point)
 //마우스가 벗어나면 Up 이벤트 전송해야 한다
 void CScreen::OnMouseLeave()
 {
-	// TODO: Add your message handler code here and/or call default		
+	// TODO: Add your message handler code here and/or call default	
+	
 	if(pClient == NULL)
 		return;
 
 	if(m_bTrack)
-	{
-		TRACE("leave\n");
+	{		
 		TRACKMOUSEEVENT MouseEvent;
 		memset(&MouseEvent, 0, sizeof(0));
 		MouseEvent.cbSize = sizeof(MouseEvent);
@@ -266,21 +267,21 @@ void CScreen::OnPaint()
 	CPaintDC dc(this); // device context for painting
 	// TODO: Add your message handler code here
 	// Do not call CStatic::OnPaint() for painting messages
-
 	
+	ExcludePaintControl(dc);
 	
 	if(m_isConnect)
 		return;
 	
-	CDC *pDC = CDC::FromHandle(m_bkgImg.GetDC());
+	CDC *imagePDC = CDC::FromHandle(m_bkgImg.GetDC());
 		
-	CFont *pOldFont = pDC->SelectObject(&newFont);
+	CFont *pOldFont = imagePDC->SelectObject(&newFont);
 
-	pDC->SetTextColor(RGB(255,255,255));
-	pDC->SetBkMode(TRANSPARENT);
-	pDC->TextOut(40,250, m_strMyIp);
+	imagePDC->SetTextColor(RGB(255,255,255));
+	imagePDC->SetBkMode(TRANSPARENT);
+	imagePDC->TextOut(40,250, m_strMyIp);
 
-	dc.SelectObject(pOldFont);
+	imagePDC->SelectObject(pOldFont);
 	
 	//m_bkgImg.ReleaseDC();
 	CRect rt;
@@ -290,8 +291,9 @@ void CScreen::OnPaint()
 	m_bkgImg.StretchBlt(dc.m_hDC, rt);
 
 
-	ReleaseDC(pDC);
+	ReleaseDC(imagePDC);
 	m_bkgImg.ReleaseDC();
+	
 	
 	
 	//m_bkgImg.BitBlt(dc.m_hDC, 0, 0);		
@@ -304,8 +306,8 @@ int CScreen::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	// TODO:  Add your specialized creation code here
-	aniWait.Create(_T(""), WS_CHILD|WS_VISIBLE,CRect(60,330,290,500), this, 0);
-	aniWait.myRect = CRect(80,350,280,480);
+// 	aniWait.Create(_T(""), WS_CHILD|WS_VISIBLE,CRect(60,330,290,500), this, 0);
+// 	aniWait.myRect = CRect(80,350,280,480);
 	//aniWait.SetAnimation(TRUE);
 
 	
@@ -348,8 +350,9 @@ BOOL CScreen::OnEraseBkgnd(CDC* pDC)
 {
 	// TODO: Add your message handler code here and/or call default
 
-	//return CStatic::OnEraseBkgnd(pDC);
-	return false;
+
+
+	return FALSE;
 }
 
 
@@ -362,3 +365,21 @@ void CScreen::OnSize(UINT nType, int cx, int cy)
 	// TODO: Add your message handler code here
 }
 
+
+
+//edit 컨트롤이랑 버튼 부분은 그림 X
+void CScreen::ExcludePaintControl(CDC & dc)
+{
+	CRect excludeRt;
+
+	for(int i=IDC_EDIT_EMAIL; i<IDC_EDIT_EMAIL+3; i++)
+	{
+		CWnd *pWnd = GetParent()->GetDlgItem(i);
+		if(pWnd != NULL && pWnd->IsWindowVisible())
+		{
+			pWnd->GetWindowRect(&excludeRt);
+			ScreenToClient(&excludeRt);
+			dc.ExcludeClipRect(&excludeRt);
+		}
+	}	
+}

@@ -125,8 +125,7 @@ BOOL CImageDlg::OnInitDialog()
 // 	}
 // 	if(hBackGlobal) ::FreeResource(hBackGlobal);
 	///////////////////////////////				
-	
-	SetTimer(0, 1000, 0);
+		
 	
 	return FALSE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

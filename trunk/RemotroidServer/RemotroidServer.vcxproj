@@ -53,11 +53,12 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeTypeInfo>
       </RuntimeTypeInfo>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ijl11.lib</AdditionalDependencies>
+      <AdditionalDependencies>ijl11.lib;json_vc71_libmtd.lib</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -166,8 +167,10 @@
     <None Include="res\XBtn_main_hover_garo.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Account.h" />
     <ClInclude Include="AniStatic.h" />
     <ClInclude Include="CMyMemDC.h" />
+    <ClInclude Include="DeviceInfo.h" />
     <ClInclude Include="DrawJpg.h" />
     <ClInclude Include="FileSender.h" />
     <ClInclude Include="ImageDlg.h" />
@@ -175,6 +178,7 @@
     <ClInclude Include="KeyCodeGen.h" />
     <ClInclude Include="MyBitmapBtn.h" />
     <ClInclude Include="MyClient.h" />
+    <ClInclude Include="MyDeviceMgr.h" />
     <ClInclude Include="packetdefine.h" />
     <ClInclude Include="PopupDlg.h" />
     <ClInclude Include="PopupDlgMgr.h" />
@@ -185,6 +189,7 @@
     <ClInclude Include="ResizingControl.h" />
     <ClInclude Include="ResizingDlg.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Response.h" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="Splash.h" />
     <ClInclude Include="stdafx.h" />
@@ -193,15 +198,20 @@
     <ClInclude Include="TrayIcon.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="VitualEventPacket.h" />
+    <ClInclude Include="Web.h" />
+    <ClInclude Include="WebRequest.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Account.cpp" />
     <ClCompile Include="AniStatic.cpp" />
+    <ClCompile Include="DeviceInfo.cpp" />
     <ClCompile Include="DrawJpg.cpp" />
     <ClCompile Include="FileSender.cpp" />
     <ClCompile Include="ImageDlg.cpp" />
     <ClCompile Include="KeyCodeGen.cpp" />
     <ClCompile Include="MyBitmapBtn.cpp" />
     <ClCompile Include="MyClient.cpp" />
+    <ClCompile Include="MyDeviceMgr.cpp" />
     <ClCompile Include="PopupDlg.cpp" />
     <ClCompile Include="PopupDlgMgr.cpp" />
     <ClCompile Include="RecvFile.cpp" />
@@ -210,6 +220,7 @@
     <ClCompile Include="ResizeControlMgr.cpp" />
     <ClCompile Include="ResizingControl.cpp" />
     <ClCompile Include="ResizingDlg.cpp" />
+    <ClCompile Include="Response.cpp" />
     <ClCompile Include="Screen.cpp" />
     <ClCompile Include="Splash.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -220,6 +231,8 @@
     <ClCompile Include="TrayIcon.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="VitualEventPacket.cpp" />
+    <ClCompile Include="Web.cpp" />
+    <ClCompile Include="WebRequest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="RemotroidServer.rc" />

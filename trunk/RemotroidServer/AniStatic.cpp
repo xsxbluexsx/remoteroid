@@ -72,10 +72,10 @@ int CAniStatic::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void CAniStatic::SetAnimation(BOOL cond)
 {
 	
-	if(cond)
-		SetTimer(0, 50, NULL);
-	else
-		KillTimer(0);
+// 	if(cond)
+// 		SetTimer(0, 50, NULL);
+// 	else
+// 		KillTimer(0);
 	
 }
 

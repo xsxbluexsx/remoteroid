@@ -2,6 +2,7 @@
 #include "VitualEventPacket.h"
 
 
+
 CVitualEventPacket::CVitualEventPacket(char eventCode)
 	: m_EventCode(eventCode)
 	, payloadSize(EVENTCODE_SIZE)

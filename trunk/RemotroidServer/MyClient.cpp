@@ -17,8 +17,9 @@ CMyClient::~CMyClient(void)
 
 
 int CMyClient::RecvPacket(void)
-{
+{		
 	int iRecvLen = recv(m_ClientSocket, m_RecvBuffer+m_iCurrent, MAXSIZE, NULL);
+	
 	if(iRecvLen > 0)
 	{
 		m_iCurrent += iRecvLen;
