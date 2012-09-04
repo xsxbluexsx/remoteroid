@@ -201,9 +201,10 @@ public class Tranceiver  implements PacketListener{
 			mAddOptionListener.onStartFileExplorer();
 			break;
 		case OpCode.OPTION_SEND_KAKAOTALK:
-			
+			String msg = "test";
+			Log.i("qweqwe", "Sdfdsfsd");
 			/** add message packet */
-			//mAddOptionListener.onSendKakaotalkMessage(msg);
+			mAddOptionListener.onSendKakaotalkMessage(msg);
 			break;
 		}
 	}
@@ -243,6 +244,15 @@ public class Tranceiver  implements PacketListener{
 			break;
 		case EventPacket.MENU:
 			mVirtEventListener.onKeyStroke(NativeKeyCode.KEY_MENU);
+			break;
+		case EventPacket.VOLUMEDOWN:
+			mVirtEventListener.onKeyStroke(NativeKeyCode.KEY_VOLUMEDOWN);			
+			break;
+		case EventPacket.VOLUMEUP:
+			mVirtEventListener.onKeyStroke(NativeKeyCode.KEY_VOLUMEUP);			
+			break;
+		case EventPacket.POWER:
+			mVirtEventListener.onKeyStroke(NativeKeyCode.KEY_POWER);			
 			break;
 		case EventPacket.HOME:
 			if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1)

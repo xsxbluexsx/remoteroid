@@ -15,8 +15,11 @@ public class EventPacket {
 	public static final int BACK = 5;
 	public static final int HOME = 6;
 	public static final int MENU = 7;
+	public static final int VOLUMEDOWN = 8;
+	public static final int VOLUMEUP = 9;
+	public static final int POWER = 10;
 	
-	public static final int EVENTCODE_SIZE = 1;
+	public static final int EVENTCODE_SIZE = 2;
 	public static final int DATA_SIZE = 4;
 	public static final int XPOSITION_SIZE = DATA_SIZE;
 	public static final int YPOSITION_SIZE = DATA_SIZE;
@@ -30,6 +33,7 @@ public class EventPacket {
 	
 	
 	private static byte[] eventValueBuf = new byte[DATA_SIZE];
+	private static byte[] bEventCode = new byte[EVENTCODE_SIZE];
 		
 	private static int ByteToInt(byte [] data){
 		int result = 0;
@@ -82,8 +86,11 @@ public class EventPacket {
 		
 		byte[] payload = packet.getPayload();	
 		
+		
 		//Event data are written in ASKII Code
-		eventPacket.SetEventCode(payload[0]-'0');
+		System.arraycopy(payload, 0, bEventCode, 0, EVENTCODE_SIZE);
+		eventPacket.SetEventCode(ByteToInt(bEventCode));
+		
 		
 		//X,Y position or Keycode set when eventcode is SETCOORDINATES,TOUCHDOWN,KEYDOWN,KEYUP
 		//others are only eventcode

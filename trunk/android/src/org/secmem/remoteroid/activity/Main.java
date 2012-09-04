@@ -212,7 +212,7 @@ public class Main extends SherlockFragmentActivity implements
         if(Pref.getMyPreferences(Pref.GCM.KEY_GCM_REGISTRATION, Main.this)==null){
         	getGcmAuth();
         }
-        
+        Log.i("qq","onCreate()");
         // remote connect
         if(getIntent().getStringExtra(GcmActionType.ActionMessage.ACTION_MESSAGE_IP) !=null){
         	getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
@@ -245,7 +245,7 @@ public class Main extends SherlockFragmentActivity implements
     
     public void onStart(){
     	super.onStart();
-    	
+    	Log.i("qq","onStart()");
         getSupportFragmentManager().beginTransaction()
 		.add(R.id.container, mAuthFragment)
 		.add(R.id.container, mConnectingFragment)
@@ -268,7 +268,7 @@ public class Main extends SherlockFragmentActivity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+		Log.i("qq","onResume()");
 		// Register receiver to get broadcast from service
 		IntentFilter filter = new IntentFilter();
 	    filter.addAction(RemoteroidIntent.ACTION_CONNECTED);
