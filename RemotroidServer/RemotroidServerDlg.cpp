@@ -950,7 +950,7 @@ void CRemotroidServerDlg::OnBnClickedBtnVolumnup()
 }
 void CRemotroidServerDlg::OnBnClickedBtnVolumedown()
 {
-	// TODO: Add your control notification handler code here
+	// TODO: Add your control notification handler code here	
 	ClickHardwareKey(VOLUMEDOWN);
 }
 void CRemotroidServerDlg::OnBnClickedBtnPower()
@@ -1101,7 +1101,7 @@ BOOL CRemotroidServerDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 void CRemotroidServerDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize(nType, cx, cy);
-	if(m_bInit == FALSE)
+	if(m_bInit == FALSE && m_pBkgDlg == NULL)
 		return;	
 			
 	m_ResizeContolMgr.ResizingControl(cx, cy, m_GaroSeroState);
@@ -1371,7 +1371,6 @@ void CRemotroidServerDlg::RequireConnectClient(void)
 
 	//테스트용으로 디바이스 리스트중에 첫번째꺼 꺼내옴
 	CDeviceInfo *pDeviceInfo = pResponse->GetDeviceListFromPayload()->GetDeviceInfoFromList();
-
 	CWeb::RequestConnection(pDeviceInfo, pAccount, m_strMyIp);
 }
 

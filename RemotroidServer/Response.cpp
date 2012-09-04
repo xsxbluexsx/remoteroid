@@ -15,6 +15,7 @@ CResponse::~CResponse(void)
 BOOL CResponse::ParseFromStr(CString strResponse)
 {
 	//유니코드를 ansi로 변경한다
+
 	char *jsonStr = CUtil::UniToAnsi(strResponse);
 	
 
