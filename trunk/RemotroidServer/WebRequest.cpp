@@ -50,6 +50,7 @@ CWebRequest * CWebRequest::AttachPayload(CAccount& account)
 //디바이스 정보, 서버 아이피, 계정 정보로 payload 작성
 CWebRequest * CWebRequest::AttachPayload(CDeviceInfo * pDeviceInfo, CAccount * pAccount, CString strServerIP)
 {
+
 	Json::StyledWriter writer;
 	Json::Value root;
 	writer.write(root);	

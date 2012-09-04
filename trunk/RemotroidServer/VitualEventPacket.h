@@ -16,7 +16,7 @@
 #define POWER			10
 
 
-#define EVENTCODE_SIZE	1
+#define EVENTCODE_SIZE	2
 #define XPOSITION_SIZE	4
 #define YPOSITION_SIZE	4
 #define KEYCODE_SIZE	4
