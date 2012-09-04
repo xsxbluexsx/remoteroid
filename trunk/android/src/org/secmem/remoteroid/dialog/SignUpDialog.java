@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.lib.api.Codes;
 import org.secmem.remoteroid.lib.data.Account;
+import org.secmem.remoteroid.lib.data.Device;
 import org.secmem.remoteroid.lib.request.Response;
 import org.secmem.remoteroid.util.HongUtil;
 import org.secmem.remoteroid.util.Pref;
@@ -18,6 +19,7 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -140,13 +142,20 @@ public class SignUpDialog {
 			String email = Pref.getMyPreferences(Pref.Account.EMAIL, context);
 			String pwd = Pref.getMyPreferences(Pref.Account.SECURITY_PASSWORD, context);
 			String reg = Pref.getMyPreferences(Pref.GCM.KEY_GCM_REGISTRATION, context);
+			String uuid = HongUtil.getDeviceId(this.context);
+			Log.i("qq","uuid = "+uuid);
 
 			try {
-				response = RemoteroidWeb.addDevice(Build.MODEL, email, pwd, reg);
+				response = RemoteroidWeb.addDevice(Build.MODEL, email, pwd, reg, uuid);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
+			}
+			
+			if (response != null && response.isSucceed()) {
+				Device device= response.getPayloadAsDevice();
+				Pref.setMyPreferences(Pref.Device.UUID, device.getUUID(), context);
 			}
 
 			return (response != null && response.isSucceed()) ? Codes.Result.OK : response.getErrorCode();

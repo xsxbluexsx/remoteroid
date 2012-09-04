@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.lib.api.Codes;
 import org.secmem.remoteroid.lib.data.Account;
+import org.secmem.remoteroid.lib.data.Device;
 import org.secmem.remoteroid.lib.request.Response;
 import org.secmem.remoteroid.util.HongUtil;
 import org.secmem.remoteroid.util.Pref;
@@ -294,13 +295,19 @@ public class AuthenticateFragment extends Fragment {
 			String email = Pref.getMyPreferences(Pref.Account.EMAIL, getActivity());
 			String pwd = Pref.getMyPreferences(Pref.Account.SECURITY_PASSWORD, getActivity());
 			String reg = Pref.getMyPreferences(Pref.GCM.KEY_GCM_REGISTRATION, getActivity());
-			
+			String uuid = HongUtil.getDeviceId(getActivity());
 			try {
-				response = RemoteroidWeb.addDevice(Build.MODEL, email, pwd, reg);
+				response = RemoteroidWeb.addDevice(Build.MODEL, email, pwd, reg, uuid);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
+			}
+			Log.i("qq","uuid = "+uuid);
+			
+			if (response != null && response.isSucceed()) {
+				Device device= response.getPayloadAsDevice();
+				Pref.setMyPreferences(Pref.Device.UUID, device.getUUID(), getActivity());
 			}
 			
 			return (response !=null && response.isSucceed())? Codes.Result.OK : response.getErrorCode();

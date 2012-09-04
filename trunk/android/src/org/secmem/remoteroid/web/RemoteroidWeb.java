@@ -37,7 +37,7 @@ public class RemoteroidWeb {
 				
 	}
 	
-	public static Response addDevice(String nickname, String email, String pwd, String reg) throws MalformedURLException, IOException{
+	public static Response addDevice(String nickname, String email, String pwd, String reg, String deviceUUID) throws MalformedURLException, IOException{
 		Request req = RequestFactory.getRequest(API.Device.ADD_DEVICE);
 		Account account = new Account();
 		account.setEmail(email);
@@ -47,6 +47,7 @@ public class RemoteroidWeb {
 		dev.setNickname(nickname);
 		dev.setRegistrationKey(reg);
 		dev.setOwnerAccount(account);
+		dev.setDeviceUUID(deviceUUID);
 		
 		Log.i("qq","nickname = "+nickname);
 		Log.i("qq","email = "+email);

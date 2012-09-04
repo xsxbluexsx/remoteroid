@@ -46,6 +46,11 @@ public class Pref {
 
 	}
 	
+	public class Device {
+		public static final String UUID = "DEVICE_UUID";
+
+	}
+	
 	
 	public static void setMyPreferences(String key, String value, Context c) {
 		int mode = Activity.MODE_PRIVATE;
