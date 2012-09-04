@@ -218,6 +218,7 @@ public class Main extends SherlockFragmentActivity implements
         	getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 	    	remoteIp = getIntent().getStringExtra(GcmActionType.ActionMessage.ACTION_MESSAGE_IP);
         }
+        
     }
     
 	@Override
