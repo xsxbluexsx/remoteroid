@@ -14,7 +14,10 @@ include $(BUILD_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := fbuffer
-LOCAL_SRC_FILES := fbuffer.c
+LOCAL_SRC_FILES :=  FrameHandler.cpp \
+					Frame.cpp \
+					DisplayInfo.cpp 
+					
 LOCAL_CFLAGS := -DCONFIG_EMBEDDED\ -DUSE_IND_THREAD\
 
 include $(BUILD_SHARED_LIBRARY)
