@@ -2,6 +2,8 @@ package org.secmem.remoteroid.network;
 
 import java.text.ParseException;
 
+import org.secmem.remoteroid.util.HongUtil;
+
 /**
  * Represents packet's header data.</br>
  * Header is consisted of <code>{@link OpCode opCode}</code> and {@link #payloadLength PayloadLength}.
@@ -13,6 +15,7 @@ public class PacketHeader{
 	public static final int LENGTH = 6;
 	public static final int OPCODE_LENGTH = 2;
 	public static final int PAYLOAD_LENGTH = 4;
+	
 	
 	/**
 	 * An operation code for {@link PacketHeader}.
@@ -51,6 +54,9 @@ public class PacketHeader{
 	private static byte[] opCodeBuffer = new byte[OPCODE_LENGTH];
 	private static byte[] packetSizeBuffer = new byte[PAYLOAD_LENGTH];
 	
+	private static byte[] heaerBuffer = new byte[OPCODE_LENGTH+PAYLOAD_LENGTH];
+	
+	
 	private PacketHeader(){
 	}
 	
@@ -69,7 +75,10 @@ public class PacketHeader{
 	 * @return
 	 */
 	public byte[] asByteArray(){
-		return toString().getBytes();
+		//return toString().getBytes();
+		HongUtil.atoi(opCode, heaerBuffer, OPCODE_LENGTH, 0);
+		HongUtil.atoi(payloadLength+LENGTH, heaerBuffer, PAYLOAD_LENGTH, OPCODE_LENGTH);
+		return heaerBuffer;
 	}
 	
 	

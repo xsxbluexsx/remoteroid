@@ -443,6 +443,57 @@ public class HongUtil {
 		}
 	}
 	
+	
+	public static int getPositionalNumber(int iSrc){
+		int positionnalNumber=1;
+		while(true){
+			if(iSrc/(int)Math.pow(10, positionnalNumber) == 0)
+				break;
+			positionnalNumber++;
+		}
+		return positionnalNumber;
+	}
+	
+		
+	public static int atoi(int iSrc, byte[] buffer){
+		int positionalNumber = getPositionalNumber(iSrc);
+		int length = positionalNumber;
+				
+		int i=0;
+		while(positionalNumber > 0){
+			int jesu = (int)Math.pow(10, positionalNumber-1);
+			int quotiont = iSrc / jesu;
+			
+			buffer[i] = (byte) (quotiont+'0');
+			
+			int remainder = iSrc % jesu;		
+			
+			positionalNumber--;
+			i++;
+			iSrc = remainder;
+		}
+		return length;
+	}
+	
+	public static int atoi(int iSrc, byte[] buffer, int positionalNumber, int offset){
+						
+		int i=offset;
+		while(positionalNumber > 0){
+			int jesu = (int)Math.pow(10, positionalNumber-1);
+			int quotiont = iSrc / jesu;
+			
+			buffer[i] = (byte) (quotiont+'0');
+			
+			int remainder = iSrc % jesu;		
+			
+			positionalNumber--;
+			i++;
+			iSrc = remainder;
+		}
+		return positionalNumber;
+	}
+	
+	
 	public static int getOrientation(Context context){
 		int result=0;
 		
