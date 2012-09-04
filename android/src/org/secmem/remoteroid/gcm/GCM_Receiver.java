@@ -27,17 +27,25 @@ public class GCM_Receiver extends BroadcastReceiver {
 		}
 		else if(intent.getAction().equals(GcmActionType.ReceiveFromServer.GCM_RECEIVE)){
 			String msg = intent.getExtras().getString("msg");
-			
+			Log.i("qq","GCM_RECEIVE");
 			/** auto Login */
 			Intent i = new Intent(this.context, Main.class);
-			
+			i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			i.putExtra(GcmActionType.ActionMessage.ACTION_MESSAGE_IP, intent.getStringExtra(WakeupMessage.IP_ADDRESS));
-			PendingIntent pi = PendingIntent.getActivity(this.context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
-			try {
-				pi.send();
-			} catch (CanceledException e) {
-				e.printStackTrace();
-			}
+			
+			this.context.startActivity(i);
+
+			
+//			PendingIntent pi = PendingIntent.getActivity(this.context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+//			try {
+//				pi.send();
+//				
+//			} catch (CanceledException e) {
+//				e.printStackTrace();
+//			}
+			
+			
 		}
 
 	}

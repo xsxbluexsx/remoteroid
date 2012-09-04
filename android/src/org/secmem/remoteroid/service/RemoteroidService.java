@@ -448,6 +448,7 @@ public class RemoteroidService extends Service
 	@Override
 	public void onSendKakaotalkMessage(String msg) {
 		try {
+			
 			HongUtil.UseKakaoLink.sendLinkMessage(getApplicationContext(), "Remoteroid", msg);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();

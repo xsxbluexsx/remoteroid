@@ -43,12 +43,14 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.sax.StartElementListener;
 import android.telephony.TelephonyManager;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -420,7 +422,7 @@ public class HongUtil {
 	
 	public static void excExplorer(Context context) throws CanceledException{
 		Intent i = new Intent(context, ExplorerActivity.class);
-		PendingIntent pi = PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_ONE_SHOT);
+		PendingIntent pi = PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
 		pi.send();
 	}
 
@@ -435,9 +437,21 @@ public class HongUtil {
 			 String strAppName = "Remoteroid";
 			link = new KakaoLink(context, title, strAppId, strAppVer, msg, strAppName, "UTF-8");
 			if(link.isAvailable()){
+				link.getIntent().setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				context.startActivity(link.getIntent());
 			}
 		}
+	}
+	
+	public static int getOrientation(Context context){
+		int result=0;
+		
+		if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+			result=2;
+		else if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+			result=1;
+		
+		return result;
 	}
 	
 }
