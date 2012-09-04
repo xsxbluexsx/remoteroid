@@ -200,8 +200,7 @@ public class FileTranceiver extends PacketSender{
 					
 					in = new FileInputStream(file);			
 					
-					while(fileSize > sentFileSize){		
-						Log.i("qwee", "filesize : "+fileSize+" sent : "+sentFileSize);
+					while(fileSize > sentFileSize){					
 						
 						int iCurrentSendSize =
 								(int) ((fileSize - sentFileSize) > MAXDATASIZE ? MAXDATASIZE : (fileSize - sentFileSize));

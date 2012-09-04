@@ -83,6 +83,7 @@ public class CommandLine {
 	 * @return true if execution succeed, false otherwise
 	 */
 	public static boolean execAsRoot(String cmd){
+		
 		if(cmd==null || cmd.equals(""))
 			throw new IllegalArgumentException();
 		  
