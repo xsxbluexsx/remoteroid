@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.secmem.remoteroid"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk android:minSdkVersion="9"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    
+    <!-- Permission for request GCM Service -->
+    <permission android:name="org.secmem.remoteroid.permission.C2D_MESSAGE" android:protectionLevel="signature"/>
+    <uses-permission android:name="org.secmem.remoteroid.permission.C2D_MESSAGE"/>
+    
+    <!-- Permission for receive Message-->
+    <uses-permission  android:name="com.google.android.c2dm.permission.RECEIVE"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name" 
+        android:theme="@style/Theme.Sherlock"
+        uiOptions="splitActionBarWhenNarrow">
+        <activity android:name=".activity.Redirector" android:clearTaskOnLaunch="true" android:launchMode="singleInstance" android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.Main"
+            android:label="@string/app_name" android:configChanges="keyboard|orientation" android:screenOrientation="portrait">
+            
+        </activity>
+        <service android:name=".service.NotificationReceiverService">
+           	<intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                 android:resource="@xml/notification_receiver_properties"/>
+        </service>
+        <activity android:name=".activity.NotificationReceiverSettings"></activity>
+        <activity android:name=".activity.PackageSelector" android:label="@string/select_package"></activity>
+        <service android:name=".service.RemoteroidService"></service>
+        <activity android:name=".activity.ExplorerActivity" android:label="@string/file_explorer"
+            android:screenOrientation="portrait"
+            android:taskAffinity="org.secmem.remoteroid.activity.ExplorerActivity">
+<!--             <intent-filter> -->
+<!--                 <action android:name="android.intent.action.MAIN" /> -->
+<!--                 <category android:name="android.intent.category.LAUNCHER" /> -->
+<!--             </intent-filter> -->
+        </activity>
+
+        <receiver android:name=".receiver.SmsReceiver">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receiver.SmsSentResultReceiver">
+            <intent-filter>
+                <action android:name="org.secmem.remoteroid.intent.action.SMS_SENT"/>
+            </intent-filter>
+        </receiver>
+        
+        <activity android:name=".activity.ConfigurationChecker" android:label="@string/get_notified"></activity>
+        <service android:name=".service.SocketService"></service>
+        <activity android:name=".dialog.CategoryDialog"
+            android:theme="@style/CustomTheme">
+        </activity>
+        <service
+			android:name=".ime.HardKeyboard"
+			android:permission="android.permission.BIND_INPUT_METHOD">
+			<intent-filter>
+				<action
+					android:name="android.view.InputMethod" />
+			</intent-filter>
+			<meta-data
+				android:name="android.view.im"
+				android:resource="@xml/remoteroid_ime" />
+		</service>
+        <service android:name=".service.FrameBufferService"></service>
+        <receiver android:name=".gcm.GCM_Receiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter >
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
+                <category android:name="org.secmem.remoteroid"/>
+            </intent-filter>
+        </receiver>
+        
+    </application>
+
+</manifest>

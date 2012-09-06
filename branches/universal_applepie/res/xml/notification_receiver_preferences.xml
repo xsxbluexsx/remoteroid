@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/preferences" >
+
+    <PreferenceCategory android:title="@string/package_filter" >
+        <CheckBoxPreference
+            android:disableDependentsState="false"
+            android:key="filter_enabled"
+            android:summary="@string/enable_disable_notify_filters"
+            android:summaryOff="@string/filter_disabled"
+            android:summaryOn="@string/filter_enabled"
+            android:title="@string/filter" />
+        
+        <ListPreference
+            android:dependency="filter_enabled"
+            android:defaultValue="e"
+            android:entries="@array/filtering_modes"
+            android:entryValues="@array/filtering_modes_val"
+            android:key="filtering_mode"
+            android:summary="@string/filtering_mode_summary"
+            android:title="@string/filtering_mode" />
+
+        <PreferenceScreen
+            android:dependency="filter_enabled"
+            android:summary="@string/select_package_to_filter"
+            android:title="@string/select_package" >
+            <intent
+                android:targetClass="org.secmem.remoteroid.activity.PackageSelector"
+                android:targetPackage="org.secmem.remoteroid" />
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+</PreferenceScreen>
