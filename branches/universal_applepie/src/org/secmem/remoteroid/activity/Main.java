@@ -503,7 +503,7 @@ public class Main extends SherlockFragmentActivity implements
 			
 			Response response = null;
 			try {
-				response = RemoteroidWeb.doLogin(email, password);
+				response = RemoteroidWeb.doLogin(email, password).sendRequest();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -562,7 +562,7 @@ public class Main extends SherlockFragmentActivity implements
 			Response response = null;
 			
 			try {
-				response = RemoteroidWeb.updateInfo(uid, model, email, password, reg);
+				response = RemoteroidWeb.updateInfo(uid, model, email, password, reg).sendRequest();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {

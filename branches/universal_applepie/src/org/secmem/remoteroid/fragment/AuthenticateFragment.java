@@ -238,7 +238,7 @@ public class AuthenticateFragment extends Fragment {
 			String pw = params[1];
 			Response response = null;
 			try {
-				response = RemoteroidWeb.addAccount(email, pw);
+				response = RemoteroidWeb.addAccount(email, pw).sendRequest();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -297,7 +297,7 @@ public class AuthenticateFragment extends Fragment {
 			String reg = Pref.getMyPreferences(Pref.GCM.KEY_GCM_REGISTRATION, getActivity());
 			String uuid = HongUtil.getDeviceId(getActivity());
 			try {
-				response = RemoteroidWeb.addDevice(Build.MODEL, email, pwd, reg, uuid);
+				response = RemoteroidWeb.addDevice(Build.MODEL, email, pwd, reg, uuid).sendRequest();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {

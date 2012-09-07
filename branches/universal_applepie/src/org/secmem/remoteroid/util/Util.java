@@ -112,6 +112,7 @@ public class Util {
 		private static final String KEY_IP_ADDR="ip_addr";
 		private static final String KEY_PASSWORD = "password";
 		private static final String KEY_AUTO_CONNECT = "auto_connect";
+		private static final String KEY_SERVER_TYPE = "server_type";
 		
 		public static void saveConnectionData(Context context, String ipAddress, String password){
 			SharedPreferences.Editor editor = getPrefEditor(context);
@@ -136,6 +137,10 @@ public class Util {
 		
 		public static boolean isAutoConnectEnabled(Context context){
 			return getPref(context).getBoolean(KEY_AUTO_CONNECT, false);
+		}
+		
+		public static String getServerType(Context context){
+			return getPref(context).getString(KEY_SERVER_TYPE, "windows");
 		}
 	}
 	

@@ -90,4 +90,15 @@
         <string name="dialog_sign_up_input_pwd">input Password</string>
         <string name="dialog_category_title">Select the wanted category</string>
         <string name="authentication_title">If your ID have existing, input your ID &amp; PASSWORD</string>
+        <string name="server_type">Server type</string>
+        <string-array name="server_type_name">
+            <item >for Windows</item>
+            <item >Universal</item>
+        </string-array>
+        <string-array name="server_type_value">
+            <item >windows</item>
+            <item >universal</item>
+        </string-array>
+            <string name="server_type_title">Server type</string>
+            <string name="server_type_summary">Select a server to communicate with.</string>
 </resources>
