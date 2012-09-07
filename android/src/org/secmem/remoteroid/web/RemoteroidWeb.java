@@ -7,41 +7,34 @@ import org.secmem.remoteroid.lib.api.API;
 import org.secmem.remoteroid.lib.data.Account;
 import org.secmem.remoteroid.lib.data.Device;
 import org.secmem.remoteroid.lib.request.Request;
-import org.secmem.remoteroid.lib.request.Request.RequestFactory;
-import org.secmem.remoteroid.lib.request.Response;
-
-import android.util.Log;
+import org.secmem.remoteroid.lib.request.Request.RequestBuilder;
 
 public class RemoteroidWeb {
 	
-	public static Response addAccount(String email, String password) throws MalformedURLException, IOException{
-		Request req = RequestFactory.getRequest(API.Account.ADD_ACCOUNT);
-		
+	public static Request addAccount(String email, String password) throws MalformedURLException, IOException{
 		Account account = new Account();
 		account.setEmail(email);
 		account.setPassword(password);
 		
-		return req.attachPayload(account).sendRequest();
-		
+		Request req = RequestBuilder.setRequest(API.Account.ADD_ACCOUNT).setPayload(account).build();
+		return req;
 	}
 	
-	public static Response doLogin(String email, String password) throws MalformedURLException, IOException{
-		Request req = RequestFactory.getRequest(API.Account.LOGIN);
-		
+	public static Request doLogin(String email, String securedPassword) throws MalformedURLException, IOException{
 		Account account = new Account();
 		account.setEmail(email);
-		account.setPassword(password);
+		account.setPassword(securedPassword);
 		
+		Request req = RequestBuilder.setRequest(API.Account.LOGIN).setPayload(account).build();
 		
-		return req.attachPayload(account).sendRequest();
+		return req;
 				
 	}
 	
-	public static Response addDevice(String nickname, String email, String pwd, String reg, String deviceUUID) throws MalformedURLException, IOException{
-		Request req = RequestFactory.getRequest(API.Device.ADD_DEVICE);
+	public static Request addDevice(String nickname, String email, String securedPwd, String reg, String deviceUUID) throws MalformedURLException, IOException{
 		Account account = new Account();
 		account.setEmail(email);
-		account.setPassword(pwd);
+		account.setPassword(securedPwd);
 		
 		Device dev = new Device();
 		dev.setNickname(nickname);
@@ -49,24 +42,16 @@ public class RemoteroidWeb {
 		dev.setOwnerAccount(account);
 		dev.setDeviceUUID(deviceUUID);
 		
-		Log.i("qq","nickname = "+nickname);
-		Log.i("qq","email = "+email);
-		Log.i("qq","pwd = "+pwd);
-		Log.i("qq","reg = "+reg);
+		Request req = RequestBuilder.setRequest(API.Device.ADD_DEVICE).setPayload(dev).build();
 		
-		return req.attachPayload(dev).sendRequest();
+		return req;
 	}
 	
 	public static void deleteAccount(){
-		Request req = RequestFactory.getRequest(API.Account.DELETE_ACCOUNT);
 		
-//		authentication
 	}
 	
-	public static Response updateInfo(String uuid, String nickname, String email, String pwd, String reg) throws MalformedURLException, IOException{
-		
-		Request req = RequestFactory.getRequest(API.Device.UPDATE_DEVICE_INFO);
-		
+	public static Request updateInfo(String uuid, String nickname, String email, String pwd, String reg) throws MalformedURLException, IOException{
 		Account account = new Account();
 		account.setEmail(email);
 		account.setPassword(pwd);
@@ -77,7 +62,9 @@ public class RemoteroidWeb {
 		dev.setRegistrationKey(reg);
 		dev.setOwnerAccount(account);
 		
-		return req.attachPayload(dev).sendRequest();
+		Request req = RequestBuilder.setRequest(API.Device.UPDATE_DEVICE_INFO).setPayload(dev).build();
+		
+		return req;
 	}
 	
 	

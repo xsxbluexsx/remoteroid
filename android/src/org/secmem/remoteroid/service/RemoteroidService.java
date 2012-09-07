@@ -42,6 +42,7 @@ import org.secmem.remoteroid.network.VirtualEventListener;
 import org.secmem.remoteroid.receiver.SmsReceiver;
 import org.secmem.remoteroid.util.CommandLine;
 import org.secmem.remoteroid.util.HongUtil;
+import org.secmem.remoteroid.util.Util;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -114,12 +115,18 @@ public class RemoteroidService extends Service
 						// Open input device
 						mInputHandler.open();
 						
-						// Start connection and receive events from server
-						mTransmitter.connect(ipAddress);
-						//Send devices resolution to host for coordinate transformation;
-						if(mTransmitter!=null && mTransmitter.isConnected())
-							mTransmitter.sendDeviceInfo(getApplicationContext().getResources().getDisplayMetrics());
+						// Handle for Windows server
+						if(Util.Connection.getServerType(RemoteroidService.this).equals("windows")){
+							// Start connection and receive events from server
+							mTransmitter.connect(ipAddress);
+							//Send devices resolution to host for coordinate transformation;
+							if(mTransmitter!=null && mTransmitter.isConnected())
+								mTransmitter.sendDeviceInfo(getApplicationContext().getResources().getDisplayMetrics());
 						
+						}else{
+							// For Universal server
+							
+						}
 						return null;	
 				}
 				

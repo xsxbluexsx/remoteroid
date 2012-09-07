@@ -39,7 +39,6 @@ import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -48,9 +47,9 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.MediaStore;
-import android.sax.StartElementListener;
 import android.telephony.TelephonyManager;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -417,7 +416,15 @@ public class HongUtil {
 	
 	public static String getDeviceId(Context context){
 		TelephonyManager tm = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
-		return tm.getDeviceId();
+		String uuid = tm.getDeviceId();
+		if(uuid==null){
+			WifiManager wifiManager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+			String mac = wifiManager.getConnectionInfo().getMacAddress();
+			if(mac==null)
+				throw new IllegalStateException();
+			return mac;
+		}
+		return uuid;
 	}
 	
 	public static void excExplorer(Context context) throws CanceledException{

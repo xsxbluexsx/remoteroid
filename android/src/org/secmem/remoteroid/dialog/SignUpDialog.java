@@ -81,7 +81,7 @@ public class SignUpDialog {
 			String pw = params[1];
 			Response response = null;
 			try {
-				response = RemoteroidWeb.addAccount(email, pw);
+				response = RemoteroidWeb.addAccount(email, pw).sendRequest();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -146,7 +146,7 @@ public class SignUpDialog {
 			Log.i("qq","uuid = "+uuid);
 
 			try {
-				response = RemoteroidWeb.addDevice(Build.MODEL, email, pwd, reg, uuid);
+				response = RemoteroidWeb.addDevice(Build.MODEL, email, pwd, reg, uuid).sendRequest();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {

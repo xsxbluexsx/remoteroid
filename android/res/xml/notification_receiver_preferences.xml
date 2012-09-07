@@ -29,5 +29,8 @@
                 android:targetPackage="org.secmem.remoteroid" />
         </PreferenceScreen>
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/server_type">
+        <ListPreference android:entries="@array/server_type_name" android:entryValues="@array/server_type_value" android:key="server_type" android:summary="@string/server_type_summary" android:title="@string/server_type_title" android:defaultValue="windows"/>
+    </PreferenceCategory>
 
 </PreferenceScreen>

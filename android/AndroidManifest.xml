@@ -86,7 +86,6 @@
 				android:name="android.view.im"
 				android:resource="@xml/remoteroid_ime" />
 		</service>
-        <service android:name=".service.FrameBufferService"></service>
         <receiver android:name=".gcm.GCM_Receiver"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter >
