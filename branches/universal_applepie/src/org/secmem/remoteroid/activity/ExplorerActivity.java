@@ -19,7 +19,6 @@
 
 package org.secmem.remoteroid.activity;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,23 +27,19 @@ import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.adapter.DataList;
 import org.secmem.remoteroid.adapter.ExplorerAdapter;
 import org.secmem.remoteroid.data.CategoryList;
-import org.secmem.remoteroid.dialog.CategoryDialog;
 import org.secmem.remoteroid.dialog.DialogListener;
 import org.secmem.remoteroid.dialog.DialogMenu;
 import org.secmem.remoteroid.expinterface.OnFileLongClickListener;
 import org.secmem.remoteroid.expinterface.OnFileSelectedListener;
 import org.secmem.remoteroid.expinterface.OnPathChangedListener;
-import org.secmem.remoteroid.fragment.AuthenticateFragment.SignUpAsync;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
 import org.secmem.remoteroid.service.RemoteroidService;
 import org.secmem.remoteroid.util.HongUtil;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -55,7 +50,6 @@ import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
@@ -63,9 +57,7 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockActivity;

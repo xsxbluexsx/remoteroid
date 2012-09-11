@@ -21,6 +21,7 @@ package org.secmem.remoteroid.util;
 
 import java.util.List;
 
+import org.secmem.remoteroid.lib.data.Account;
 import org.secmem.remoteroid.service.RemoteroidService;
 
 import android.app.ActivityManager;
@@ -109,32 +110,56 @@ public class Util {
 	
 	
 	public static class Connection{
-		private static final String KEY_IP_ADDR="ip_addr";
+		private static final String KEY_ACCOUNT_ENABLED = "use_account";
+		private static final String KEY_USER_EMAIL="user_email";
 		private static final String KEY_PASSWORD = "password";
+		@Deprecated
 		private static final String KEY_AUTO_CONNECT = "auto_connect";
 		private static final String KEY_SERVER_TYPE = "server_type";
 		
-		public static void saveConnectionData(Context context, String ipAddress, String password){
+		public static void setUserAccountEnabled(Context context, boolean enabled){
 			SharedPreferences.Editor editor = getPrefEditor(context);
-			editor.putString(KEY_IP_ADDR, ipAddress);
+			editor.putBoolean(KEY_ACCOUNT_ENABLED, enabled);
+			editor.putString(KEY_USER_EMAIL, null);
+			editor.putString(KEY_PASSWORD, null);
+			editor.commit();
+		}
+		
+		public static void saveAuthData(Context context, String userEmail, String password){
+			SharedPreferences.Editor editor = getPrefEditor(context);
+			editor.putBoolean(KEY_ACCOUNT_ENABLED, true);
+			editor.putString(KEY_USER_EMAIL, userEmail);
 			editor.putString(KEY_PASSWORD, password);
 			editor.commit();
 		}
 		
+		@Deprecated
 		public static void setAutoConnect(Context context, boolean autoconnect){
 			SharedPreferences.Editor editor = getPrefEditor(context);
 			editor.putBoolean(KEY_AUTO_CONNECT, autoconnect);
 			editor.commit();
 		}
 		
-		public static String getIpAddress(Context context){
-			return getPref(context).getString(KEY_IP_ADDR, null);
+		public static String getUserEmail(Context context){
+			return getPref(context).getString(KEY_USER_EMAIL, null);
 		}
 		
 		public static String getPassword(Context context){
 			return getPref(context).getString(KEY_PASSWORD, null);
 		}
 		
+		public static Account getUserAccount(Context context){
+			Account account = new Account();
+			account.setEmail(getUserEmail(context));
+			account.setPassword(getPassword(context));
+			return account;
+		}
+		
+		public static boolean isUserAccountSet(Context context){
+			return getPref(context).getBoolean(KEY_ACCOUNT_ENABLED, false);
+		}
+		
+		@Deprecated
 		public static boolean isAutoConnectEnabled(Context context){
 			return getPref(context).getBoolean(KEY_AUTO_CONNECT, false);
 		}

@@ -29,8 +29,6 @@ import org.secmem.remoteroid.util.Util;
 import org.secmem.remoteroid.util.Util.Filter;
 import org.secmem.remoteroid.util.Util.Filter.NotificationType;
 
-import dalvik.bytecode.Opcodes;
-
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.ComponentName;

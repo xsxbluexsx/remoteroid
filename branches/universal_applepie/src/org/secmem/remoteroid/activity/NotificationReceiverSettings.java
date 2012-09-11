@@ -37,7 +37,6 @@ public class NotificationReceiverSettings extends SherlockPreferenceActivity{
 	    addPreferencesFromResource(R.xml.notification_receiver_preferences);
 	}
 
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
@@ -47,7 +46,5 @@ public class NotificationReceiverSettings extends SherlockPreferenceActivity{
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
 	
-
 }

@@ -24,33 +24,10 @@
         <requestFocus />
     </EditText>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/password"
-        android:textAppearance="?android:attr/textAppearanceMedium" android:layout_marginTop="5dp"/>
-
-    <EditText
-        android:id="@+id/password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10" android:minLines="1" android:inputType="textPassword"/>
-
-    <CheckBox
-        android:id="@+id/auto_connect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/auto_connect" />
-
     <Button
         android:id="@+id/connect"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/connect" android:layout_marginTop="5dp" android:enabled="false"/>
-    <Button
-        android:id="@+id/signup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/sign_up" android:layout_marginTop="5dp"/>
 
 </LinearLayout>
