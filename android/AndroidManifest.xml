@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.secmem.remoteroid"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="2"
+    android:versionName="1.5" >
 
     <uses-sdk android:minSdkVersion="9"/>
     <uses-permission android:name="android.permission.GET_TASKS"/>
@@ -94,6 +94,21 @@
                 <category android:name="org.secmem.remoteroid"/>
             </intent-filter>
         </receiver>
+        <activity android:name=".activity.LoginActivity" android:label="@string/login" android:noHistory="true">
+            <intent-filter>
+                <action android:name="org.secmem.remoteroid.intent.action.LOGIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.RegisterActivity" android:label="@string/register" android:noHistory="true">
+            <intent-filter>
+                <action android:name="org.secmem.remoteroid.intent.action.REGISTER"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.AccountInfoActivity" android:label="@string/account_info"></activity>
+        <service android:name=".service.RemoteroidServiceU"></service>
         
     </application>
 

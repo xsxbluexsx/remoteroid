@@ -7,7 +7,6 @@ import org.secmem.remoteroid.lib.api.API;
 import org.secmem.remoteroid.lib.data.Account;
 import org.secmem.remoteroid.lib.data.Device;
 import org.secmem.remoteroid.lib.request.Request;
-import org.secmem.remoteroid.lib.request.Request.RequestBuilder;
 
 public class RemoteroidWeb {
 	
@@ -16,7 +15,7 @@ public class RemoteroidWeb {
 		account.setEmail(email);
 		account.setPassword(password);
 		
-		Request req = RequestBuilder.setRequest(API.Account.ADD_ACCOUNT).setPayload(account).build();
+		Request req = Request.Builder.setRequest(API.Account.ADD_ACCOUNT).setPayload(account).build();
 		return req;
 	}
 	
@@ -25,7 +24,7 @@ public class RemoteroidWeb {
 		account.setEmail(email);
 		account.setPassword(securedPassword);
 		
-		Request req = RequestBuilder.setRequest(API.Account.LOGIN).setPayload(account).build();
+		Request req = Request.Builder.setRequest(API.Account.LOGIN).setPayload(account).build();
 		
 		return req;
 				
@@ -40,9 +39,9 @@ public class RemoteroidWeb {
 		dev.setNickname(nickname);
 		dev.setRegistrationKey(reg);
 		dev.setOwnerAccount(account);
-		dev.setDeviceUUID(deviceUUID);
+		//dev.setDeviceUUID(deviceUUID); // Use DeviceUUIDGeneratorImpl instead
 		
-		Request req = RequestBuilder.setRequest(API.Device.ADD_DEVICE).setPayload(dev).build();
+		Request req = Request.Builder.setRequest(API.Device.ADD_DEVICE).setPayload(dev).build();
 		
 		return req;
 	}
@@ -58,11 +57,11 @@ public class RemoteroidWeb {
 		
 		Device dev = new Device();
 		dev.setNickname(nickname);
-		dev.setDeviceUUID(uuid);
+		//dev.setDeviceUUID(uuid); // Use DeviceUUIDGeneratorImpl instead
 		dev.setRegistrationKey(reg);
 		dev.setOwnerAccount(account);
 		
-		Request req = RequestBuilder.setRequest(API.Device.UPDATE_DEVICE_INFO).setPayload(dev).build();
+		Request req = Request.Builder.setRequest(API.Device.UPDATE_DEVICE_INFO).setPayload(dev).build();
 		
 		return req;
 	}

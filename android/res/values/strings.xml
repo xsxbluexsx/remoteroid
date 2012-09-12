@@ -82,7 +82,7 @@
         <string name="connected_to_s">Connected to %s</string>
         <string name="disconnected_from_server">Disconnected from server.</string>
         <string name="connection_with_server_has_interrupted">Connection with server has interrupted.</string>
-        <string name="disconnecting">Disconnecting...</string>
+        <string name="disconnecting">Disconnecting…</string>
         <string name="back_finished">\'뒤로가기\'를 한번더 누르면 종료가 됩니다.</string>
         <string name="incoming_call_from_s">Incoming call from %s</string>
         <string name="dialog_sign_up_title">e-mail과 password를 입력해주세요.</string>
@@ -101,4 +101,21 @@
         </string-array>
             <string name="server_type_title">Server type</string>
             <string name="server_type_summary">Select a server to communicate with.</string>
+            <string name="email">E-mail address</string>
+            <string name="login">Login</string>
+            <string name="register">Register</string>
+            <string name="have_no_account">Have no account?</string>
+            <string name="verify_password">Verify password</string>
+            <string name="user_e_mail_duplicates">User E-mail duplicates.</string>
+            <string name="error_occurred_please_try_again">Error occurred. Please try again.</string>
+            <string name="account_has_been_set">Account has been set.</string>
+            <string name="authentication_failed">Authentication failed.</string>
+            <string name="e_mail_is_not_valid">E-mail is not valid.</string>
+            <string name="account_info">Account info</string>
+            <string name="logout">Logout</string>
+            <string name="proceed_logout">Proceed logout?</string>
+            <string name="set_user_account">Manage account</string>
+            <string name="set_user_account_summary">Manage user\'s Remoteroid account and device.</string>
+            <string name="please_wait">Please wait…</string>
+            <string name="register_device">Register device</string>
 </resources>
