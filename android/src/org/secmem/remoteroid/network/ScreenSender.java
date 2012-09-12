@@ -19,6 +19,7 @@ import android.util.Log;
 public class ScreenSender extends PacketSender{
 		
 	private static final int MAXDATASIZE = 4090;
+	
 	private static final int JPGINFOLENGTH = 10;
 
 	private byte[] sendBuffer = new byte[MAXDATASIZE];
@@ -35,11 +36,16 @@ public class ScreenSender extends PacketSender{
 		//First send jpg size information to host
 		//byte [] jpgSizeInfo = String.valueOf(jpgTotalSize).getBytes();
 		
-		int length = HongUtil.atoi(jpgTotalSize, jpgSizeInfo);
+		//set oprientation information to 1st byte
+		//jpgSizeInfo[0] = orientation;
 		
-		Packet jpgInfoPacket = new Packet(OpCode.JPGINFO_SEND, jpgSizeInfo, length);				
+		int length = HongUtil.itoa(jpgTotalSize, jpgSizeInfo);
+		
+		
+		Packet jpgInfoPacket = new Packet(OpCode.JPGINFO_SEND, jpgSizeInfo, length);
 		
 		send(jpgInfoPacket);
+		
 		
 		//Next send jpg data to host
 		while(jpgTotalSize > transmittedSize){
@@ -47,10 +53,11 @@ public class ScreenSender extends PacketSender{
 					MAXDATASIZE : (jpgTotalSize-transmittedSize);
 			System.arraycopy(jpgData, transmittedSize, sendBuffer, 0, CurTransSize);
 			transmittedSize += CurTransSize;
-			
+		
 			Packet jpgDataPacket = new Packet(OpCode.JPGDATA_SEND, sendBuffer, CurTransSize);
-			
+		
 			send(jpgDataPacket);
+		
 		}		
 	}
 }
