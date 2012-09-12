@@ -26,6 +26,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -102,15 +103,13 @@ public class FrameHandler {
 //			setBitmap(getDisplayBitmap());
 //		}	
 		
-		int ret = getFrameBuffer(buffer, pixelFormat);
-				
-		//Log.i("qwe", ""+ret);
-		frameBuffer.put(buffer, 0, displaySize);
-		frameBuffer.rewind();
-		bitmap.copyPixelsFromBuffer(frameBuffer);
-				
-		frameStream.reset();
-		bitmap.compress(CompressFormat.JPEG, 100, frameStream);
+		getFrameBuffer(buffer, pixelFormat);		
+		frameBuffer.put(buffer, 0, displaySize);		
+		frameBuffer.rewind();		
+		bitmap.copyPixelsFromBuffer(frameBuffer);				
+		frameStream.reset();		 
+		bitmap.compress(CompressFormat.JPEG, 100, frameStream);		
+		
 		return frameStream;
 	}
 	

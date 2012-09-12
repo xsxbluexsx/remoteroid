@@ -377,11 +377,16 @@ public class RemoteroidService extends Service
 		CommandLine.execAsRoot("chmod 664 /dev/graphics/fb0");
 		CommandLine.execAsRoot("chmod 664 /dev/graphics/fb1");
 		
+		
 		Thread mThread = new Thread(){
 			@Override
 			public void run() {
-				while(isTransmission){
+				Context context = getApplicationContext();
+				while(isTransmission){					
 					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
+					
+					int orientation = context.getResources().getConfiguration().orientation;
+					
 					mTransmitter.screenTransmission(frameStream.toByteArray());
 				}
 			}

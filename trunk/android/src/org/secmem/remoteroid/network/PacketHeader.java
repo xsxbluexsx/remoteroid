@@ -76,8 +76,8 @@ public class PacketHeader{
 	 */
 	public byte[] asByteArray(){
 		//return toString().getBytes();
-		HongUtil.atoi(opCode, heaerBuffer, OPCODE_LENGTH, 0);
-		HongUtil.atoi(payloadLength+LENGTH, heaerBuffer, PAYLOAD_LENGTH, OPCODE_LENGTH);
+		HongUtil.itoa(opCode, heaerBuffer, OPCODE_LENGTH, 0);
+		HongUtil.itoa(payloadLength+LENGTH, heaerBuffer, PAYLOAD_LENGTH, OPCODE_LENGTH);
 		return heaerBuffer;
 	}
 	
