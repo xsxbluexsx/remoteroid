@@ -30,7 +30,6 @@ import org.secmem.remoteroid.fragment.ConnectedFragment;
 import org.secmem.remoteroid.fragment.ConnectingFragment;
 import org.secmem.remoteroid.fragment.ConnectionStateListener;
 import org.secmem.remoteroid.fragment.DriverInstallationFragment;
-import org.secmem.remoteroid.fragment.AuthenticateFragment.SignUpAsync;
 import org.secmem.remoteroid.gcm.GcmActionType;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
 import org.secmem.remoteroid.lib.api.Codes;
@@ -42,6 +41,7 @@ import org.secmem.remoteroid.util.HongUtil;
 import org.secmem.remoteroid.util.Pref;
 import org.secmem.remoteroid.web.RemoteroidWeb;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
@@ -56,12 +56,9 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
-import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -85,7 +82,6 @@ public class Main extends SherlockFragmentActivity implements
 	private ProgressDialog mProgress;
 	
 	private String remoteIp=null;
-	private PowerManager.WakeLock wl;
 	
 	private IRemoteroid mRemoteroidSvc;
 	private ServiceConnection conn = new ServiceConnection() {
@@ -212,7 +208,6 @@ public class Main extends SherlockFragmentActivity implements
         if(Pref.getMyPreferences(Pref.GCM.KEY_GCM_REGISTRATION, Main.this)==null){
         	getGcmAuth();
         }
-        Log.i("qq","onCreate()");
         // remote connect
         if(getIntent().getStringExtra(GcmActionType.ActionMessage.ACTION_MESSAGE_IP) !=null){
         	getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
@@ -246,7 +241,6 @@ public class Main extends SherlockFragmentActivity implements
     
     public void onStart(){
     	super.onStart();
-    	Log.i("qq","onStart()");
         getSupportFragmentManager().beginTransaction()
 		.add(R.id.container, mAuthFragment)
 		.add(R.id.container, mConnectingFragment)
@@ -269,7 +263,6 @@ public class Main extends SherlockFragmentActivity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.i("qq","onResume()");
 		// Register receiver to get broadcast from service
 		IntentFilter filter = new IntentFilter();
 	    filter.addAction(RemoteroidIntent.ACTION_CONNECTED);
@@ -322,10 +315,20 @@ public class Main extends SherlockFragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_main_preferences:
-			startActivity(new Intent(this, NotificationReceiverSettings.class));
+			startActivityForResult(new Intent(this, NotificationReceiverSettings.class), 0);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	@Override 
+	public void onActivityResult(int requestCode, int resultCode, Intent data) { 
+		if(resultCode==Activity.RESULT_OK && requestCode==0){
+			boolean restart = data.getBooleanExtra("restart", false);
+			if(restart){
+				finish();
+			}
+		}
 	}
 
 	

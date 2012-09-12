@@ -55,6 +55,9 @@ public final class RemoteroidIntent {
 	
 	public static final String ACTION_DEVICE_OPEN_FAILED = "org.secmem.remoteroid.intent.action.DEVICE_OPEN_FAILED";
 	
+	public static final String ACTION_LOGIN = "org.secmem.remoteroid.intent.action.LOGIN";
+	public static final String ACTION_REGISTER = "org.secmem.remoteroid.intent.action.REGISTER";
+	
 	/**
 	 * Key for extra data contains server's ip address.
 	 * @see RemoteroidIntent#ACTION_CONNECTED

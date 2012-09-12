@@ -38,5 +38,23 @@
             android:summary="@string/notification_type_summary"
             android:title="@string/notification_type" />
     </PreferenceCategory>
-
+    <PreferenceCategory android:title="@string/server_type" >
+        <ListPreference
+            android:defaultValue="windows"
+            android:entries="@array/server_type_name"
+            android:entryValues="@array/server_type_value"
+            android:key="server_type"
+            android:summary="@string/server_type_summary"
+            android:title="@string/server_type_title" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/account_info" >
+        <PreferenceScreen
+            android:summary="@string/set_user_account_summary"
+            android:title="@string/set_user_account">
+        
+            <intent
+                android:targetClass="org.secmem.remoteroid.activity.AccountInfoActivity"
+                android:targetPackage="org.secmem.remoteroid" />
+        </PreferenceScreen>>
+    </PreferenceCategory>
 </PreferenceScreen>

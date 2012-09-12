@@ -21,16 +21,12 @@ package org.secmem.remoteroid.activity;
 
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.adapter.PackageAdapter;
-import org.secmem.remoteroid.gcm.GcmActionType;
 import org.secmem.remoteroid.util.FilterUtil;
 
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -45,8 +41,6 @@ public class PackageSelector extends SherlockListActivity{
 	
 	private EditText edtSearch;
 	
-	private String currentSearchStr="";
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
