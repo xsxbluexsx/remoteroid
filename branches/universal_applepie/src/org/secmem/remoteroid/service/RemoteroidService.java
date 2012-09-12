@@ -74,7 +74,6 @@ public class RemoteroidService extends Service
 	private InputHandler mInputHandler;
 	private static ServiceState mState = ServiceState.IDLE;
 	private FrameHandler frameHandler;
-	private Process process;
 	
 	private String DEBUG_STATE = "debug_state";
 	
