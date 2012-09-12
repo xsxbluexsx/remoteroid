@@ -29,6 +29,7 @@ import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.provider.Settings.Secure;
@@ -106,15 +107,13 @@ public class Util {
 			}
 		}
 	}
-	
-	
-	
+		
 	public static class Connection{
 		private static final String KEY_ACCOUNT_ENABLED = "use_account";
 		private static final String KEY_USER_EMAIL="user_email";
 		private static final String KEY_PASSWORD = "password";
-		@Deprecated
-		private static final String KEY_AUTO_CONNECT = "auto_connect";
+		private static final String KEY_DEVICE_NAME = "device_nickname";
+		
 		private static final String KEY_SERVER_TYPE = "server_type";
 		
 		public static void setUserAccountEnabled(Context context, boolean enabled){
@@ -133,11 +132,14 @@ public class Util {
 			editor.commit();
 		}
 		
-		@Deprecated
-		public static void setAutoConnect(Context context, boolean autoconnect){
+		public static void setDeviceNickname(Context context, String nickname){
 			SharedPreferences.Editor editor = getPrefEditor(context);
-			editor.putBoolean(KEY_AUTO_CONNECT, autoconnect);
+			editor.putString(KEY_DEVICE_NAME, nickname);
 			editor.commit();
+		}
+		
+		public static String getDeviceNickname(Context context){
+			return getPref(context).getString(KEY_DEVICE_NAME, Build.MODEL);
 		}
 		
 		public static String getUserEmail(Context context){
@@ -152,16 +154,14 @@ public class Util {
 			Account account = new Account();
 			account.setEmail(getUserEmail(context));
 			account.setPassword(getPassword(context));
+			if(account.getEmail()==null || account.getPassword()==null){
+				throw new IllegalStateException("No account data");
+			}
 			return account;
 		}
 		
 		public static boolean isUserAccountSet(Context context){
 			return getPref(context).getBoolean(KEY_ACCOUNT_ENABLED, false);
-		}
-		
-		@Deprecated
-		public static boolean isAutoConnectEnabled(Context context){
-			return getPref(context).getBoolean(KEY_AUTO_CONNECT, false);
 		}
 		
 		public static String getServerType(Context context){
