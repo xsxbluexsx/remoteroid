@@ -19,18 +19,33 @@ public class RemoteroidServiceU extends Service {
 	private IBinder binder = new IRemoteroidU.Stub() {
 
 		@Override
-		public boolean isConnected() throws RemoteException {
-			return connManager.isConnected();
+		public boolean isCommandConnected() throws RemoteException {
+			return connManager.isCommandConnected();
 		}
 
 		@Override
-		public void connect(String ipAddress) throws RemoteException {
-			connManager.connect(ipAddress);
+		public void connectCommand(String ipAddress) throws RemoteException {
+			connManager.connectCommand(ipAddress);
+		}
+		
+		@Override
+		public boolean isScreenConnected() throws RemoteException {
+			return connManager.isScreenConnected();
+		}
+
+		@Override
+		public void connectScreen(String ipAddress) throws RemoteException {
+			connManager.connectScreen(ipAddress);
+		}
+		
+		@Override
+		public void disconnectScreen() throws RemoteException {
+			connManager.disconnectScreen();
 		}
 
 		@Override
 		public void disconnect() throws RemoteException {
-			connManager.teardown();
+			connManager.disconnect();
 		}
 
 		@Override
@@ -39,7 +54,7 @@ public class RemoteroidServiceU extends Service {
 			CommandPacket command = CommandFactory.notification(notificationType, args);
 			connManager.sendCommand(command);
 		}
-		
+
 	};
 	
 	@Override
@@ -54,16 +69,24 @@ public class RemoteroidServiceU extends Service {
 	private ServerConnectionListener connListener = new ServerConnectionListener(){
 
 		@Override
-		public void onConnected(String ipAddress) {
+		public void onCommandConnected(String ipAddress) {
 			sendBroadcast(
 					new Intent(RemoteroidIntent.ACTION_CONNECTED)
 					.putExtra(RemoteroidIntent.EXTRA_IP_ADDESS, ipAddress));
+		}
+		
+		@Override
+		public void onScreenConnected(String ipAddress) {
+			// TODO Auto-generated method stub
+			
 		}
 
 		@Override
 		public void onFailed() {
 			sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTION_FAILED));
 		}
+
+
 		
 	};
 	

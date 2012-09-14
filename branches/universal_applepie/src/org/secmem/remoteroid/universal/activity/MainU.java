@@ -45,7 +45,7 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 			try{
 				// Check whether client is connected to server or not
 				// and show a proper fragment on activity
-				if(remoteroidSvc.isConnected()){
+				if(remoteroidSvc.isCommandConnected()){
 					getSupportFragmentManager().beginTransaction()
 					.replace(R.id.container, connectedFragment).commit();
 				}else{
@@ -125,9 +125,9 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 		String serverIp = intent.getStringExtra(RemoteroidIntent.EXTRA_IP_ADDESS);
 		if(remoteroidSvc!=null){
 			try{
-				if(!remoteroidSvc.isConnected()){
+				if(!remoteroidSvc.isCommandConnected()){
 					setSupportProgressBarIndeterminateVisibility(true);
-					remoteroidSvc.connect(serverIp);
+					remoteroidSvc.connectCommand(serverIp);
 				}else{
 					Log.e(TAG, "Cannot make a connection while client is connected to server!");
 				}
@@ -205,7 +205,7 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 		if(remoteroidSvc!=null){
 			try{
 				setSupportProgressBarIndeterminateVisibility(true);
-				remoteroidSvc.connect(ipAddress);
+				remoteroidSvc.connectCommand(ipAddress);
 			}catch(RemoteException e){
 				e.printStackTrace();
 			}
