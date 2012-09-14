@@ -38,7 +38,6 @@ import android.widget.EditText;
 public class AuthenticateFragment extends Fragment {
 	
 	private EditText mEdtIpAddr;
-	private EditText mEdtPassword;
 	private Button mBtnConnect;
 
 	private boolean isIpValid=false;
@@ -64,8 +63,8 @@ public class AuthenticateFragment extends Fragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		mEdtIpAddr = (EditText)view.findViewById(R.id.ip_address);
-		mBtnConnect = (Button)view.findViewById(R.id.connect);
+		mEdtIpAddr = (EditText)view.findViewById(R.id.edt_fragment_authenticate_ip_address);
+		mBtnConnect = (Button)view.findViewById(R.id.btn_fragment_authenticate_connect);
 		
 		mEdtIpAddr.addTextChangedListener(new TextWatcher(){
 
@@ -96,7 +95,7 @@ public class AuthenticateFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				
-				Util.Connection.saveAuthData(getActivity(), mEdtIpAddr.getText().toString(), mEdtPassword.getText().toString());
+				Util.Connection.saveAuthData(getActivity(), mEdtIpAddr.getText().toString(), null);
 				mListener.onConnectRequested(mEdtIpAddr.getText().toString());
 				
 			}

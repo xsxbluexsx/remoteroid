@@ -26,6 +26,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <!-- Keeps the processor from sleeping when a message is received. -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
 
     <application
         uiOptions="splitActionBarWhenNarrow"
@@ -158,7 +159,7 @@
             android:label="@string/account_info" >
         </activity>
 
-        <service android:name=".service.RemoteroidServiceU" >
+        <service android:name=".universal.service.RemoteroidServiceU" >
         </service>
         <service android:name=".service.GCMIntentService" >
         </service>
@@ -166,6 +167,12 @@
         <activity
             android:name=".activity.RemoteConnectRedirector"
             android:noHistory="true" >
+        </activity>
+        <activity android:name=".universal.activity.MainU" android:label="Remoteroid(Universal)">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
