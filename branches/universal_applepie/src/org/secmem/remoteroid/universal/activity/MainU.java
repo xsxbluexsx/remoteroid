@@ -41,17 +41,7 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			remoteroidSvc = IRemoteroidU.Stub.asInterface(service);
 			try{
-				// Check whether client is connected to server or not
-				// and show a proper fragment on activity
-				if(remoteroidSvc.isCommandConnected()){
-					getSupportFragmentManager().beginTransaction()
-					.replace(R.id.container, new ConnectedFragmentU().setListener(MainU.this))
-					.commitAllowingStateLoss();
-				}else{
-					getSupportFragmentManager().beginTransaction()
-					.replace(R.id.container, new ConnectFragmentU().setListener(MainU.this))
-					.commitAllowingStateLoss();
-				}
+				remoteroidSvc.requestBroadcastConnectionState();
 			}catch(RemoteException e){
 				e.printStackTrace();
 			}
@@ -97,6 +87,9 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 		if(!Util.Services.isServiceAliveU(getApplicationContext())){
 			Util.Services.startRemoteroidServiceU(getApplicationContext());
 		}
+		// Register a BroadcastReceiver to receive 
+		// broadcast message regarding connection status
+		registerReceiver(connectionStateReceiver, broadcastFilter);
 		bindService(new Intent(this, RemoteroidServiceU.class), 
 					connection, Context.BIND_AUTO_CREATE);
 		
@@ -106,22 +99,21 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 	protected void onResume() {
 		super.onResume();
 		
-		// Register a BroadcastReceiver to receive 
-		// broadcast message regarding connection status
-		registerReceiver(connectionStateReceiver, broadcastFilter);
+		
 	}
 	
 	@Override
 	protected void onPause() {
 		super.onPause();
 		
-		// Unregister BroadcastReceiver
-		unregisterReceiver(connectionStateReceiver);
+		
 	}
 	
 	@Override
 	protected void onStop(){
 		super.onStop();
+		// Unregister BroadcastReceiver
+		unregisterReceiver(connectionStateReceiver);
 		unbindService(connection);
 		
 	}
@@ -176,7 +168,7 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 				// Need to replace ConnectFragmentU to ConnectedFragmentU
 				getSupportFragmentManager().beginTransaction()
 					.replace(R.id.container, 
-							new ConnectedFragmentU().setListener(MainU.this)).commit();
+							new ConnectedFragmentU().setListener(MainU.this)).commitAllowingStateLoss();
 				
 			}else if(action.equals(RemoteroidIntent.ACTION_CONNECTION_FAILED)){
 				// The client failed to connect server.
@@ -185,7 +177,7 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 				//connectFragment.resetComponentState();
 				getSupportFragmentManager().beginTransaction()
 				.replace(R.id.container, 
-						new ConnectedFragmentU().setListener(MainU.this)).commit();
+						new ConnectFragmentU().setListener(MainU.this)).commitAllowingStateLoss();
 			
 				// Show a message to user that connection has failed
 				Toast.makeText(getApplicationContext(), 
@@ -196,7 +188,7 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 				// Current fragment needs to be replaced to ConnectFragment
 				getSupportFragmentManager().beginTransaction()
 					.replace(R.id.container, 
-							new ConnectFragmentU().setListener(MainU.this)).commit();
+							new ConnectFragmentU().setListener(MainU.this)).commitAllowingStateLoss();
 			}
 		}
 	};

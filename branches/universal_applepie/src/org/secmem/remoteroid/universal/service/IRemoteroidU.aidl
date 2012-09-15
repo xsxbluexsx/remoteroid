@@ -1,6 +1,7 @@
 package org.secmem.remoteroid.universal.service;
 
 interface IRemoteroidU{
+	void requestBroadcastConnectionState();
 	boolean isCommandConnected();
 	boolean isScreenConnected();
 	void connectCommand(in String ipAddress);

@@ -77,7 +77,7 @@ public class RemoteroidServiceU extends Service {
 		@Override
 		public void connectScreen(final String ipAddress) throws RemoteException {
 			frameHandler.acquireFrameBufferPermission();
-			connManager.connectScreen(ipAddress);
+			connManager.connectScreen();
 		}
 		
 		@Override
@@ -113,6 +113,15 @@ public class RemoteroidServiceU extends Service {
 			connManager.sendCommand(command);
 		}
 
+		@Override
+		public void requestBroadcastConnectionState() throws RemoteException {
+			if(connManager.isCommandConnected()){
+				sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTED));
+			}else{
+				sendBroadcast(new Intent(RemoteroidIntent.ACTION_DISCONNECTED));
+			}
+		}
+
 	};
 	
 	@Override
@@ -138,12 +147,6 @@ public class RemoteroidServiceU extends Service {
 		return binder;
 	}
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		Log.d(TAG, "onDestroy()");
-	}
-
 	private ServerConnectionListener connListener = new ServerConnectionListener(){
 
 		@Override
@@ -156,7 +159,9 @@ public class RemoteroidServiceU extends Service {
 		
 		@Override
 		public void onScreenConnected(String ipAddress) {
-			
+			frameHandler.acquireFrameBufferPermission();
+			screenSenderThread = new ScreenSenderThread();
+			screenSenderThread.start();
 		}
 
 		@Override
@@ -165,26 +170,32 @@ public class RemoteroidServiceU extends Service {
 			sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTION_FAILED));
 		}
 
+		@Override
+		public void onScreenConnectionFailed() {
+			Log.e(TAG, "Screen connection failed.");
+			
+		}
 
-		
 	};
 	
 	private ServerCommandListener commListener = new ServerCommandListener(){
 
 		@Override
 		public void onCommand(CommandPacket command) {
+			System.out.println(command);
 			switch(command.getCommand()){
 			case Command.SCREEN_SERVER_READY:
 				// Server established screen socket.
 				// Now, client should send screen data to the server.
-				screenSenderThread = new ScreenSenderThread();
-				screenSenderThread.start();
+				connManager.connectScreen();
+				
 				break;
 			
 			case Command.REQUEST_DEVICE_INFO:
 				// Server has requested device info.
 				connManager.sendCommand(
 						CommandFactory.sendDeviceInfo(frameHandler.getWidth(), frameHandler.getHeight()));
+				
 				break;
 				
 			case Command.TOUCH_DOWN:
