@@ -57,6 +57,7 @@ public class ConnectFragmentU extends InterfaceFragment<ConnectFragmentListenerU
 			}
 			
 		});
+		edtIpAddress.setText("192.168.0.26");
 		
 		btnConnect.setOnClickListener(new OnClickListener(){
 

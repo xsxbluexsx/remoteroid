@@ -9,6 +9,7 @@ import org.secmem.remoteroid.universal.listener.ConnectFragmentListenerU;
 import org.secmem.remoteroid.universal.listener.ConnectedFragmentListenerU;
 import org.secmem.remoteroid.universal.service.IRemoteroidU;
 import org.secmem.remoteroid.universal.service.RemoteroidServiceU;
+import org.secmem.remoteroid.util.Util;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -32,9 +33,6 @@ import com.actionbarsherlock.view.MenuItem;
 public class MainU extends SherlockFragmentActivity implements ConnectFragmentListenerU, ConnectedFragmentListenerU{
 	private static final String TAG = "MainU";
 	
-	private ConnectFragmentU connectFragment;
-	private ConnectedFragmentU connectedFragment;
-	
 	private IntentFilter broadcastFilter;
 	private IRemoteroidU remoteroidSvc;
 	private ServiceConnection connection = new ServiceConnection(){
@@ -47,10 +45,12 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 				// and show a proper fragment on activity
 				if(remoteroidSvc.isCommandConnected()){
 					getSupportFragmentManager().beginTransaction()
-					.replace(R.id.container, connectedFragment).commit();
+					.replace(R.id.container, new ConnectedFragmentU().setListener(MainU.this))
+					.commitAllowingStateLoss();
 				}else{
 					getSupportFragmentManager().beginTransaction()
-					.replace(R.id.container, connectFragment).commit();
+					.replace(R.id.container, new ConnectFragmentU().setListener(MainU.this))
+					.commitAllowingStateLoss();
 				}
 			}catch(RemoteException e){
 				e.printStackTrace();
@@ -63,7 +63,7 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 		}
 		
 	};
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// Add this LayoutParams to wake up application from Push message
@@ -78,10 +78,9 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 	    setContentView(R.layout.activity_main);
 	    
 	    // Set Action bar color
-	    getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
+	    getSupportActionBar().setBackgroundDrawable(
+	    		getResources().getDrawable(R.drawable.bg_red));
 	    
-	    // Initiate fragments
-	    initFragments();
 	    
 	    // Prepare Intent filter
 	    broadcastFilter = new IntentFilter();
@@ -89,16 +88,24 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 	    broadcastFilter.addAction(RemoteroidIntent.ACTION_CONNECTION_FAILED);
 	    broadcastFilter.addAction(RemoteroidIntent.ACTION_DISCONNECTED);
 	}
-	
+
+
 	@Override
 	protected void onStart(){
 		super.onStart();
-	    bindService(new Intent(this, RemoteroidServiceU.class), connection, Context.BIND_AUTO_CREATE);
+		
+		if(!Util.Services.isServiceAliveU(getApplicationContext())){
+			Util.Services.startRemoteroidServiceU(getApplicationContext());
+		}
+		bindService(new Intent(this, RemoteroidServiceU.class), 
+					connection, Context.BIND_AUTO_CREATE);
+		
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
 		// Register a BroadcastReceiver to receive 
 		// broadcast message regarding connection status
 		registerReceiver(connectionStateReceiver, broadcastFilter);
@@ -107,6 +114,7 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 	@Override
 	protected void onPause() {
 		super.onPause();
+		
 		// Unregister BroadcastReceiver
 		unregisterReceiver(connectionStateReceiver);
 	}
@@ -115,6 +123,7 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 	protected void onStop(){
 		super.onStop();
 		unbindService(connection);
+		
 	}
 	
 	@Override
@@ -153,14 +162,6 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-	private void initFragments(){
-		connectFragment = new ConnectFragmentU();
-		connectFragment.setListener(this);
-		
-		connectedFragment = new ConnectedFragmentU();
-		connectedFragment.setListener(this);
-	}
 
 	private BroadcastReceiver connectionStateReceiver = new BroadcastReceiver(){
 
@@ -174,15 +175,18 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 				// The client has connected to server.
 				// Need to replace ConnectFragmentU to ConnectedFragmentU
 				getSupportFragmentManager().beginTransaction()
-					.setCustomAnimations(R.animator.fade_in, R.animator.fade_out)
-					.replace(R.id.container, connectedFragment).commit();
+					.replace(R.id.container, 
+							new ConnectedFragmentU().setListener(MainU.this)).commit();
 				
 			}else if(action.equals(RemoteroidIntent.ACTION_CONNECTION_FAILED)){
 				// The client failed to connect server.
 				// ConnectFragmentU should revert its component's state to
 				// original state which makes user retry its connection.
-				connectFragment.resetComponentState();
-				
+				//connectFragment.resetComponentState();
+				getSupportFragmentManager().beginTransaction()
+				.replace(R.id.container, 
+						new ConnectedFragmentU().setListener(MainU.this)).commit();
+			
 				// Show a message to user that connection has failed
 				Toast.makeText(getApplicationContext(), 
 						R.string.connection_with_server_has_interrupted, Toast.LENGTH_SHORT).show();
@@ -191,11 +195,10 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 				// The client has been disconnected from server.
 				// Current fragment needs to be replaced to ConnectFragment
 				getSupportFragmentManager().beginTransaction()
-					.setCustomAnimations(R.animator.fade_in, R.animator.fade_out)
-					.replace(R.id.container, connectFragment).commit();
+					.replace(R.id.container, 
+							new ConnectFragmentU().setListener(MainU.this)).commit();
 			}
 		}
-		
 	};
 	
 	/* From interface ConnectFragmentListenerU */
@@ -225,6 +228,4 @@ public class MainU extends SherlockFragmentActivity implements ConnectFragmentLi
 			}
 		}
 	}
-
-
 }

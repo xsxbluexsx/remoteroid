@@ -168,7 +168,7 @@
             android:name=".activity.RemoteConnectRedirector"
             android:noHistory="true" >
         </activity>
-        <activity android:name=".universal.activity.MainU" android:label="Remoteroid(Universal)">
+        <activity android:name=".universal.activity.MainU" android:label="Remoteroid(Universal)" android:configChanges="touchscreen|keyboard|keyboardHidden|navigation|orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
