@@ -3,11 +3,13 @@ package org.secmem.remoteroid.universal.natives;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 
+import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.util.CommandLine;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
@@ -25,6 +27,11 @@ public class FrameHandlerU {
 	private Bitmap bitmap;
 	private ByteArrayOutputStream bitmapOutStream;
 	
+	private Bitmap dev1;
+	private Bitmap dev2;
+	private byte[] dev1Byte;
+	private byte[] dev2Byte;
+	
 	static{
 		System.loadLibrary("fbuffer");
 	}
@@ -35,9 +42,12 @@ public class FrameHandlerU {
 	 * @param pixelformat
 	 * @return
 	 */
-	private native int getFrameBuffer(byte[] buff, int pixelformat);
+	//private native int getFrameBuffer(byte[] buff, int pixelformat);
+	private boolean toggle = false;
+	private Context context;
 	
 	public FrameHandlerU(Context context){
+		this.context = context;
 		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 		width = metrics.widthPixels;
 		height = metrics.heightPixels;
@@ -48,18 +58,41 @@ public class FrameHandlerU {
 		frameBuffer = ByteBuffer.allocate(screenDataSizeInBytes); 
 		bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		bitmapOutStream = new ByteArrayOutputStream();
+		
+		// TEST
+		dev1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.dev1);
+		dev2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.dev2);
+		
+		ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
+		dev1.compress(CompressFormat.JPEG, 100, stream1);
+		dev1Byte = stream1.toByteArray();
+		
+		ByteArrayOutputStream stream2 = new ByteArrayOutputStream();
+		dev2.compress(CompressFormat.JPEG, 100, stream2);
+		dev2Byte = stream2.toByteArray();
 	}
 	
-	public byte[] readScreenBuffer(){
-		getFrameBuffer(frameByteArray, pixelFormat);
+	public synchronized byte[] readScreenBuffer(){
+		// FIXME simple test code for screen xmission
 		
-		frameBuffer.put(frameByteArray, 0, screenDataSizeInBytes);
+		//getFrameBuffer(frameByteArray, pixelFormat);
+		
+		/*frameBuffer.put(frameByteArray, 0, screenDataSizeInBytes);
 		frameBuffer.rewind();
 		bitmap.copyPixelsFromBuffer(frameBuffer);
 		
 		frameBuffer.reset();
-		bitmap.compress(CompressFormat.JPEG, 100, bitmapOutStream);
-		return bitmapOutStream.toByteArray();
+		bitmap.compress(CompressFormat.JPEG, 100, bitmapOutStream);*/
+		toggle = !toggle;
+		if(toggle){
+			return dev1Byte;
+		}else{
+			return dev2Byte;
+		}
+		
+		//bitmap.compress(CompressFormat.JPEG, 100, bitmapOutStream);
+		//return bitmapOutStream.toByteArray();
+		
 	}
 	
 	public void acquireFrameBufferPermission(){

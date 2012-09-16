@@ -3,7 +3,6 @@ package org.secmem.remoteroid.universal.service;
 import java.io.IOException;
 
 import org.secmem.remoteroid.R;
-import org.secmem.remoteroid.activity.Main;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
 import org.secmem.remoteroid.lib.net.CommandPacket;
 import org.secmem.remoteroid.lib.net.CommandPacket.Command;
@@ -11,7 +10,9 @@ import org.secmem.remoteroid.lib.net.CommandPacket.CommandFactory;
 import org.secmem.remoteroid.lib.net.ConnectionManager;
 import org.secmem.remoteroid.lib.net.ConnectionManager.ServerCommandListener;
 import org.secmem.remoteroid.lib.net.ConnectionManager.ServerConnectionListener;
+import org.secmem.remoteroid.lib.net.ScreenPacket;
 import org.secmem.remoteroid.natives.InputHandler;
+import org.secmem.remoteroid.universal.activity.MainU;
 import org.secmem.remoteroid.universal.natives.FrameHandlerU;
 
 import android.app.Notification;
@@ -176,6 +177,12 @@ public class RemoteroidServiceU extends Service {
 			
 		}
 
+		@Override
+		public void onScreenDisconnected() {
+			// TODO Auto-generated method stub
+			
+		}
+
 	};
 	
 	private ServerCommandListener commListener = new ServerCommandListener(){
@@ -219,7 +226,6 @@ public class RemoteroidServiceU extends Service {
 
 		@Override
 		public void onDisconnected() {
-			System.out.println("Command onDisconnected()");
 			dismissNotification();
 			sendBroadcast(new Intent(RemoteroidIntent.ACTION_DISCONNECTED));
 		}
@@ -234,12 +240,16 @@ public class RemoteroidServiceU extends Service {
 		
 		@Override
 		public void run(){
+			
 			while(true){
+				ScreenPacket packet = new ScreenPacket();
 				byte[] screen = frameHandler.readScreenBuffer();
+				packet.setImageBytes(screen);
 				try{
-					connManager.sendScreen(screen);
+					connManager.sendScreen(packet);
 				}catch(IOException e){
 					e.printStackTrace();
+					connListener.onScreenDisconnected();
 					break;
 				}
 			}
@@ -249,7 +259,7 @@ public class RemoteroidServiceU extends Service {
 	@SuppressWarnings("deprecation")
 	private void showConnectionNotification(String ipAddress){
 		Notification notification = new Notification();
-		PendingIntent intent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(this, Main.class), 0);
+		PendingIntent intent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(this, MainU.class), 0);
 		notification.icon = R.drawable.ic_launcher;
 		notification.tickerText = String.format(getString(R.string.connected_to_s), ipAddress);
 		notification.when = System.currentTimeMillis();
