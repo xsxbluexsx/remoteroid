@@ -7,6 +7,7 @@ import org.secmem.remoteroid.intent.RemoteroidIntent;
 import org.secmem.remoteroid.lib.net.CommandPacket;
 import org.secmem.remoteroid.lib.net.CommandPacket.Command;
 import org.secmem.remoteroid.lib.net.CommandPacket.CommandFactory;
+import org.secmem.remoteroid.lib.net.CommandPacket.Extra;
 import org.secmem.remoteroid.lib.net.ConnectionManager;
 import org.secmem.remoteroid.lib.net.ConnectionManager.ServerCommandListener;
 import org.secmem.remoteroid.lib.net.ConnectionManager.ServerConnectionListener;
@@ -214,11 +215,11 @@ public class RemoteroidServiceU extends Service {
 				break;
 				
 			case Command.KEY_DOWN:
-				
+				inputHandler.keyDown(command.getIntExtra(Extra.KEY_KEYCODE));
 				break;
 				
 			case Command.KEY_UP:
-				
+				inputHandler.keyUp(command.getIntExtra(Extra.KEY_KEYCODE));
 				break;
 				
 			}
