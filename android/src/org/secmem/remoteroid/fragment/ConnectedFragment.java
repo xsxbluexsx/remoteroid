@@ -63,7 +63,7 @@ public class ConnectedFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 		tvMessage = (TextView)view.findViewById(R.id.fragment_connected_msg);
 		prgDisconnectPrg = (ProgressBar)view.findViewById(R.id.fragment_connected_progress);
-		btnDisconnect = (Button)view.findViewById(R.id.disconnect);
+		btnDisconnect = (Button)view.findViewById(R.id.btn_fragment_connected_disconnect);
 		ivCircuitBoard = (ImageView)view.findViewById(R.id.circuit_board);
 		
 		if(savedInstanceState!=null){

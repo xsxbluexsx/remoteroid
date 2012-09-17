@@ -41,7 +41,7 @@
     </FrameLayout>
 
     <Button
-        android:id="@+id/disconnect"
+        android:id="@+id/btn_fragment_connected_disconnect"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
