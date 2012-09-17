@@ -34,7 +34,7 @@ CScreen::CScreen()
 
 CScreen::~CScreen()
 {	
-	newFont.DeleteObject();
+	newFont.DeleteObject();	
 }
 
 
@@ -186,7 +186,7 @@ void CScreen::OnLButtonUp(UINT nFlags, CPoint point)
 void CScreen::SetClient(CMyClient * pClient)
 {
 	m_isConnect = TRUE;
-	aniWait.SetAnimation(FALSE);
+	EnableAnimation(FALSE);
 
 	this->pClient = pClient;	
 }
@@ -268,11 +268,11 @@ void CScreen::OnPaint()
 	// TODO: Add your message handler code here
 	// Do not call CStatic::OnPaint() for painting messages
 	
-	ExcludePaintControl(dc);
+	
 	
 	if(m_isConnect)
 		return;
-	
+	/*
 	CDC *imagePDC = CDC::FromHandle(m_bkgImg.GetDC());
 		
 	CFont *pOldFont = imagePDC->SelectObject(&newFont);
@@ -284,19 +284,20 @@ void CScreen::OnPaint()
 	imagePDC->SelectObject(pOldFont);
 	
 	//m_bkgImg.ReleaseDC();
+
+	*/
 	CRect rt;
 	GetClientRect(&rt);
-
+		
 	dc.SetStretchBltMode(HALFTONE);
+
+	ExcludePaintControl(dc);
+
 	m_bkgImg.StretchBlt(dc.m_hDC, rt);
 
 
-	ReleaseDC(imagePDC);
-	m_bkgImg.ReleaseDC();
-	
-	
-	
-	//m_bkgImg.BitBlt(dc.m_hDC, 0, 0);		
+	//ReleaseDC(imagePDC);
+	//m_bkgImg.ReleaseDC();	
 }
 
 
@@ -306,21 +307,33 @@ int CScreen::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	// TODO:  Add your specialized creation code here
-// 	aniWait.Create(_T(""), WS_CHILD|WS_VISIBLE,CRect(60,330,290,500), this, 0);
-// 	aniWait.myRect = CRect(80,350,280,480);
-	//aniWait.SetAnimation(TRUE);
-
-	
-	
+ 	aniWait.Create(_T(""), WS_CHILD|WS_VISIBLE,CRect(81,351,281,487), this, 0);
+ 	aniWait.myRect = CRect(81,351,281,487);	
+	aniWait.ShowWindow(SW_HIDE);		
 	return 0;
 }
 
 
+void CScreen::EnableAnimation(BOOL cond)
+{
+	if(cond)
+	{		
+		aniWait.ShowWindow(SW_SHOW);		
+		aniWait.SetAnimation(TRUE);
+	}
+	else
+	{
+		aniWait.SetAnimation(FALSE);
+		aniWait.ShowWindow(SW_HIDE);		
+	}
+}
+
+
+
 void CScreen::SetDisconnect()
 {
-	m_isConnect = FALSE;
+	m_isConnect = FALSE;	
 	RedrawWindow();
-	aniWait.SetAnimation(TRUE);
 }
 
 
@@ -383,3 +396,5 @@ void CScreen::ExcludePaintControl(CDC & dc)
 		}
 	}	
 }
+
+

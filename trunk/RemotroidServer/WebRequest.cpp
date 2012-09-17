@@ -91,8 +91,7 @@ CResponse* CWebRequest::SendRequest(void)
 {	
 	TRY 
 	{		
-		m_pHttpConnect = m_Session.GetHttpConnection(m_strUrl,port);
-		
+		m_pHttpConnect = m_Session.GetHttpConnection(m_strUrl,port);	
 	}
 	CATCH (CInternetException, e)
 	{

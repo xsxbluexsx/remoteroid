@@ -75,4 +75,5 @@ public:
 	afx_msg void OnDestroy();	
 	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
 
+	void TrayWindow(int state);
 };

@@ -21,6 +21,7 @@
 #include "atltypes.h"
 #include "ResizingDlg.h"
 #include "ResizeControlMgr.h"
+#include "IFileTranceiverListener.h"
 
 
 
@@ -59,11 +60,21 @@ interface IParentControl
 {
 	virtual ~IParentControl(){};
 	virtual void MoveBkgDlg(CRect rect, int garosero) = 0;
+	virtual void TrayWindow(int state) = 0;
 	/*virtual void TurnGaroSero(int garosero)=0;*/
 };
 
+
+//웹서버를 통한 접속 상태
+typedef enum CONNECTSTATE
+{
+	START, SUCCESS, FAIL, END
+};
+
+
+
 // CRemotroidServerDlg dialog
-class CRemotroidServerDlg : public CDialogEx
+class CRemotroidServerDlg : public CDialogEx, public IFileTranceiverListener
 {
 // Construction
 public:
@@ -97,6 +108,7 @@ private:
 	SOCKET m_ServerSocket;	
 	CMyClient *m_pClient;
 	CFileSender fileSender;
+	CRecvFile recvFileClass;
 	CScreen screen;
 	CKeyCodeGen keyCodeGen;
 
@@ -126,14 +138,15 @@ public:
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg);		
 
-private:
+private:	
+	CWinThread *pConnectThread;
 	CWinThread *pRecvThread;
 	CWinThread *pAcceptThread;
 	CWinThread *pUdpRecvThread;
 	BOOL m_isClickedEndBtn;
 	SOCKET m_UDPServerSocket;
 	BOOL m_isReadyRecv;	
-	CRecvFile recvFileClass;
+
 	CPopupDlgMgr m_popDlgMgr;
 	
 
@@ -152,6 +165,7 @@ public:
 	CMyBitmapBtn m_VolumeDownButton;
 	CMyBitmapBtn m_VolumeUpButton;
 	CMyBitmapBtn m_ExplorerBtn;
+	CMyBitmapBtn m_FileCancelButton;
 
 	CTextProgressCtrl m_progressCtrl;
 	CTrayIcon m_TrayIcon;
@@ -219,7 +233,7 @@ public:
 	CImageList *imageList;
 	
 	
-	void RequireConnectClient(void);
+	static UINT CRemotroidServerDlg::RequireConnectClient(LPVOID parma);
 	CString m_strEmail;
 	CString m_strPasswd;
 	CEdit m_ctrlEmail;
@@ -229,9 +243,23 @@ public:
 private:
 	CFont editFont;
 	LOGFONT lf;
+	FILETRANCEIVERSTATE m_fileTranceiverState;	
+	
+
 public:
 	void InitFont(void);
 	void DestroyFont(void);
-	void EnableLoginWnd(BOOL enable, BOOL visible=TRUE);
+	
 	void ClickHardwareKey(int state);
+	BOOL InitServerSocket(void);
+	static UINT StartingWaitingAni(LPVOID pParam);
+	BOOL bLoginOK;
+	void EnableLoginWnd(CONNECTSTATE state);
+	CRect m_firstPosition;
+	void DestroyAllPopupDlg();	
+	void SetFileTranceiverState(FILETRANCEIVERSTATE state);
+	
+	void StartFileTranceiver(BOOL cond);
+	afx_msg void OnBnClickedBtnFilecancel();
 };
+

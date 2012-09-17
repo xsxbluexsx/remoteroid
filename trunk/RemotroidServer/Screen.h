@@ -84,6 +84,7 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);	
 	
 	void ExcludePaintControl(CDC & dc);
+	void EnableAnimation(BOOL cond);
 };
 
 

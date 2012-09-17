@@ -3,6 +3,7 @@
 #include "MyClient.h"
 #include "afxcoll.h"
 #include "TextProgressCtrl.h"
+#include "IFileTranceiverListener.h"
 
 #define MAXDATASIZE		MAXSIZE-HEADERSIZE
 
@@ -15,9 +16,9 @@ public:
 	void DeleteFileList(void);
 	void SendFileData();		
 	void SetProgressBar(CTextProgressCtrl * pProgressCtrl);
-	BOOL AddSendFile(CFile * pFile);
+	void AddSendFile(CFile * pFile);
 	void SetClient(CMyClient *pClient);	
-	BOOL StartSendFile(void);		
+	int StartSendFile(void);		
 	static UINT SendFileThread(LPVOID pParam);
 
 public:	
@@ -38,5 +39,10 @@ private:
 private:
 	int SendPacket(int iOPCode, const char * data, int iDataLen);	
 	int SendFileInfo();
+	IFileTranceiverListener *m_Listener;
+public:
+	void SetListener(IFileTranceiverListener *listener);
+private:
+	BOOL m_bCond;
 };
 

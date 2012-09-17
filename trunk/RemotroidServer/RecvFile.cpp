@@ -18,12 +18,16 @@ CRecvFile::~CRecvFile(void)
 	CloseFileHandle();
 }
 
+void CRecvFile::SetListener(IFileTranceiverListener *listener)
+{
+	m_Listener = listener;
+}
+
+
 
 //파일 정보(이름, 크기) 수신시..
 HANDLE CRecvFile::RecvFileInfo(char * data)
 {
-	TCHAR fullFilePath[MAX_PATH];
-
 	char bFileName[FILENAMESIZE+1];
 	memset(bFileName, 0, sizeof(bFileName));
 	memcpy(bFileName, data, FILENAMESIZE);
@@ -40,6 +44,8 @@ HANDLE CRecvFile::RecvFileInfo(char * data)
 	CUtil::UtfToUni(m_uniFileName, bFileName);	
 
 	CreateDirectory(directoryPath, NULL);
+
+	memset(fullFilePath, 0, MAX_PATH);
 	
 	_tcscpy(fullFilePath, directoryPath);
 	_tcscat(fullFilePath, m_uniFileName);
@@ -74,7 +80,7 @@ HANDLE CRecvFile::RecvFileInfo(char * data)
 
 	
 	pProgressBar->SetPos(0);
-	pProgressBar->ShowWindow(SW_RESTORE);
+	m_Listener->StartFileTranceiver(TRUE);
 	
 
 	m_iRecvFileSize = 0;
@@ -89,6 +95,9 @@ void CRecvFile::RecvFileData(char * data, int packetSize)
 	int iCurrentRecvLen = packetSize - HEADERSIZE;
 
 	DWORD dwWrite;
+	if(m_hRecvFile == NULL)
+		return;
+
 	WriteFile(m_hRecvFile, data, iCurrentRecvLen, &dwWrite, NULL);
 	m_iRecvFileSize += iCurrentRecvLen;
 	
@@ -98,7 +107,7 @@ void CRecvFile::RecvFileData(char * data, int packetSize)
 
 	if(m_iTotalFileSize <= m_iRecvFileSize)
 	{		
-		pProgressBar->ShowWindow(SW_HIDE);
+		m_Listener->StartFileTranceiver(FALSE);
 		CloseHandle(m_hRecvFile);
 		m_hRecvFile = NULL;		
 	}
@@ -132,8 +141,9 @@ void CRecvFile::CloseFileHandle(void)
 	if(m_hRecvFile != NULL)
 	{
 		CloseHandle(m_hRecvFile);
+		DeleteFile(fullFilePath);		
 		m_hRecvFile = NULL;
-		pProgressBar->ShowWindow(SW_HIDE);
+		m_Listener->StartFileTranceiver(FALSE);
 	}
 }
 

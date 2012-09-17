@@ -1,5 +1,6 @@
 #pragma once
 #include "TextProgressCtrl.h"
+#include "IFileTranceiverListener.h"
 
 class CRecvFile
 {
@@ -14,6 +15,7 @@ private:
 
 	TCHAR directoryPath[MAX_PATH];
 	CTextProgressCtrl *pProgressBar;
+	TCHAR fullFilePath[MAX_PATH];
 
 public:
 	HANDLE RecvFileInfo(char * data);
@@ -23,5 +25,7 @@ public:
 	void SetFilePath(TCHAR * path);
 	void SetDefaultPath(void);
 	void SetProgressBar(CTextProgressCtrl * pProgressBar);
+	void SetListener(IFileTranceiverListener *listener);
+	IFileTranceiverListener *m_Listener;
 };
 

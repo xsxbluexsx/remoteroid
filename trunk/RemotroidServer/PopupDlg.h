@@ -5,8 +5,9 @@
 
 // CPopupDlg dialog
 
-#define MAXNOTI_LENGTH 50
-#define MOVESTEP	10
+#define MAXNOTI_LENGTH	50
+#define MOVESTEP		10
+#define MAXPOPUPDLG		10
 
 class CPopupDlg : public CDialogEx
 {
@@ -46,5 +47,6 @@ private:
 	CRect dlgRect;
 public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	BOOL m_bFlagAllDestroy;
 };
 
