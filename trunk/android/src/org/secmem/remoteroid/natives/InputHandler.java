@@ -22,8 +22,7 @@ package org.secmem.remoteroid.natives;
 import org.secmem.remoteroid.util.CommandLine;
 
 import android.content.Context;
-import android.view.Display;
-import android.view.WindowManager;
+import android.util.DisplayMetrics;
 
 /**
  * Contains methods related to event injection.
@@ -46,12 +45,10 @@ public class InputHandler {
 	private static final int DIMENSION = 4096;
 	private static final int HALF_DIMENSION =2048;
 	
-	@SuppressWarnings("deprecation")
 	public InputHandler(Context context){
-		WindowManager mng = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-		Display disp = mng.getDefaultDisplay();
-		displayWidth = disp.getWidth();
-		displayHeight = disp.getHeight();
+		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+		displayWidth = metrics.widthPixels;
+		displayHeight = metrics.heightPixels;
 	}
 	
 	@Override
@@ -60,8 +57,6 @@ public class InputHandler {
 			close();
 		}
 	}
-
-
 
 	public boolean isDeviceOpened(){
 		return isDeviceOpened;
