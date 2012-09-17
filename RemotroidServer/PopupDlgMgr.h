@@ -12,5 +12,6 @@ private:
 public:
 	void InsertPopDlg(CPopupDlg * pDlg);
 	void RemoveAndMove(CPopupDlg * pDlg);
+	void DestroyAllPopupDlg(void);
 };
 

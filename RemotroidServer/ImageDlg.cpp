@@ -205,10 +205,13 @@ void CImageDlg::SetDlgPosition(void)
 	CWnd * pDesktopWnd = GetDesktopWindow();
 	CRect desktopRect;
 	pDesktopWnd->GetWindowRect(&desktopRect);
+
+	int dlgHeight = (float)m_pBkgBitmap[SERO]->GetHeight();
+	int dlgWidth = (float)m_pBkgBitmap[SERO]->GetWidth();
 	
-	int top = (desktopRect.Height()/2) - (m_pBkgBitmap[SERO]->GetHeight()/2);
-	int left = (desktopRect.Width()/2) - (m_pBkgBitmap[SERO]->GetWidth()/2);
-	MoveWindow(left, top, m_pBkgBitmap[SERO]->GetWidth(), m_pBkgBitmap[SERO]->GetHeight());
+	int top = (desktopRect.Height()/2) - (dlgHeight/2);
+	int left = (desktopRect.Width()/2) - (dlgWidth/2);
+	MoveWindow(left, top, dlgWidth, dlgHeight);
 
 	
 	GetWindowRect(&baseRect);
@@ -279,11 +282,14 @@ HBITMAP CImageDlg::Create32BitBitmap(CDC * pDC, int cx, int cy)
 BOOL CImageDlg::InitControlDlg(void)
 {
  	m_pControlDlg = new CRemotroidServerDlg;	
+	m_pControlDlg->m_firstPosition = baseRect;
+
  	BOOL rt = m_pControlDlg->Create(IDD_REMOTROIDSERVER_DIALOG, this);	
 	if(rt == FALSE)
 	{
 		return FALSE;
 	}
+
 	m_pControlDlg->MoveWindow(baseRect);
 	m_pControlDlg->SetResizingDlg();
 	m_pControlDlg->SetBkgDlg(this);
@@ -320,4 +326,10 @@ void CImageDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 		m_pControlDlg->SetFocus();
 	}
 	// TODO: Add your message handler code here
+}
+
+
+void CImageDlg::TrayWindow(int state)
+{
+	ShowWindow(state);
 }

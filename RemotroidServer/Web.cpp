@@ -42,6 +42,9 @@ CResponse * CWeb::GetDeviceList(CAccount * pAccount)
 
 BOOL CWeb::GetErrorMsg(CResponse * pResponse)
 {
+	if(pResponse == NULL)
+		return FALSE;
+
 	switch(pResponse->errorCode)
 	{	
 	case 0:

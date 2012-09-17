@@ -60,6 +60,8 @@ CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
 	, m_pBkgDlg(NULL)
 	, m_bInit(FALSE)
 	, m_GaroSeroState(0)
+	, pConnectThread(NULL)
+	, m_fileTranceiverState(NORMAL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -94,6 +96,7 @@ void CRemotroidServerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_EMAIL, m_ctrlEmail);
 	DDX_Control(pDX, IDC_EDIT_PASSWD, m_ctrlPasswd);
 	DDX_Control(pDX, IDC_BTN_CONNECT, m_btnConnect);
+	DDX_Control(pDX, IDC_BTN_FILECANCEL, m_FileCancelButton);
 }
 
 BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
@@ -145,6 +148,7 @@ BEGIN_MESSAGE_MAP(CRemotroidServerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_EXPLORER, &CRemotroidServerDlg::OnBnClickedBtnExplorer)
 	
 	ON_BN_CLICKED(IDC_BTN_CONNECT, &CRemotroidServerDlg::OnBnClickedBtnConnect)
+	ON_BN_CLICKED(IDC_BTN_FILECANCEL, &CRemotroidServerDlg::OnBnClickedBtnFilecancel)
 END_MESSAGE_MAP()
 
 
@@ -155,7 +159,6 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	
-
 	// Add "About..." menu item to system menu.
 
 	// IDM_ABOUTBOX must be in the system command range.
@@ -194,7 +197,9 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	SetBackgroundColor(RGB(1,50,100));
  	SetLayeredWindowAttributes(RGB(1,50,100),0, LWA_COLORKEY);		
 
-	
+
+	//초기위치로
+		
 	//버튼 및 스크린 위치 세팅
 	SetControlPos();
 
@@ -232,27 +237,8 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	//pUdpRecvThread->m_bAutoDelete = FALSE;
 	*/
 	
-
-	m_ServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if(m_ServerSocket == INVALID_SOCKET)
-	{
-		MessageBox(_T("Server Socket Error"));
-		EndDialog(IDCANCEL);
-		return TRUE;
-	}
+	InitServerSocket();
 	
-	SOCKADDR_IN addr;
-	memset(&addr, 0, sizeof(addr));
-	addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(PORT);
-
-	if(bind(m_ServerSocket, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR)
-	{
-		MessageBox(_T("bind error"));
-		EndDialog(IDCANCEL);
-		return TRUE;
-	}
 
 	//자신의 IP 얻어오기
 	PHOSTENT hostinfo;
@@ -266,17 +252,7 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 			m_strMyIp = CA2W(ip);
 			screen.m_strMyIp = m_strMyIp;
 		}
-	}	
-
-	if(listen(m_ServerSocket , SOMAXCONN) == SOCKET_ERROR)
-	{
-		MessageBox(_T("listen error"));
-		EndDialog(IDCANCEL);
-		return TRUE;
-	}	
-	
-	pAcceptThread = AfxBeginThread(AcceptFunc, this);	
-	pAcceptThread->m_bAutoDelete = FALSE;
+	}		
 	
 
 	CRect systemRc, rc;
@@ -299,6 +275,10 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 
 	//이메일 폰트 설정
 	InitFont();
+
+	//파일 송수신 모듈에 리스너로 등록
+	fileSender.SetListener(this);
+	recvFileClass.SetListener(this);
 	
 	
 	m_bInit = TRUE;
@@ -306,6 +286,44 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }
+
+BOOL CRemotroidServerDlg::InitServerSocket(void)
+{
+	m_ServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if(m_ServerSocket == INVALID_SOCKET)
+	{
+		MessageBox(_T("Server Socket Error"));
+		EndDialog(IDCANCEL);
+		return TRUE;
+	}
+	
+	SOCKADDR_IN addr;
+	memset(&addr, 0, sizeof(addr));
+	addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(PORT);
+
+	if(bind(m_ServerSocket, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR)
+	{
+		MessageBox(_T("bind error"));
+		EndDialog(IDCANCEL);
+		return TRUE;
+	}
+
+	
+
+	if(listen(m_ServerSocket , SOMAXCONN) == SOCKET_ERROR)
+	{
+		MessageBox(_T("listen error"));
+		EndDialog(IDCANCEL);
+		return TRUE;
+	}	
+	
+	pAcceptThread = AfxBeginThread(AcceptFunc, this);	
+	pAcceptThread->m_bAutoDelete = FALSE;
+	return 0;
+}
+
 
 void CRemotroidServerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
@@ -344,7 +362,7 @@ void CRemotroidServerDlg::OnPaint()
 		dc.DrawIcon(x, y, m_hIcon);		
 	}
 	else
-	{			
+	{
 		CDialogEx::OnPaint();		
 	}
 }
@@ -369,12 +387,8 @@ UINT CRemotroidServerDlg::AcceptFunc(LPVOID pParam)
 	if(ClientSocket == INVALID_SOCKET)
 	{		
 		return 0;
-	}
-	
-	AfxMessageBox(_T("화면 전송 중에는 배터리 소모가 많으니\n사용하시지 않을 경우에는 최소화 시켜주세요"));
+	}	
 
-	//이메일 비밀번호 창 숨기기
-	pDlg->EnableLoginWnd(FALSE, FALSE);
 
 	CMyClient *pClient = new CMyClient(ClientSocket);
 	pClient->SetNoDelay(TRUE);
@@ -437,13 +451,15 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 {	
 	CRemotroidServerDlg *pDlg = (CRemotroidServerDlg *)pParam;
 	CMyClient *pClient = pDlg->GetClientSocket();
-
-	
+		
 
 	char bPacket[MAXSIZE];			
 
 	CRecvFile& recvFileClass = pDlg->recvFileClass;	
 	CTextProgressCtrl& prgressBar = pDlg->m_progressCtrl;
+
+	//로그인 화면 숨기기
+	pDlg->EnableLoginWnd(SUCCESS);
 	
 	while (TRUE)
 	{		
@@ -461,7 +477,7 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 			
 			//packet 크기가 0이면 깨진 패킷
 			if(iPacketSize == 0)
-			{
+			{				
 				pClient->ResetBuffer();
 				break;
 			}
@@ -470,8 +486,13 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 
 			switch(iOPCode)
 			{
-			case OP_SENDFILEINFO:
-				if(recvFileClass.RecvFileInfo(data) != INVALID_HANDLE_VALUE)
+			case OP_SENDFILEINFO:				
+				if(recvFileClass.RecvFileInfo(data) == INVALID_HANDLE_VALUE)
+				{
+					//파일 수신 받을 준비 실패시에
+					pDlg->m_fileTranceiverState = NORMAL;
+				}
+				else
 				{
 					//파일은 수신 받을 준비가 되면 req 요청을 전송한다
 					pClient->SendPacket(OP_REQFILEDATA, NULL, 0);
@@ -482,6 +503,9 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 				break;		
 			case OP_SENDJPGINFO:
 				//pDlg->screen.SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);
+
+				//data의 첫번째 바이트에는 가로세로에 대한 정보가 들어있다				
+				//pDlg->TurnGaroSero(data[0]);
 				pDlg->screen.SetJpgInfo(data);
 				break;
 			case OP_SENDJPGDATA:
@@ -504,11 +528,15 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 					break;
 				pDlg->SendMessage(WM_CREATEPOPUPDLG, iPacketSize, (LPARAM)data);
 				break;
+			case OP_COMPLETEFILETRANSFER:
+				//파일 수신이 완료 됐을경우
+				recvFileClass.CloseFileHandle();
+				pDlg->m_fileTranceiverState = NORMAL;				
+				break;
 			}
 		}
 	}
-
-	
+		
 
 	recvFileClass.CloseFileHandle();		
 	pDlg->fileSender.DeleteFileList();
@@ -529,6 +557,7 @@ void CRemotroidServerDlg::SetClientSocket(CMyClient * pClient)
 {
 	m_pClient = pClient;
 	fileSender.SetClient(pClient);
+	m_fileTranceiverState = NORMAL;
 	screen.InitDrawJpg();
 	screen.SetClient(pClient);
 }
@@ -570,6 +599,16 @@ void CRemotroidServerDlg::OnBnClickedCancel()
 void CRemotroidServerDlg::OnDropFiles(HDROP hDropInfo)
 {
 	// TODO: Add your message handler code here and/or call default
+	
+	//접속이 안되어 있거나 파일이 송수신 중이라면 FALSE
+	if(pRecvThread == NULL || m_fileTranceiverState != NORMAL)
+	{
+		return;
+	}
+
+	m_fileTranceiverState = SENDING;
+		
+
 	TCHAR path[MAX_PATH];
 	memset(path, 0, sizeof(path));
 	int count = 0;
@@ -590,13 +629,16 @@ void CRemotroidServerDlg::OnDropFiles(HDROP hDropInfo)
 		}
 		END_CATCH
 
-		if(FALSE == fileSender.AddSendFile(pFile))
-		{
-			delete pFile;
-			return;
-		}			
+		fileSender.AddSendFile(pFile);
 	}
-	fileSender.StartSendFile();
+
+	if(fileSender.StartSendFile() == -1)
+	{
+		fileSender.DeleteFileList();
+		m_fileTranceiverState = NORMAL;
+	}
+
+
 	CDialogEx::OnDropFiles(hDropInfo);
 }
 
@@ -664,8 +706,8 @@ LRESULT CRemotroidServerDlg::OnEndRecv(WPARAM wParam, LPARAM lParam)
 	pAcceptThread = AfxBeginThread(AcceptFunc, this);
 	pAcceptThread->m_bAutoDelete = FALSE;
 	//로그인 이메일 에디트 온
-
-	EnableLoginWnd(TRUE);
+	EnableLoginWnd(END);
+	
 	return LRESULT();
 }
 
@@ -804,12 +846,16 @@ ENDSEARCH:
 //안드로이드에서 부터 파일 수신 받을 준비
 LRESULT CRemotroidServerDlg::OnReadyRecvFile(WPARAM wParam, LPARAM lParam)
 {
-	m_isReadyRecv = TRUE;
+	//파일이 송수신 중일 경우에 막음
+	if(m_fileTranceiverState != NORMAL)
+		return 0;
+
+	m_fileTranceiverState = RECEIVEING;
 	
 	::SetSystemCursor(LoadCursor(0, IDC_HAND), OCR_NORMAL);
 		
 
-	SetCapture();	
+ 	SetCapture();	
 
 
 	/*
@@ -887,16 +933,14 @@ void CRemotroidServerDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	
 
 	//수신 받을 파일을 드래그 한 후 드롭일 경우에 저장할
-	if(m_isReadyRecv == TRUE)
+	if(m_fileTranceiverState == RECEIVEING)
 	{
 		GetStoreFilePath();
 		SystemParametersInfo(SPI_SETCURSORS, 0, NULL, 0);
-		ReleaseCapture();
-		m_isReadyRecv = FALSE;		
+		ReleaseCapture();		
 
 		CVitualEventPacket event(TOUCHUP);
 		m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
-
 		m_pClient->SendPacket(OP_REQFILEINFO, 0, 0);
 	}
 	else if(m_bResizing)	//테두리로 크기조절시
@@ -978,6 +1022,10 @@ LRESULT CRemotroidServerDlg::OnCreatePopupDlg(WPARAM wParam, LPARAM lParam)
 	if(!isTray)
 		return 0;
 
+	//최대 10개 까지만 팝업 생성
+	if(CPopupDlg::numOfDlg == MAXPOPUPDLG)
+		return 0;
+
 	char *data = (char*)lParam;
 	int payloadSize = wParam-HEADERSIZE;
 	TCHAR *notiText = new TCHAR[payloadSize*2];
@@ -1012,6 +1060,14 @@ LRESULT CRemotroidServerDlg::OnClosePopDlg(WPARAM wParam, LPARAM lParam)
 }
 
 
+//활성화 시키면 팝업 다이얼로그 모두 종료
+void CRemotroidServerDlg::DestroyAllPopupDlg()
+{
+	m_popDlgMgr.DestroyAllPopupDlg();
+}
+
+
+
 LRESULT CRemotroidServerDlg::OnTrayNotification(WPARAM wParam, LPARAM lParam)
 {
 	return m_TrayIcon.OnTrayNotification(wParam, lParam);
@@ -1029,6 +1085,13 @@ LRESULT CRemotroidServerDlg::OnMyDblClkTray(WPARAM wParam, LPARAM lParam)
 	
 	CUtil::AniMaximiseFromTray(AfxGetMainWnd()->GetSafeHwnd());
 	ShowWindow(SW_RESTORE);
+
+	if(m_pBkgDlg == NULL)
+		return 0;
+	m_pBkgDlg->TrayWindow(SW_RESTORE);
+
+	//활성화 하면 모든 팝업창 종료
+	DestroyAllPopupDlg();
 	return LRESULT();
 }
 
@@ -1044,6 +1107,10 @@ void CRemotroidServerDlg::OnBnClickedBtnTray()
 		m_pClient->SendPacket(OP_REQSTOPSCREEN, NULL, 0);
 	CUtil::AniMinimizeToTray(GetSafeHwnd());	
 	ShowWindow(SW_HIDE);	
+
+	if(m_pBkgDlg == NULL)
+		return;
+	m_pBkgDlg->TrayWindow(SW_HIDE);
 }
 
 
@@ -1101,12 +1168,16 @@ BOOL CRemotroidServerDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 void CRemotroidServerDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize(nType, cx, cy);
-	if(m_bInit == FALSE && m_pBkgDlg == NULL)
+	if(m_bInit == FALSE)
 		return;	
 			
 	m_ResizeContolMgr.ResizingControl(cx, cy, m_GaroSeroState);
 	
 	GetWindowRect(&mainDlgRect);
+
+	if(m_pBkgDlg == NULL)
+		return;
+
  	m_pBkgDlg->MoveBkgDlg(mainDlgRect, m_GaroSeroState);
 	
 	// TODO: Add your message handler code here
@@ -1118,17 +1189,26 @@ void CRemotroidServerDlg::OnMove(int x, int y)
 {
 	CDialogEx::OnMove(x, y); 	
 	// TODO: Add your message handler code here
+	if(m_pBkgDlg != NULL && y == 0)
+	{
+		RECT rect;
+		GetWindowRect(&rect);
+		m_pBkgDlg->MoveBkgDlg(rect, m_GaroSeroState);
+	}
 }
-
 
 void CRemotroidServerDlg::OnMoving(UINT fwSide, LPRECT pRect)
-{
+{	
 	CDialogEx::OnMoving(fwSide, pRect);
 	mainDlgRect = *pRect;
-	m_pBkgDlg->MoveBkgDlg(pRect, m_GaroSeroState);	
+
+	if(m_pBkgDlg == NULL)
+		return;
+	m_pBkgDlg->MoveBkgDlg(mainDlgRect, m_GaroSeroState);	
+
+
 	// TODO: Add your message handler code here
 }
-
 
 
 
@@ -1137,8 +1217,9 @@ void CRemotroidServerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	// TODO: Add your message handler code here and/or call default
 	
 	
-	//모서리를 마우스가 클릭 했을경우 크기 변경 테두리 다이럴로그 초기화
-	if( (m_CurCursorState = SetSizeCursor(point)) != -1)
+	//모서리를 마우스가 클릭 했을경우 크기 변경 테두리 다이얼로그 초기화
+	//접속이 되지 않으면 크기조절을 막는다
+	if(pRecvThread != NULL && (m_CurCursorState = SetSizeCursor(point)) != -1)
 	{
 		ClientToScreen(&point);
 		m_bResizing = TRUE;
@@ -1165,11 +1246,11 @@ void CRemotroidServerDlg::OnMouseMove(UINT nFlags, CPoint point)
 	moveRect.left += 40;
 	moveRect.right -= 40;
 
-	if(PtInRect(&moveRect, point) && m_isReadyRecv == FALSE )
+	if(PtInRect(&moveRect, point) && m_isReadyRecv == FALSE )	//드래그
 	{		
 		PostMessage( WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM( point.x, point.y));
 	}
-	else if(!m_bResizing)
+	else if(pRecvThread != NULL && !m_bResizing)	//접속이 되지 않으면 크기 조절을 막는다
 	{
 		SetSizeCursor(point);
 	}
@@ -1231,18 +1312,21 @@ void CRemotroidServerDlg::PostNcDestroy()
 
 void CRemotroidServerDlg::SetControlPos(void)
 {
+
+
 	screen.CreateEx(WS_EX_TOPMOST
 		, _T("STATIC"), NULL, WS_CHILD|WS_VISIBLE|SS_NOTIFY, CRect(LEFT, TOP, RIGHT, BOTTOM), this, 1234);	
 	screen.SetLayeredWindowAttributes(0, 255, LWA_ALPHA);
 	
 	
 
-
+	//프로그래스 바와 전송 취소 버튼은 전송이 시작할 때만 보여야 한다.
 	m_progressCtrl.ShowWindow(SW_HIDE);
 	m_progressCtrl.SetBarBkColor(RGB(56,58,60));
 	m_progressCtrl.SetBarColor(RGB(7,215,7));
 	m_progressCtrl.SetTextColor(RGB(255,255,255));	
 	m_progressCtrl.SetRange(0, 100);
+	m_FileCancelButton.ShowWindow(SW_HIDE);
 
 	recvFileClass.SetProgressBar(&m_progressCtrl);
 	fileSender.SetProgressBar(&m_progressCtrl);	
@@ -1286,13 +1370,16 @@ void CRemotroidServerDlg::SetControlPos(void)
 	m_PowerButton.SetHoverBitmapID(IDB_BITMAP_POWER_HOVER);
 	m_PowerButton.SetGaroBitmapID(IDB_BITMAP_POWER_GARO, IDB_BITMAP_POWER_HOVER_GARO, IDB_BITMAP_POWER_CLICK_GARO);
 
-
+	m_FileCancelButton.LoadBitmaps(IDB_BITMAP_CLOSE_MAIN);
+	m_FileCancelButton.SetHoverBitmapID(IDB_BITMAP_HOVER_MAIN);
+	m_FileCancelButton.SetGaroBitmapID(IDB_BITMAP_CLOSE_MAIN_GARO, IDB_BITMAP_HOVER_MAIN_GARO);
 	
 
 
 	//다이얼로그 크기 조정시 비율 계산및 컨트롤 메니저에 등록
 	screen.InitRatio(screen.m_hWnd, SCREENLEFT, SCREENTOP, SCREENWIDTH, SCREENHEIGHT, DLGWIDTH, DLGHEIGHT);
-	m_progressCtrl.InitRatio(m_progressCtrl.m_hWnd, SCREENLEFT, SCREENTOP-10, SCREENWIDTH, 10, DLGWIDTH, DLGHEIGHT);
+	m_progressCtrl.InitRatio(m_progressCtrl.m_hWnd, SCREENLEFT, SCREENTOP-11, SCREENWIDTH-15, 10, DLGWIDTH, DLGHEIGHT);
+	m_FileCancelButton.InitRatio(m_FileCancelButton.m_hWnd, SCREENLEFT+SCREENWIDTH-14, SCREENTOP-11, 13, 10, DLGWIDTH, DLGHEIGHT);
 	m_MenuButton.InitRatio(m_MenuButton.m_hWnd, SCREENLEFT+20, SCREENBOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT,DLGWIDTH, DLGHEIGHT);
 	m_HomeButton.InitRatio(m_HomeButton.m_hWnd, SCREENLEFT+20+BUTTONWIDTH, SCREENBOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT,DLGWIDTH, DLGHEIGHT);
 	m_BackButton.InitRatio(m_BackButton.m_hWnd, SCREENLEFT+20+BUTTONWIDTH*2, SCREENBOTTOM+8, BUTTONWIDTH, BUTTONHEIGHT,DLGWIDTH, DLGHEIGHT);
@@ -1302,10 +1389,11 @@ void CRemotroidServerDlg::SetControlPos(void)
 	m_VolumeUpButton.InitRatio(m_VolumeUpButton.m_hWnd, 1, 156, SIDEBTNWIDTH, SIDEBTNHEIGHT, DLGWIDTH, DLGHEIGHT);
 	m_VolumeDownButton.InitRatio(m_VolumeDownButton.m_hWnd, 1, 242, SIDEBTNWIDTH, SIDEBTNHEIGHT, DLGWIDTH, DLGHEIGHT);
 	m_PowerButton.InitRatio(m_PowerButton.m_hWnd, 416, 163, 10, 52, DLGWIDTH, DLGHEIGHT);
-
+	
 	
 
 	m_ResizeContolMgr.InsertControl(&m_progressCtrl);
+	m_ResizeContolMgr.InsertControl(&m_FileCancelButton);
 	m_ResizeContolMgr.InsertControl(&m_MenuButton);
 	m_ResizeContolMgr.InsertControl(&m_HomeButton);
 	m_ResizeContolMgr.InsertControl(&m_BackButton);
@@ -1315,13 +1403,16 @@ void CRemotroidServerDlg::SetControlPos(void)
 	m_ResizeContolMgr.InsertControl(&m_VolumeUpButton);
 	m_ResizeContolMgr.InsertControl(&m_VolumeDownButton);
 	m_ResizeContolMgr.InsertControl(&m_PowerButton);
-	m_ResizeContolMgr.InsertControl(&m_ExplorerBtn);	
+	m_ResizeContolMgr.InsertControl(&m_ExplorerBtn);
 	
 }
 
 
 void CRemotroidServerDlg::TurnGaroSero(int garosero)
 {
+	if(m_GaroSeroState == garosero)
+		return;
+
 	m_GaroSeroState = garosero;
 
 	CRect newRect;
@@ -1342,17 +1433,19 @@ void CRemotroidServerDlg::TurnGaroSero(int garosero)
 #include "Web.h"
 //////////////////////////////////////////////////////////////////
 //로그인 과정
-void CRemotroidServerDlg::RequireConnectClient(void)
+UINT CRemotroidServerDlg::RequireConnectClient(LPVOID pParam)
 {
-	UpdateData(TRUE);
+	CRemotroidServerDlg *pDlg = (CRemotroidServerDlg *)pParam;
 	
-	//Login 
-	CResponse *pResponse = CWeb::DoLogin(m_strEmail, m_strPasswd);
-	if(pResponse == NULL)
-		return;
 
+	//Login 
+	CResponse *pResponse = CWeb::DoLogin(pDlg->m_strEmail, pDlg->m_strPasswd);
+	
 	if(!CWeb::GetErrorMsg(pResponse))
-		return;	
+	{
+		pDlg->bLoginOK = FALSE;
+		return 0;	
+	}
 
 	//response 로부터 계정 객체 생성
 	CAccount *pAccount = pResponse->GetAccountFromPayload();
@@ -1362,23 +1455,59 @@ void CRemotroidServerDlg::RequireConnectClient(void)
 
 	//등록된 디바이스 정보 요청
 	pResponse = CWeb::GetDeviceList(pAccount);
-	if(pResponse == NULL)
-		return;
-
+	
 	if(!CWeb::GetErrorMsg(pResponse))
-		return;	
+	{
+		pDlg->bLoginOK = FALSE;
+		return 0;
+	}
 
 
 	//테스트용으로 디바이스 리스트중에 첫번째꺼 꺼내옴
-	CDeviceInfo *pDeviceInfo = pResponse->GetDeviceListFromPayload()->GetDeviceInfoFromList();
-	CWeb::RequestConnection(pDeviceInfo, pAccount, m_strMyIp);
+	CMyDeviceMgr *pDeviceMgr = pResponse->GetDeviceListFromPayload();
+	CDeviceInfo *pDeviceInfo = pDeviceMgr->GetDeviceInfoFromList();
+
+	delete pResponse;
+
+	pResponse = CWeb::RequestConnection(pDeviceInfo, pAccount, pDlg->m_strMyIp);
+	
+	if(!CWeb::GetErrorMsg(pResponse))
+	{
+		pDlg->bLoginOK = FALSE;
+		return 0;	
+	}
+
+	delete pResponse;	
+	delete pDeviceMgr;
+	delete pAccount;
+	
+	pDlg->bLoginOK = TRUE;
+
+	return 0;
 }
+
+
+UINT CRemotroidServerDlg::StartingWaitingAni(LPVOID pParam)
+{
+	CRemotroidServerDlg *pDlg = (CRemotroidServerDlg *)pParam;
+	pDlg->EnableLoginWnd(START);
+	CWinThread *pRequireConnectionThread = AfxBeginThread(RequireConnectClient, pParam);
+
+	WaitForSingleObject(pRequireConnectionThread->m_hThread, INFINITE);		
+
+	if(pDlg->bLoginOK == FALSE)
+		pDlg->EnableLoginWnd(FAIL);
+
+	return 0;
+}
+
 
 
 void CRemotroidServerDlg::OnBnClickedBtnConnect()
 {
 	// TODO: Add your control notification handler code here
-	RequireConnectClient();
+	UpdateData(TRUE);
+	pConnectThread = AfxBeginThread(StartingWaitingAni, this);
 }
 
 
@@ -1402,15 +1531,87 @@ void CRemotroidServerDlg::DestroyFont(void)
 }
 
 
-void CRemotroidServerDlg::EnableLoginWnd(BOOL enable, BOOL visible)
-{
-	m_ctrlEmail.EnableWindow(enable);
-	m_ctrlPasswd.EnableWindow(enable);	
-	m_btnConnect.EnableWindow(enable);	
 
-	m_ctrlPasswd.ShowWindow(visible);
-	m_ctrlEmail.ShowWindow(visible);
-	m_btnConnect.ShowWindow(visible);	
-	
+
+//접속 할 때 이메일 edit 등과 같은 컨트롤 세팅
+void CRemotroidServerDlg::EnableLoginWnd(CONNECTSTATE state)
+{
+	switch(state)
+	{
+	case START:	//접속 버튼 눌렀을 경우
+		m_ctrlEmail.ShowWindow(SW_SHOW);
+		m_ctrlPasswd.ShowWindow(SW_SHOW);
+
+		m_ctrlEmail.EnableWindow(FALSE);
+		m_ctrlPasswd.EnableWindow(FALSE);	
+
+		m_btnConnect.ShowWindow(SW_HIDE);
+		screen.EnableAnimation(TRUE);
+		break;
+	case SUCCESS:	//접속 성공
+		m_ctrlEmail.ShowWindow(SW_HIDE);
+		m_ctrlPasswd.ShowWindow(SW_HIDE);
+
+		m_btnConnect.ShowWindow(SW_HIDE);
+		screen.EnableAnimation(FALSE);
+		break;
+	case FAIL:
+		m_ctrlEmail.EnableWindow(TRUE);
+		m_ctrlPasswd.EnableWindow(TRUE);	
+
+		m_btnConnect.ShowWindow(SW_SHOW);
+		screen.EnableAnimation(FALSE);
+		break;
+	case END:
+		MoveWindow(m_firstPosition);
+		m_pBkgDlg->MoveBkgDlg(m_firstPosition, SERO);
+
+		m_ctrlEmail.ShowWindow(SW_SHOW);
+		m_ctrlPasswd.ShowWindow(SW_SHOW);
+
+		m_ctrlEmail.EnableWindow(TRUE);
+		m_ctrlPasswd.EnableWindow(TRUE);	
+
+		m_btnConnect.ShowWindow(SW_SHOW);
+		screen.EnableAnimation(FALSE);
+		break;
+	}
 }
 
+
+//현재 파일 송신 수신 상태를 세팅
+void CRemotroidServerDlg::SetFileTranceiverState(FILETRANCEIVERSTATE state)
+{
+	m_fileTranceiverState = state;
+}
+
+//파일 송수신이 시작되면 프로그래스 바와 켄슬 버튼 활성화
+void CRemotroidServerDlg::StartFileTranceiver(BOOL cond)
+{
+	if(cond)
+	{
+		m_progressCtrl.ShowWindow(SW_SHOW);
+		m_FileCancelButton.ShowWindow(SW_SHOW);
+	}
+	else
+	{
+		m_progressCtrl.ShowWindow(SW_HIDE);
+		m_FileCancelButton.ShowWindow(SW_HIDE);
+	}
+}
+
+
+void CRemotroidServerDlg::OnBnClickedBtnFilecancel()
+{
+	// TODO: Add your control notification handler code here
+
+	//파일을 보내는 중일 때
+	if(m_fileTranceiverState == SENDING)
+	{
+		fileSender.DeleteFileList();
+	}
+	else if(m_fileTranceiverState == RECEIVEING)
+	{
+		m_pClient->SendPacket(OP_REQSTOPFILETRANFER, NULL, 0);		
+	}
+}

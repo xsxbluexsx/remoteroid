@@ -7,6 +7,8 @@ CFileSender::CFileSender()
 	sendedFileSize(0),isSending(FALSE)	
 	, pSendFileThread(NULL)
 	, m_progressCtrl(NULL)
+	, m_Listener(NULL)
+	, m_bCond(FALSE)
 {
 	memset(buffer, 0, sizeof(buffer));
 }
@@ -14,7 +16,6 @@ CFileSender::CFileSender()
 
 CFileSender::~CFileSender(void)
 {	
-	
 	DeleteFileList();	
 }
 
@@ -25,31 +26,31 @@ void CFileSender::SetClient(CMyClient *pClient)
 
 int CFileSender::SendPacket(int iOPCode, const char * data, int iDataLen)
 {
+	if(m_pClient == NULL)
+		return -1;
+
 	return m_pClient->SendPacket(iOPCode,data,iDataLen);
 }
 
 
-
-BOOL CFileSender::StartSendFile(void)
+void CFileSender::AddSendFile(CFile * pFile)
 {
-	if(m_pClient == NULL || isSending == TRUE)
-	{		
-		return FALSE;
-	}
+	sendFileList.AddTail((void*)pFile);		
+	return;
+}
 
-	isSending = TRUE;
 
-	SendFileInfo();
-
-	return TRUE;
+int CFileSender::StartSendFile(void)
+{
+	return SendFileInfo();
 }
 
 int CFileSender::SendFileInfo()
 {	
 	if(sendFileList.IsEmpty())
-	{
-		isSending = FALSE;
-		return -1;
+	{			
+		m_Listener->SetFileTranceiverState(NORMAL);
+		return -1;		
 	}
 
 	CFile *pFile = (CFile *)sendFileList.GetHead();
@@ -80,21 +81,9 @@ void CFileSender::SendFileData()
 	{
 		delete pSendFileThread;
 	}
+	m_bCond = TRUE;
 	pSendFileThread = AfxBeginThread(SendFileThread, this);
 	pSendFileThread->m_bAutoDelete = FALSE;
-}
-
-
-
-BOOL CFileSender::AddSendFile(CFile * pFile)
-{
-	if(m_pClient == NULL || isSending == TRUE)
-	{		
-		return FALSE;
-	}
-
-	sendFileList.AddTail((void*)pFile);		
-	return TRUE;
 }
 
 
@@ -106,24 +95,27 @@ UINT CFileSender::SendFileThread(LPVOID pParam)
 	unsigned long long totalFileSize = pFile->GetLength();
 	unsigned long long sendedFileSize = 0;
 
-	pDlg->m_progressCtrl->ShowWindow(SW_RESTORE);
+	pDlg->m_Listener->StartFileTranceiver(TRUE);
 	
 	while(totalFileSize > sendedFileSize)
 	{
 		int iCurrentSendSize = (totalFileSize-sendedFileSize) > MAXDATASIZE ? MAXDATASIZE : totalFileSize-sendedFileSize;		
 
 		pFile->Read(pDlg->buffer, iCurrentSendSize);
-		if(pDlg->SendPacket(OP_SENDFILEDATA, pDlg->buffer, iCurrentSendSize) == SOCKET_ERROR)
+
+		//접속이 종료되거나 X버튼 누를 경우
+		if(pDlg->SendPacket(OP_SENDFILEDATA, pDlg->buffer, iCurrentSendSize) == SOCKET_ERROR || pDlg->m_bCond == FALSE)
 		{				
 			delete pFile;			
-			pDlg->m_progressCtrl->ShowWindow(SW_HIDE);						
+			pDlg->m_Listener->StartFileTranceiver(FALSE);
+			pDlg->m_Listener->SetFileTranceiverState(NORMAL);
 			return 0;
 		}
 		sendedFileSize += iCurrentSendSize;
 		int percent = (int)(((float)sendedFileSize/totalFileSize)*100);		
 		pDlg->m_progressCtrl->SetPos(percent);
 	}
-	pDlg->m_progressCtrl->ShowWindow(SW_HIDE);
+	pDlg->m_Listener->StartFileTranceiver(FALSE);
 
 	delete pFile;
 	pDlg->SendFileInfo();
@@ -131,11 +123,11 @@ UINT CFileSender::SendFileThread(LPVOID pParam)
 }
 
 
-
 void CFileSender::DeleteFileList(void)
 {
 	if(pSendFileThread != NULL)
-	{			
+	{		
+		m_bCond = FALSE;
 		while(TRUE)
 		{
 			DWORD dwResult = WaitForSingleObject(pSendFileThread->m_hThread, 100);				
@@ -159,8 +151,7 @@ void CFileSender::DeleteFileList(void)
 		CFile *pFile = (CFile *)sendFileList.GetNext(pos);			
 		delete pFile;				
 	}	
-	sendFileList.RemoveAll();	
-	isSending = FALSE;
+	sendFileList.RemoveAll();		
 	return;
 }
 
@@ -168,4 +159,10 @@ void CFileSender::DeleteFileList(void)
 void CFileSender::SetProgressBar(CTextProgressCtrl * pProgressCtrl)
 {
 	this->m_progressCtrl = pProgressCtrl;
+}
+
+
+void CFileSender::SetListener(IFileTranceiverListener *listener)
+{
+	m_Listener = listener;
 }

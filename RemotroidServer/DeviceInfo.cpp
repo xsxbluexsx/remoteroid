@@ -48,9 +48,21 @@ CString CDeviceInfo::GetRegKey()
 CDeviceInfo * CDeviceInfo::FromJson(Json::Value& jsonPayload)
 {
 	CDeviceInfo *deviceInfo = new CDeviceInfo();
-	deviceInfo->SetUUID(CString(jsonPayload.get("deviceUUID", "").asCString()));
-	deviceInfo->SetNickname(CString(jsonPayload.get("nickname", "").asCString()));
-	deviceInfo->SetRegKey(CString(jsonPayload.get("registrationKey", "").asCString()));
+	
+	if(jsonPayload.get("deviceUUID", "").empty())
+		deviceInfo->SetUUID(_T(""));
+	else
+		deviceInfo->SetUUID(CString(jsonPayload.get("deviceUUID", "").asCString()));
+	
+	if(jsonPayload.get("nickname", "").empty())
+		deviceInfo->SetNickname(_T(""));
+	else
+		deviceInfo->SetNickname(CString(jsonPayload.get("nickname", "").asCString()));
+
+	if(jsonPayload.get("registrationKey", "").empty())
+		deviceInfo->SetRegKey(_T(""));
+	else
+		deviceInfo->SetRegKey(CString(jsonPayload.get("registrationKey", "").asCString()));	
 
 	return deviceInfo;
 }

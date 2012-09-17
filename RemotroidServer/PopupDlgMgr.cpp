@@ -28,11 +28,28 @@ void CPopupDlgMgr::RemoveAndMove(CPopupDlg * pDlg)
 	m_ptrList.GetNext(pos);
 	while (pos)
 	{
-		CPopupDlg *pDlg  =(CPopupDlg *)m_ptrList.GetNext(pos);
+		CDialogEx *pDlg  =(CDialogEx *)m_ptrList.GetNext(pos);
 		if(pDlg != NULL)
 			pDlg->PostMessage(WM_MOVEPOPDLG, 0, 0);
 	}		
 
 	//팝업 다이얼로그가 종료될 때 스스로 delete 해주기 때문에 리스트에서만 삭제하면 된다
 	m_ptrList.RemoveAt(oldPos);
+}
+
+
+void CPopupDlgMgr::DestroyAllPopupDlg(void)
+{
+	POSITION pos = m_ptrList.GetHeadPosition();
+
+	while(pos)
+	{
+		CPopupDlg *pDlg  =(CPopupDlg *)m_ptrList.GetNext(pos);
+		if(pDlg != NULL)
+		{
+			pDlg->m_bFlagAllDestroy = TRUE;
+			pDlg->DestroyWindow();		
+		}
+	}
+	m_ptrList.RemoveAll();
 }
