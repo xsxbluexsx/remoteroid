@@ -757,9 +757,9 @@ void CRemotroidServerDlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	
 	int keyCode;
 	if( (m_pClient != NULL) && ((keyCode=keyCodeGen.GetKeyCode(nChar)) != INVALID_KEYCODE) )
-	{
+	{		
 		CVitualEventPacket event(KEYUP, keyCode);
-		m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);
+		m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);		
 	}	
 }
 
@@ -775,9 +775,9 @@ void CRemotroidServerDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 	int keyCode;
 	if( (m_pClient != NULL) && ((keyCode=keyCodeGen.GetKeyCode(nChar)) != INVALID_KEYCODE) )
-	{
+	{			
 		CVitualEventPacket event(KEYDOWN, keyCode);
-		m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);	
+		m_pClient->SendPacket(OP_VIRTUALEVENT, event.asByteArray(), event.payloadSize);			
 	}	
 }
 
@@ -794,6 +794,21 @@ BOOL CRemotroidServerDlg::PreTranslateMessage(MSG* pMsg)
 		//한영키 눌렀을 경우 처리
 		if(pMsg->wParam == VK_PROCESSKEY)
 			pMsg->wParam = ImmGetVirtualKey(GetSafeHwnd());
+
+		
+		//컨트롤 V 처리
+		BOOL bShift = ((GetKeyState(VK_SHIFT) & 0x8000) != 0); // Shift 키가 눌렸는지의 여부 저장
+		BOOL bControl = ((GetKeyState(VK_CONTROL) & 0x8000) != 0); // Control 키가 눌렸는지의 여부 저장
+		BOOL bAlt = ((GetKeyState(VK_MENU) & 0x8000) != 0);
+		if(bControl && !bShift && !bAlt && pRecvThread != NULL && pMsg->message == WM_KEYDOWN)
+		{
+           if(pMsg->wParam == 'v' || pMsg->wParam == 'V')
+           {
+              // Paste 함수 구현
+			   SendClipboardText();
+           }           
+		}
+		
 
 		SendMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
 	}
@@ -999,7 +1014,7 @@ void CRemotroidServerDlg::OnBnClickedBtnVolumnup()
 }
 void CRemotroidServerDlg::OnBnClickedBtnVolumedown()
 {
-	// TODO: Add your control notification handler code here	
+	// TODO: Add your control notification handler code here		
 	ClickHardwareKey(VOLUMEDOWN);
 }
 void CRemotroidServerDlg::OnBnClickedBtnPower()
@@ -1550,6 +1565,7 @@ void CRemotroidServerDlg::DestroyFont(void)
 //접속 할 때 이메일 edit 등과 같은 컨트롤 세팅
 void CRemotroidServerDlg::EnableLoginWnd(CONNECTSTATE state)
 {
+	
 	switch(state)
 	{
 	case START:	//접속 버튼 눌렀을 경우
@@ -1562,14 +1578,25 @@ void CRemotroidServerDlg::EnableLoginWnd(CONNECTSTATE state)
 		m_btnConnect.ShowWindow(SW_HIDE);
 		screen.EnableAnimation(TRUE);
 		break;
-	case SUCCESS:	//접속 성공
+	case SUCCESS:	//접속 성공			
+		m_ctrlEmail.SetReadOnly(TRUE);
+		m_ctrlPasswd.SetReadOnly(FALSE);	
+
+		m_ctrlEmail.EnableWindow(FALSE);
+		m_ctrlPasswd.EnableWindow(FALSE);	
+
 		m_ctrlEmail.ShowWindow(SW_HIDE);
-		m_ctrlPasswd.ShowWindow(SW_HIDE);
+		m_ctrlPasswd.ShowWindow(SW_HIDE);		
 
 		m_btnConnect.ShowWindow(SW_HIDE);
+		m_btnConnect.EnableWindow(FALSE);
+
 		screen.EnableAnimation(FALSE);
 		break;
 	case FAIL:
+		m_ctrlEmail.ShowWindow(SW_SHOW);
+		m_ctrlPasswd.ShowWindow(SW_SHOW);
+		
 		m_ctrlEmail.EnableWindow(TRUE);
 		m_ctrlPasswd.EnableWindow(TRUE);	
 
@@ -1580,6 +1607,9 @@ void CRemotroidServerDlg::EnableLoginWnd(CONNECTSTATE state)
 		MoveWindow(m_firstPosition);
 		m_pBkgDlg->MoveBkgDlg(m_firstPosition, SERO);
 
+		m_ctrlEmail.SetReadOnly(FALSE);
+		m_ctrlPasswd.SetReadOnly(FALSE);
+
 		m_ctrlEmail.ShowWindow(SW_SHOW);
 		m_ctrlPasswd.ShowWindow(SW_SHOW);
 
@@ -1587,6 +1617,8 @@ void CRemotroidServerDlg::EnableLoginWnd(CONNECTSTATE state)
 		m_ctrlPasswd.EnableWindow(TRUE);	
 
 		m_btnConnect.ShowWindow(SW_SHOW);
+		m_btnConnect.EnableWindow(TRUE);
+
 		screen.EnableAnimation(FALSE);
 		break;
 	}
@@ -1632,3 +1664,20 @@ void CRemotroidServerDlg::OnBnClickedBtnFilecancel()
 }
 
 
+
+
+
+void CRemotroidServerDlg::SendClipboardText(void)
+{
+	if(m_pClient == NULL)
+		return;
+
+	char *clipboardText = CUtil::GetClipboardText(GetSafeHwnd());
+
+	int len = strlen(clipboardText);
+
+	len = len > 4096-HEADERSIZE ? 4096-HEADERSIZE : len;
+
+	m_pClient->SendPacket(OP_SENDCLIPBOARDTEXT, clipboardText, len);
+	delete clipboardText;
+}

@@ -76,4 +76,5 @@ void CKeyCodeGen::InitKeyCodeArray(void)
 	KeyCodeArray[VK_RIGHT] = KEY_RIGHT;
 	KeyCodeArray[VK_DOWN] = KEY_DOWN;
 	KeyCodeArray[VK_UP] = KEY_UP;	
+	KeyCodeArray[VK_CONTROL] = KEY_LEFTCTRL;	
 }

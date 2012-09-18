@@ -90,6 +90,30 @@ char *  CUtil::AnsiToUtf(const char *ansi)
 }
 
 
+//클립보드에 있는 데이터를 UTF-8로 리턴해줌
+char * CUtil::GetClipboardText(HWND hwnd)
+{
+	OpenClipboard(hwnd);
+	HGLOBAL hGlobal = GetClipboardData(CF_TEXT);
+
+	char *temp;
+
+	if(hGlobal)
+	{
+		char *pGlobal = (char *)GlobalLock(hGlobal);
+		temp = new char[strlen(pGlobal)+1];
+		memset(temp, 0, strlen(pGlobal)+1);
+		strcpy(temp, pGlobal);
+		GlobalUnlock(hGlobal);
+	}
+	CloseClipboard();
+	char * utf = AnsiToUtf(temp);
+	delete [] temp;
+	return utf;
+}
+
+
+
 //트래이로 이동하는 애니메이션
 void CUtil::AniMinimizeToTray(HWND hwnd)
 {
@@ -150,9 +174,5 @@ void CUtil::SetHanEngMode(HWND hFocusWnd)
 		ImmReleaseContext(hFocusWnd, hImc);
 	}
 }
-
-
-
-
 
 
