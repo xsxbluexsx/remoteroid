@@ -18,5 +18,6 @@ public:
 	static char * UniToUtfEx(const CString uni);
 	static char * AnsiToUtf(const char *ansi);
 	static TCHAR * AnsiToUni(const char * ansi);
+	static char * GetClipboardText(HWND hwnd);
 };
 

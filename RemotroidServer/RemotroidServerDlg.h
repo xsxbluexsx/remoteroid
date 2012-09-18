@@ -263,5 +263,6 @@ public:
 	afx_msg void OnBnClickedBtnFilecancel();
 	HCURSOR fileTransferCursor;
 	
+	void SendClipboardText(void);
 };
 

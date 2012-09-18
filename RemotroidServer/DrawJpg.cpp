@@ -43,9 +43,7 @@ void CDrawJpg::SetJpgInfo(char * data)
 	memcpy(m_bJpgSize, data, JPGSIZELEGNTH-1);
 	m_iTotalJpgSize = atoi(m_bJpgSize);
 
-	static int a=0;
-	TRACE("%d\n", a++);
-	
+		
 	m_iRecvJpgSize = 0;
 	memset(m_pJpgData, 0, MAXRESOLUTION);
 }
@@ -68,7 +66,7 @@ void CDrawJpg::RecvJpgData(char * data, int packetSize)
 
 // 한 프레임 jpg 출력
 void CDrawJpg::DrawScreen(void)
-{
+{	
 	if(!SetIJLInfo())
 	{
 		return;
