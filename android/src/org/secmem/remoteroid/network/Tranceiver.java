@@ -152,9 +152,9 @@ public class Tranceiver  implements PacketListener{
 	
 	
 	//Send frameBuffer to host by udp
-	public void screenTransmission(byte[] jpgData){
+	public void screenTransmission(byte[] jpgData, int orientation){
 		try{
-			screenSender.screenTransmission(jpgData);
+			screenSender.screenTransmission(jpgData, orientation);
 		}catch(IOException e){
 			e.printStackTrace();
 			mScreenTransListener.onScreenTransferInterrupted();
@@ -206,6 +206,9 @@ public class Tranceiver  implements PacketListener{
 			Log.i("qweqwe", "Sdfdsfsd");
 			/** add message packet */
 			mAddOptionListener.onSendKakaotalkMessage(msg);
+			break;
+		case OpCode.FILETRANSFER_STOP_REQUESTED:
+			fileTransReceiver.transferStopRequested();
 			break;
 			
 		case OpCode.FILEDATA_CANCEL:

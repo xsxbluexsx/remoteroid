@@ -49,9 +49,13 @@ public class FileTranceiver extends PacketSender{
 		fileSender.SendFileData();
 	}
 	
+	public void transferStopRequested(){
+		fileSender.transferStopRequested();
+	}
+	
 	public void cancelFile() {
 		File file = fileReceiver.getFile();
-		if(file.exists())
+		if(file !=null && file.exists())
 			file.delete();
 	}
 	
@@ -164,6 +168,7 @@ public class FileTranceiver extends PacketSender{
 		private FileInputStream	in 						= null;
 		private ArrayList<File>	fileList				= null;	
 		private FileTransmissionListener mListener;
+		private boolean isTransfer 						= true;
 		
 		public FileSender(FileTransmissionListener listener){		
 			mListener = listener;
@@ -186,6 +191,12 @@ public class FileTranceiver extends PacketSender{
 		 */
 		public void SendFileInfo(){		
 			if(fileList.isEmpty()){
+				try {
+					send(new Packet(OpCode.FILETRANSFER_COMPLETE, null, 0));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				return;
 			}
 			File currentFile = fileList.get(0);
@@ -199,7 +210,12 @@ public class FileTranceiver extends PacketSender{
 			}		
 		}
 		
+		public void transferStopRequested(){
+			isTransfer = false;
+		}
+		
 		public void SendFileData(){
+			isTransfer = true;
 			new SendFileDataThread().start();		
 		}
 		
@@ -216,6 +232,10 @@ public class FileTranceiver extends PacketSender{
 					in = new FileInputStream(file);			
 					
 					while(fileSize > sentFileSize){					
+						if(isTransfer == false){
+							send(new Packet(OpCode.FILETRANSFER_COMPLETE, null, 0));							
+							return;							
+						}							
 						
 						int iCurrentSendSize =
 								(int) ((fileSize - sentFileSize) > MAXDATASIZE ? MAXDATASIZE : (fileSize - sentFileSize));
