@@ -533,21 +533,8 @@ public class HongUtil {
 		WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
 		
-		int rotation = display.getRotation();
 		
-		switch(rotation){
-		
-		case Surface.ROTATION_0:			// 0
-			/** Portrait : 0		*/
-		case Surface.ROTATION_90 : 		// 1
-			/** Landscape : 90   */
-		case Surface.ROTATION_180:		// 2
-			/** Portrait : 180		 */
-		case Surface.ROTATION_270:		// 3
-		
-		}
-		
-		return rotation;
+		return  display.getRotation();
 	}
 	
 }

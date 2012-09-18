@@ -101,32 +101,38 @@ public class Tranceiver  implements PacketListener{
 	 * Disconnect from host.
 	 * @throws IOException
 	 */
-	public synchronized void disconnect(){
-		if(socket!=null){
-			try{				
-				recvStream.close();
-				sendStream.close();
-				packetReceiver = null;	
-				mScreenTransListener.onScreenTransferStopRequested();
-				socket.close();			
-			}catch(IOException e){
-				e.printStackTrace();
-			} finally{
-				mServerConnectionListener.onServerDisconnected();
+	public void disconnect(){
+		synchronized(this){
+			if(socket!=null){
+				try{				
+					recvStream.close();
+					sendStream.close();
+					packetReceiver = null;				
+					socket.close();		
+					socket = null;
+				}catch(IOException e){
+					e.printStackTrace();
+					Log.i("qweqwe", "disconnect exception");
+				} finally{
+					mServerConnectionListener.onServerDisconnected();
+				}
 			}
 		}
 	}
 	
-	private synchronized void cleanup(){
-		if(socket!=null){
-			try{
-				recvStream.close();
-				packetReceiver = null;
-				socket.close();
-				socket=null;
+	private void cleanup(){
+		synchronized(this){
+			if(socket!=null){
+				try{
+					recvStream.close();
+					sendStream.close();
+					packetReceiver = null;
+					socket.close();
+					socket=null;
 			
-			}catch(IOException e){
-				
+				}catch(IOException e){
+					Log.i("qweqwe", "cleanup exception");
+				}
 			}
 		}
 	}

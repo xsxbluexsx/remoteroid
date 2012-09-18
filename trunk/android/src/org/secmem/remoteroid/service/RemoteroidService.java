@@ -398,9 +398,9 @@ public class RemoteroidService extends Service
 				
 				while(isTransmission){					
 					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
-					int orientation = HongUtil.getOrientation(getApplicationContext());
+					int rotation = HongUtil.getRotation(getApplicationContext());				
 					
-					mTransmitter.screenTransmission(frameStream.toByteArray(), orientation);
+					mTransmitter.screenTransmission(frameStream.toByteArray(), rotation);
 				}
 			}
 		};
@@ -490,12 +490,12 @@ public class RemoteroidService extends Service
 		
 			if(intent.getAction().equals(SCREEN_ON)){
 				Log.i(DEBUG_SCREEN, "SCREEN_ON");
-				if(!isTransmission)
-					onScreenTransferRequested();
+//				if(!isTransmission)
+//					onScreenTransferRequested();
 			}
 			else if(intent.getAction().equals(SCREEN_OFF)){
 				Log.i(DEBUG_SCREEN, "SCREEN_OFF");
-				onScreenTransferStopRequested();
+//				onScreenTransferStopRequested();
 			}
 			
 		}
