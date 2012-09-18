@@ -21,6 +21,7 @@ public class ScreenSender extends PacketSender{
 	private static final int MAXDATASIZE = 4090;
 	
 	private static final int JPGINFOLENGTH = 10;
+	private static final int ORIENTATION_INFO_LENGTH = 1;
 
 	private byte[] sendBuffer = new byte[MAXDATASIZE];
 	private byte[] jpgSizeInfo = new byte[JPGINFOLENGTH];
@@ -29,17 +30,21 @@ public class ScreenSender extends PacketSender{
 		super(out);		
 	}
 			
-	public void screenTransmission(byte[] jpgData) throws IOException{
+	public void screenTransmission(byte[] jpgData, int orientation) throws IOException{
 		int jpgTotalSize = jpgData.length;
 		int transmittedSize = 0;		
 		
-		//First send jpg size information to host
+
 		//byte [] jpgSizeInfo = String.valueOf(jpgTotalSize).getBytes();
+
+		//First send jpg size information to host
+		//first byte is orientation
+		jpgSizeInfo[0] = (byte)orientation;
+		int length = HongUtil.itoa(jpgTotalSize, jpgSizeInfo, 1)+ORIENTATION_INFO_LENGTH;
 		
 		//set oprientation information to 1st byte
 		//jpgSizeInfo[0] = orientation;
 		
-		int length = HongUtil.itoa(jpgTotalSize, jpgSizeInfo);
 		
 		
 		Packet jpgInfoPacket = new Packet(OpCode.JPGINFO_SEND, jpgSizeInfo, length);

@@ -377,7 +377,7 @@ public class RemoteroidService extends Service
 		return result;
 	}
 	
-	private boolean isTransmission = true; // Taeho : What is this variable means for?
+	private boolean isTransmission = false; // Taeho : What is this variable means for?
 
 	@Override
 	public void onScreenTransferRequested() {
@@ -395,13 +395,12 @@ public class RemoteroidService extends Service
 		Thread mThread = new Thread(){
 			@Override
 			public void run() {
-				Context context = getApplicationContext();
+				
 				while(isTransmission){					
 					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
+					int orientation = HongUtil.getOrientation(getApplicationContext());
 					
-					int orientation = context.getResources().getConfiguration().orientation;
-					
-					mTransmitter.screenTransmission(frameStream.toByteArray());
+					mTransmitter.screenTransmission(frameStream.toByteArray(), orientation);
 				}
 			}
 		};

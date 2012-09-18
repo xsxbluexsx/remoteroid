@@ -485,6 +485,26 @@ public class HongUtil {
 		return length;
 	}
 	
+	public static int itoa(int iSrc, byte[] buffer, int offset){
+		int positionalNumber = getPositionalNumber(iSrc);
+		int length = positionalNumber;
+				
+		int i=offset;
+		while(positionalNumber > 0){
+			int jesu = (int)Math.pow(10, positionalNumber-1);
+			int quotiont = iSrc / jesu;
+			
+			buffer[i] = (byte) (quotiont+'0');
+			
+			int remainder = iSrc % jesu;		
+			
+			positionalNumber--;
+			i++;
+			iSrc = remainder;
+		}
+		return length;
+	}
+	
 	public static int itoa(int iSrc, byte[] buffer, int positionalNumber, int offset){
 						
 		int i=offset;
@@ -503,35 +523,10 @@ public class HongUtil {
 		return positionalNumber;
 	}
 	
-	public static int itoa(int iSrc, byte[] buffer, int offset){
-		
-		int positionalNumber = getPositionalNumber(iSrc);
-		int length = positionalNumber;
-		int i=offset;
-		while(positionalNumber > 0){
-			int jesu = (int)Math.pow(10, positionalNumber-1);
-			int quotiont = iSrc / jesu;
-			
-			buffer[i] = (byte) (quotiont+'0');
-			
-			int remainder = iSrc % jesu;		
-			
-			positionalNumber--;
-			i++;
-			iSrc = remainder;
-		}
-		return length;
-	}
+
 	
-	
-	public static int getOrientation(Context context){
-		int result=0;
-		if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-			result=1;
-		else if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-			result=0;
-		
-		return result;
+	public static int getOrientation(Context context){		
+		return context.getResources().getConfiguration().orientation-1;
 	}
 	
 	public static int getRotation(Context context){
