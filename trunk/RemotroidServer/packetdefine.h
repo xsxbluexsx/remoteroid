@@ -13,6 +13,9 @@
 #define SERO				0
 #define GARO				1
 
+#define ROTATION0			0
+#define ROTATION90			1
+#define ROTATION270			3
 
 
 #define OP_SENDFILEINFO				1
@@ -31,6 +34,7 @@
 
 #define OP_COMPLETEFILETRANSFER		16
 #define OP_REQSTOPFILETRANFER		17
+#define OP_FILETRANSFERCANCEL		18
 
 
 

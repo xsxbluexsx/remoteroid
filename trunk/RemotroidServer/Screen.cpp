@@ -21,6 +21,7 @@ CScreen::CScreen()
 , m_bTrack(FALSE)
 , m_strMyIp(_T(""))
 , m_isConnect(FALSE)
+, m_rotationState(0)
 {
 	m_bkgImg.LoadFromResource(AfxGetInstanceHandle(), IDB_BITMAP_WAITING);		
 	ZeroMemory(&lf, sizeof(lf));
@@ -132,8 +133,24 @@ void CScreen::RecvJpgData(char * data, int iPacketSize)
 
 inline void CScreen::CoordinateTransform(CPoint& point)
 {
-	point.x = point.x*((float)widthResolution/width);
-	point.y = point.y*((float)heightResolution/height);
+	CPoint temp;
+	if(m_rotationState == ROTATION0)
+	{
+		point.x = point.x*((float)widthResolution/width);
+		point.y = point.y*((float)heightResolution/height);
+	}
+	else if(m_rotationState == ROTATION90)
+	{
+		temp.y = point.x*((float)heightResolution/width);
+		temp.x = widthResolution - point.y*((float)widthResolution/height);
+		point = temp;
+	}
+	else
+	{
+		temp.x = point.y*((float)widthResolution/height);
+		temp.y = heightResolution - point.x * ((float)heightResolution/width);
+		point = temp;
+	}
 }
 
 
@@ -398,3 +415,8 @@ void CScreen::ExcludePaintControl(CDC & dc)
 }
 
 
+void CScreen::TurnGaroSero(int rotation)
+{
+	drawJpg.m_rotationState = rotation;	
+	m_rotationState = rotation;
+}

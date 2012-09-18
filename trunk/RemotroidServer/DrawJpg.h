@@ -14,6 +14,7 @@ private:
 	char m_bJpgSize[JPGSIZELEGNTH+1];
 	BYTE * m_pJpgData;
 	BYTE * m_pBitmapData;
+	BYTE *m_pBitmapDataGaro;
 
 	JPEG_CORE_PROPERTIES image;
 	IJLERR err;
@@ -36,5 +37,9 @@ private:
 	HWND screenHandle;
 	HDC hdc;	
 
+public:
+	void RotationScreen(int rotation);
+	int m_GaroSeroState;	
+	int m_rotationState;
 };
 

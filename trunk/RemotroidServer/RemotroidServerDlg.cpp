@@ -276,6 +276,10 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 	//이메일 폰트 설정
 	InitFont();
 
+	//파일 송수신시 사용할 마우스 커서 등록
+	fileTransferCursor = (HCURSOR)LoadImage(AfxGetInstanceHandle(), 
+		MAKEINTRESOURCE(IDC_CURSOR1), IMAGE_CURSOR, 32, 32, LR_DEFAULTCOLOR);
+
 	//파일 송수신 모듈에 리스너로 등록
 	fileSender.SetListener(this);
 	recvFileClass.SetListener(this);
@@ -504,9 +508,9 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 			case OP_SENDJPGINFO:
 				//pDlg->screen.SendMessage(WM_RECVJPGINFO, 0, (LPARAM)data);
 
-				//data의 첫번째 바이트에는 가로세로에 대한 정보가 들어있다				
-				//pDlg->TurnGaroSero(data[0]);
-				pDlg->screen.SetJpgInfo(data);
+				//data의 첫번째 바이트에는 가로세로에 대한 정보가 들어있다	
+				pDlg->TurnGaroSero(data[0]);
+				pDlg->screen.SetJpgInfo(data+1);
 				break;
 			case OP_SENDJPGDATA:
 				//pDlg->screen.SendMessage(WM_RECVJPGDATA, iPacketSize, (LPARAM)data);
@@ -537,9 +541,10 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 		}
 	}
 		
-
+	
 	recvFileClass.CloseFileHandle();		
 	pDlg->fileSender.DeleteFileList();
+	pDlg->m_fileTranceiverState = NORMAL;
 	pDlg->screen.SetDisconnect();
 
 	delete pClient;	
@@ -577,6 +582,9 @@ void CRemotroidServerDlg::OnDestroy()
 	m_isClickedEndBtn = TRUE;
 	EndAccept();
 	EndConnect();
+
+	DestroyCursor(fileTransferCursor);
+
 
 	CDialogEx::OnDestroy();	
 }
@@ -852,13 +860,14 @@ LRESULT CRemotroidServerDlg::OnReadyRecvFile(WPARAM wParam, LPARAM lParam)
 
 	m_fileTranceiverState = RECEIVEING;
 	
-	::SetSystemCursor(LoadCursor(0, IDC_HAND), OCR_NORMAL);
-		
-
- 	SetCapture();	
-
+	//::SetSystemCursor(LoadCursor(0, IDC_HAND), OCR_NORMAL);
+	
+	SetCapture();		
+	SetCursor(fileTransferCursor);
+ 	
 
 	/*
+	SetCapture();	
 	AfxLockTempMaps();
 	
 	Invalidate(FALSE);
@@ -868,11 +877,7 @@ LRESULT CRemotroidServerDlg::OnReadyRecvFile(WPARAM wParam, LPARAM lParam)
 	
 
 	imageList = new CImageList;
-	CBitmap bitmap;
-	bitmap.LoadBitmap(IDB_BITMAP_EXPLORER_HOVER);
-
-	BITMAP bm;
-	bitmap.GetBitmap(&bm);
+	
 
 	imageList->Create(50,50,ILC_COLOR32, 0,1);
 
@@ -936,7 +941,7 @@ void CRemotroidServerDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	if(m_fileTranceiverState == RECEIVEING)
 	{
 		GetStoreFilePath();
-		SystemParametersInfo(SPI_SETCURSORS, 0, NULL, 0);
+//		SystemParametersInfo(SPI_SETCURSORS, 0, NULL, 0);
 		ReleaseCapture();		
 
 		CVitualEventPacket event(TOUCHUP);
@@ -1375,6 +1380,11 @@ void CRemotroidServerDlg::SetControlPos(void)
 	m_FileCancelButton.SetGaroBitmapID(IDB_BITMAP_CLOSE_MAIN_GARO, IDB_BITMAP_HOVER_MAIN_GARO);
 	
 
+	m_btnConnect.MoveWindow(150,470,121,41);
+	m_btnConnect.LoadBitmaps(IDB_BITMAP_CONNECTBTN);
+	m_btnConnect.SetHoverBitmapID(IDB_BITMAP_CONNECTBTN_HOVER);
+	m_btnConnect.SetGaroBitmapID(IDB_BITMAP_CONNECTBTN, IDB_BITMAP_CONNECTBTN_HOVER);
+	
 
 	//다이얼로그 크기 조정시 비율 계산및 컨트롤 메니저에 등록
 	screen.InitRatio(screen.m_hWnd, SCREENLEFT, SCREENTOP, SCREENWIDTH, SCREENHEIGHT, DLGWIDTH, DLGHEIGHT);
@@ -1408,8 +1418,11 @@ void CRemotroidServerDlg::SetControlPos(void)
 }
 
 
-void CRemotroidServerDlg::TurnGaroSero(int garosero)
+void CRemotroidServerDlg::TurnGaroSero(int rotaion)
 {
+	//왼쪽 가로는 1, 오른쪽 가로는 3이기 때문에 무조건 왼쪽 가로로만 설정한다
+	int garosero = rotaion == 0 ? 0 : 1;
+
 	if(m_GaroSeroState == garosero)
 		return;
 
@@ -1423,6 +1436,7 @@ void CRemotroidServerDlg::TurnGaroSero(int garosero)
 	newRect.bottom = newRect.top + mainDlgRect.Width();
 	mainDlgRect = newRect;
 	
+	screen.TurnGaroSero(rotaion);
 
 	MoveWindow(mainDlgRect);
 }
@@ -1609,9 +1623,12 @@ void CRemotroidServerDlg::OnBnClickedBtnFilecancel()
 	if(m_fileTranceiverState == SENDING)
 	{
 		fileSender.DeleteFileList();
+		m_pClient->SendPacket(OP_FILETRANSFERCANCEL, NULL, 0);
 	}
 	else if(m_fileTranceiverState == RECEIVEING)
 	{
 		m_pClient->SendPacket(OP_REQSTOPFILETRANFER, NULL, 0);		
 	}
 }
+
+

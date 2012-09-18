@@ -207,6 +207,15 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="ClassDiagram1.cd" />
+    <None Include="res\test.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\connect_btn.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\connect_btn_hover.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RemotroidServer.h">
