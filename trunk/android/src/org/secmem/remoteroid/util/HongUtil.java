@@ -53,6 +53,9 @@ import android.provider.MediaStore;
 import android.telephony.TelephonyManager;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.view.Display;
+import android.view.Surface;
+import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -523,13 +526,33 @@ public class HongUtil {
 	
 	public static int getOrientation(Context context){
 		int result=0;
-		
 		if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
 			result=1;
 		else if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
 			result=0;
 		
 		return result;
+	}
+	
+	public static int getRotation(Context context){
+		WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+		Display display = wm.getDefaultDisplay();
+		
+		int rotation = display.getRotation();
+		
+		switch(rotation){
+		
+		case Surface.ROTATION_0:			// 0
+			/** Portrait : 0		*/
+		case Surface.ROTATION_90 : 		// 1
+			/** Landscape : 90   */
+		case Surface.ROTATION_180:		// 2
+			/** Portrait : 180		 */
+		case Surface.ROTATION_270:		// 3
+		
+		}
+		
+		return rotation;
 	}
 	
 }

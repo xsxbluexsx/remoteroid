@@ -153,7 +153,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		
 		dataList.setPath("/mnt/sdcard");
 		
-		adapter = new ExplorerAdapter(this, R.layout.grid_explorer_row, dataList, ADAPTER_TYPE_EXPLORER, onFileLongClick);
+		adapter = new ExplorerAdapter(this, R.layout.grid_explorer_row, dataList, ADAPTER_TYPE_EXPLORER, onFileLongClick, gridview);
 		
 		LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(ExplorerActivity.this, R.anim.layout_wave_scale);
 		gridview.setLayoutAnimation(gridAnimation);
@@ -456,6 +456,8 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 			String action = intent.getAction();
 			if(action.equals(RemoteroidIntent.ACTION_FILE_TRANSMISSION_SECCESS))
 			{	
+				LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_wave_scale);
+				gridview.setLayoutAnimation(gridAnimation);
 				dataList.setPath(dataList.get_Path());
 				fileInfo.clear();
 				adapter.notifyDataSetChanged();

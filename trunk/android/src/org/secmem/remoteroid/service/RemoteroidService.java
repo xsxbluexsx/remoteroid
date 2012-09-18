@@ -49,8 +49,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -187,6 +189,11 @@ public class RemoteroidService extends Service
 		
 		mInputHandler = new InputHandler(this);
 		frameHandler = new FrameHandler(getApplicationContext());
+		
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(Intent.ACTION_SCREEN_OFF);
+		filter.addAction(Intent.ACTION_SCREEN_ON);
+		registerReceiver(ScreenStateReceiver, filter);
 	}
 	
 	private PhoneStateListener mPhoneListener = new PhoneStateListener(){
@@ -229,6 +236,8 @@ public class RemoteroidService extends Service
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		if(ScreenStateReceiver.isOrderedBroadcast())
+			unregisterReceiver(ScreenStateReceiver);
 	}
 
 
@@ -373,6 +382,11 @@ public class RemoteroidService extends Service
 	@Override
 	public void onScreenTransferRequested() {
 		Log.i(DEBUG_STATE,"onScreenTransferRequested()");
+		
+		// prevent for multiple thread
+		if(isTransmission)
+			return;
+		
 		isTransmission = true;
 		CommandLine.execAsRoot("chmod 664 /dev/graphics/fb0");
 		CommandLine.execAsRoot("chmod 664 /dev/graphics/fb1");
@@ -465,5 +479,27 @@ public class RemoteroidService extends Service
 			e.printStackTrace();
 		}
 	}
+	
+	BroadcastReceiver ScreenStateReceiver = new BroadcastReceiver() {
+		
+		private static final String SCREEN_OFF = "android.intent.action.SCREEN_OFF";
+		private static final String SCREEN_ON = "android.intent.action.SCREEN_ON";
+		private String DEBUG_SCREEN = "ScreenStateReceiver";
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+		
+			if(intent.getAction().equals(SCREEN_ON)){
+				Log.i(DEBUG_SCREEN, "SCREEN_ON");
+				if(!isTransmission)
+					onScreenTransferRequested();
+			}
+			else if(intent.getAction().equals(SCREEN_OFF)){
+				Log.i(DEBUG_SCREEN, "SCREEN_OFF");
+				onScreenTransferStopRequested();
+			}
+			
+		}
+	};
 
 }

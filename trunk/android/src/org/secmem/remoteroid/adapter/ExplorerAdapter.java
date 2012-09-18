@@ -46,8 +46,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -68,12 +71,15 @@ public class ExplorerAdapter extends BaseAdapter{
 	
 	private OnFileLongClickListener onFileLongClick=null;
 	
-	public ExplorerAdapter(Context context, int layout, DataList dataList, int type, OnFileLongClickListener onFileLongClick) {
+	private GridView gridview;
+	
+	public ExplorerAdapter(Context context, int layout, DataList dataList, int type, OnFileLongClickListener onFileLongClick, GridView gridview) {
 		this.context = context;
 		this.layout = layout;
 		this.dataList = dataList;
 		this.type = type;
 		this.onFileLongClick = onFileLongClick;
+		this.gridview = gridview;
 	}
 
 	@Override
@@ -305,7 +311,8 @@ public class ExplorerAdapter extends BaseAdapter{
 					if (dataList.getExpList().get(pos).getType()== ExplorerType.TYPE_FOLDER) {
 						dataList.setPath(dataList.getRealPathName(fileName));
 						ExplorerActivity.fileInfo.clear();
-						
+						LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_wave_scale);
+						gridview.setLayoutAnimation(gridAnimation);
 						notifyDataSetChanged();
 						
 					} 

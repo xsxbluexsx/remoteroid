@@ -34,6 +34,7 @@ public class Tranceiver  implements PacketListener{
 	private ScreenTransmissionListener mScreenTransListener;
 	private ServerConnectionListener mServerConnectionListener;
 	private AddOptionListener mAddOptionListener;
+
 	
 
 	public Tranceiver(ServerConnectionListener listener){
@@ -206,6 +207,10 @@ public class Tranceiver  implements PacketListener{
 			/** add message packet */
 			mAddOptionListener.onSendKakaotalkMessage(msg);
 			break;
+			
+		case OpCode.FILEDATA_CANCEL:
+			fileTransReceiver.cancelFile();
+			break;
 		}
 	}
 		
@@ -214,7 +219,8 @@ public class Tranceiver  implements PacketListener{
 		
 		//If server was closed, throw an IOException	
 		//If file is open, Shoud be closed
-		fileTransReceiver.closeFile();		
+		fileTransReceiver.closeFile();	
+		fileTransReceiver.cancelFile();
 		cleanup();
 		mServerConnectionListener.onServerConnectionInterrupted();
 	}

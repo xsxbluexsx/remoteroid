@@ -49,6 +49,12 @@ public class FileTranceiver extends PacketSender{
 		fileSender.SendFileData();
 	}
 	
+	public void cancelFile() {
+		File file = fileReceiver.getFile();
+		if(file.exists())
+			file.delete();
+	}
+	
 	/**
 	 * FileReceiver receive File Information(file name, size) and file data
 	 * And store file to SDCARD
@@ -58,6 +64,7 @@ public class FileTranceiver extends PacketSender{
 		private long totalFileSize;
 		private long recvFileSize;
 		private File file;
+
 		private FileOutputStream out;
 		private FileTransmissionListener mListener;
 		
@@ -135,6 +142,14 @@ public class FileTranceiver extends PacketSender{
 				} catch (IOException e) {Log.i("debug_state","closeFile");}
 				out = null;
 			}
+		}
+		
+		public File getFile() {
+			return file;
+		}
+
+		public void setFile(File file) {
+			this.file = file;
 		}
 	}
 	
