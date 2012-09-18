@@ -36,6 +36,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -535,6 +537,17 @@ public class HongUtil {
 		
 		
 		return  display.getRotation();
+	}
+	
+	public static void setClipBoard(Context context, String msg){
+		ClipboardManager clip = (ClipboardManager)context.getSystemService(context.CLIPBOARD_SERVICE);
+		ClipData data = ClipData.newPlainText("Remoteroid_Clip", msg);
+		clip.setPrimaryClip(data);
+	}
+	
+	public static String getClipData(Context context){
+		ClipboardManager clip = (ClipboardManager)context.getSystemService(context.CLIPBOARD_SERVICE);
+		return clip.getPrimaryClip().getItemAt(0).getText().toString();
 	}
 	
 }

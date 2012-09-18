@@ -220,6 +220,10 @@ public class Tranceiver  implements PacketListener{
 		case OpCode.FILEDATA_CANCEL:
 			fileTransReceiver.cancelFile();
 			break;
+			
+		case OpCode.SET_TO_CLIPBOARD:
+			
+			break;
 		}
 	}
 		

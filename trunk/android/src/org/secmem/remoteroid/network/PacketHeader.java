@@ -41,8 +41,8 @@ public class PacketHeader{
 		public static final int NOTIFICATION_KAKAOTALK_SEND = 15;
 		public static final int FILETRANSFER_COMPLETE = 16;
 		public static final int FILETRANSFER_STOP_REQUESTED = 17;
-		
 		public static final int FILEDATA_CANCEL = 18;
+		public static final int SET_TO_CLIPBOARD = 19;
 		
 	}
 	
