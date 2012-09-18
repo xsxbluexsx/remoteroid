@@ -85,6 +85,8 @@ public:
 	
 	void ExcludePaintControl(CDC & dc);
 	void EnableAnimation(BOOL cond);
+	void TurnGaroSero(int garosero);
+	int m_rotationState;
 };
 
 

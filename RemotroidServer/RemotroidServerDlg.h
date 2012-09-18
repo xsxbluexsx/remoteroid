@@ -239,7 +239,7 @@ public:
 	CEdit m_ctrlEmail;
 	CEdit m_ctrlPasswd;
 	afx_msg void OnBnClickedBtnConnect();
-	CButton m_btnConnect;
+	CMyBitmapBtn m_btnConnect;
 private:
 	CFont editFont;
 	LOGFONT lf;
@@ -261,5 +261,7 @@ public:
 	
 	void StartFileTranceiver(BOOL cond);
 	afx_msg void OnBnClickedBtnFilecancel();
+	HCURSOR fileTransferCursor;
+	
 };
 

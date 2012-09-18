@@ -16,6 +16,7 @@ CMyBitmapBtn::CMyBitmapBtn()
 	m_bMouseHover				= FALSE;
 	m_nIDBitmapResourceHover	= 0;
 	ZeroMemory(&m_stTrackMouse, sizeof(m_stTrackMouse));
+	m_garoSeroState = SERO;
 }
 
 CMyBitmapBtn::~CMyBitmapBtn()

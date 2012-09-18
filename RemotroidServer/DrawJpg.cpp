@@ -5,9 +5,14 @@
 CDrawJpg::CDrawJpg()
 	: m_iTotalJpgSize(0)
 	, m_iRecvJpgSize(0)	
+	, m_pBitmapDataGaro(NULL)
+	, m_GaroSeroState(SERO)
+	, m_rotationState(ROTATION0)
 {
 	m_pBitmapData = new BYTE[MAXRESOLUTION];
 	m_pJpgData = new BYTE[MAXRESOLUTION];
+	m_pBitmapDataGaro = new BYTE[MAXRESOLUTION];
+
 	memset(&image, 0, sizeof(image));
 	if(ijlInit(&image) != IJL_OK)
 	{
@@ -21,6 +26,7 @@ CDrawJpg::~CDrawJpg(void)
 	
 	delete [] m_pBitmapData;
 	delete [] m_pJpgData;
+	delete [] m_pBitmapDataGaro;
 
 	if(ijlFree(&image) != IJL_OK)
 	{
@@ -32,9 +38,13 @@ CDrawJpg::~CDrawJpg(void)
 // 한 프레임의 JPG 크기 정보를 세팅
 void CDrawJpg::SetJpgInfo(char * data)
 {	
+	
 	memset(m_bJpgSize, 0, sizeof(m_bJpgSize));
-	memcpy(m_bJpgSize, data, JPGSIZELEGNTH);
+	memcpy(m_bJpgSize, data, JPGSIZELEGNTH-1);
 	m_iTotalJpgSize = atoi(m_bJpgSize);
+
+	static int a=0;
+	TRACE("%d\n", a++);
 	
 	m_iRecvJpgSize = 0;
 	memset(m_pJpgData, 0, MAXRESOLUTION);
@@ -150,8 +160,20 @@ void CDrawJpg::SetBitmapInfo(void)
 // 		
  	
 	::SetStretchBltMode(hdc, HALFTONE);	
-	::StretchDIBits(hdc, 0, 0, screenXSize, screenYSize, 0, 0,
+
+	if(m_rotationState != ROTATION0)
+	{
+		RotationScreen(m_rotationState);
+		::StretchDIBits(hdc, 0, 0, screenXSize, screenYSize, 0, 0,
+		image.DIBHeight, image.DIBWidth, m_pBitmapDataGaro, &bmi, DIB_RGB_COLORS, SRCCOPY);
+	}
+	else
+	{		
+		::StretchDIBits(hdc, 0, 0, screenXSize, screenYSize, 0, 0,
 		image.DIBWidth, image.DIBHeight, m_pBitmapData, &bmi, DIB_RGB_COLORS, SRCCOPY);
+		
+	}
+	
 
 // 	::StretchDIBits(memDC, 0, 0, screenXSize, screenYSize, 0, 0,
 // 		image.DIBWidth, image.DIBHeight, m_pBitmapData, &bmi, DIB_RGB_COLORS, SRCCOPY);
@@ -165,6 +187,35 @@ void CDrawJpg::SetBitmapInfo(void)
 
 }
 
+//가로모드일때 화면을 병경해준다
+void CDrawJpg::RotationScreen(int rotation)
+{
+	memset(m_pBitmapDataGaro, 0, MAXRESOLUTION);	
+		
+ 	for(int col=image.DIBWidth-1; col>=0; col--)
+	{
+		for(int row=0; row<image.DIBHeight; row++)
+		{
+			int srcPos = 0;
+			if(rotation == ROTATION90)
+				srcPos = row * image.DIBWidth * image.DIBChannels + col * image.DIBChannels;
+			else
+				srcPos = ((image.DIBHeight-1-row) * image.DIBWidth) * image.DIBChannels + (image.DIBWidth-1-col) * image.DIBChannels;
+				
+			
+			int desPos = (image.DIBWidth-1-col)*image.DIBHeight*image.DIBChannels + row*image.DIBChannels;
+// 			*(m_pBitmapDataGaro+row+( (image.DIBWidth-1-col)*image.DIBHeight) ) = 
+// 				*(m_pBitmapData+(row*image.DIBWidth)+col);
+			memcpy(m_pBitmapDataGaro+desPos, m_pBitmapData+srcPos, image.DIBChannels);
+		}
+	}	
+
+	BITMAPINFOHEADER& bih = bmi.bmiHeader;
+	bih.biHeight = -(image.DIBWidth);		
+	bih.biWidth = image.DIBHeight;
+}
+
+
 
 void CDrawJpg::InitDrawJpg(HWND screenHandle, int XSize, int YSize)
 {		
@@ -172,3 +223,4 @@ void CDrawJpg::InitDrawJpg(HWND screenHandle, int XSize, int YSize)
 	screenXSize = XSize;
 	screenYSize = YSize;	
 }
+
