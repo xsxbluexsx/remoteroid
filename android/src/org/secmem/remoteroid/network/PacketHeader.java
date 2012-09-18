@@ -39,6 +39,8 @@ public class PacketHeader{
 		public static final int OPTION_START_EXPLORER = 13;
 		public static final int OPTION_SEND_KAKAOTALK = 14;
 		public static final int NOTIFICATION_KAKAOTALK_SEND = 15;
+		public static final int FILEDATA_CANCEL = 16;
+		
 	}
 	
 	/**
