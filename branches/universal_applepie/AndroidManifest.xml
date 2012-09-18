@@ -173,6 +173,10 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="org.secmem.remoteroid.intent.action.REMOTE_CONNECT" />
+                <category android:name="org.secmem.remoteroid.intent.category.UNIVERSAL"/>
+            </intent-filter>
         </activity>
     </application>
 

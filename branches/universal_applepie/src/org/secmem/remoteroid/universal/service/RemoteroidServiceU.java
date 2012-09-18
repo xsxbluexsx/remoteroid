@@ -207,11 +207,17 @@ public class RemoteroidServiceU extends Service {
 				break;
 				
 			case Command.TOUCH_DOWN:
+				inputHandler.touchDown();
+				break;
 				
+			case Command.TOUCH_SETPTR:
+				inputHandler.touchSetPtr(
+						command.getIntExtra(Extra.KEY_TOUCH_X), 
+						command.getIntExtra(Extra.KEY_TOUCH_Y));
 				break;
 				
 			case Command.TOUCH_UP:
-				
+				inputHandler.touchUp();
 				break;
 				
 			case Command.KEY_DOWN:

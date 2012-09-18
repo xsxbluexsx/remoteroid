@@ -73,6 +73,8 @@ public final class RemoteroidIntent {
 	 */
 	public static final String ACTION_DEVICE_REGISTRATION_FAILED = "org.secmem.remoteroid.intent.action.DEVICE_REGISTRATION_FAILED";
 	
+	public static final String CATEGORY_UNIVERSAL = "org.secmem.remoteroid.intent.category.UNIVERSAL";
+	
 	/**
 	 * Key for extra data contains server's ip address.
 	 * @see RemoteroidIntent#ACTION_CONNECTED
