@@ -141,6 +141,9 @@ public class RemoteroidService extends Service
 			telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_NONE);
 			dismissNotification();
 			onScreenTransferStopRequested();
+			if(ScreenStateReceiver.isOrderedBroadcast()){
+				unregisterReceiver(ScreenStateReceiver);
+			}
 			// Do time-consuming (blocks UI thread, causes activity death) task on here
 			new AsyncTask<Void, Void, Void>(){
 
@@ -236,8 +239,11 @@ public class RemoteroidService extends Service
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if(ScreenStateReceiver.isOrderedBroadcast())
+		Log.i("qq","onDestroy()");
+		if(ScreenStateReceiver.isOrderedBroadcast()){
+			Log.i("qq","isOrderedBroadcast()");
 			unregisterReceiver(ScreenStateReceiver);
+		}
 	}
 
 
