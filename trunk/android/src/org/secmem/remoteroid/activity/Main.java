@@ -31,6 +31,7 @@ import org.secmem.remoteroid.service.RemoteroidService;
 import org.secmem.remoteroid.service.RemoteroidService.ServiceState;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -41,6 +42,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -278,6 +280,24 @@ public class Main extends SherlockFragmentActivity implements
 		
 		if(mRemoteroidSvc!=null)
 			unbindService(conn);
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		try {
+			ServiceState state = ServiceState.valueOf(mRemoteroidSvc.getConnectionStatus());
+			switch(state){
+			case IDLE:
+				Log.i("qq","IDLE");
+				ActivityManager am = (ActivityManager)getSystemService(ACTIVITY_SERVICE);
+				am.killBackgroundProcesses(getPackageName());
+				break;
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	@Override
