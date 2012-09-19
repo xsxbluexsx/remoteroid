@@ -48,5 +48,8 @@ private:
 public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	BOOL m_bFlagAllDestroy;
+	afx_msg void OnBnClickedBtnSend();
+	CMyBitmapBtn m_btnSend;
+	afx_msg void OnStnClickedStaticBkg();
 };
 

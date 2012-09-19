@@ -22,7 +22,7 @@
 #include "ResizingDlg.h"
 #include "ResizeControlMgr.h"
 #include "IFileTranceiverListener.h"
-
+#include "KakaoPopupDlg.h"
 
 
 #define DLGHEIGHT		781

@@ -216,6 +216,18 @@
     <None Include="res\connect_btn_hover.bmp">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\kakaboback.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\textbox.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\sendbutton.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\sendbutton_hover.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RemotroidServer.h">
@@ -320,6 +332,15 @@
     <ClInclude Include="IFileTranceiverListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="KakaoPopupDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EditTrans.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyEdit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RemotroidServer.cpp">
@@ -404,6 +425,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MyDeviceMgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KakaoPopupDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EditTrans.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MyEdit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
