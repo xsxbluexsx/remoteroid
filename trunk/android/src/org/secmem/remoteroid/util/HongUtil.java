@@ -44,19 +44,19 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.telephony.TelephonyManager;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.Display;
-import android.view.Surface;
 import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
@@ -539,15 +539,27 @@ public class HongUtil {
 		return  display.getRotation();
 	}
 	
-	public static void setClipBoard(Context context, String msg){
-		ClipboardManager clip = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
-		ClipData data = ClipData.newPlainText("Remoteroid_Clip", msg);
-		clip.setPrimaryClip(data);
+
+	public static void setClipBoard(final Context context, final String msg, Handler handler){
+		
+		
+		Runnable updater = new Runnable() {
+	         public void run() {
+	        	 Log.i("qq","Set ClipBoard");
+	        	 ClipboardManager clip = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
+	     		ClipData data = ClipData.newPlainText("Remoteroid_Clip", msg);
+	     		clip.setPrimaryClip(data);
+	         }
+	             
+	     };
+	     handler.post(updater);
+		
 	}
-	
+
 	public static String getClipData(Context context){
 		ClipboardManager clip = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
 		return clip.getPrimaryClip().getItemAt(0).getText().toString();
 	}
+
 	
 }

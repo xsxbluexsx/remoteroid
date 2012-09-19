@@ -44,6 +44,7 @@ public class PacketHeader{
 		public static final int FILEDATA_CANCEL = 18;
 		public static final int SET_TO_CLIPBOARD = 19;
 		
+		
 	}
 	
 	/**

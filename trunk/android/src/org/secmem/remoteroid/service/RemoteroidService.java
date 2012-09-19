@@ -50,14 +50,16 @@ import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.os.RemoteException;
 import android.telephony.PhoneStateListener;
 import android.telephony.SmsManager;
@@ -79,6 +81,8 @@ public class RemoteroidService extends Service
 	private FrameHandler frameHandler;
 	
 	private String DEBUG_STATE = "debug_state";
+	
+	private Handler handler;
 	
 	private IBinder mBinder = new IRemoteroid.Stub() {
 		
@@ -191,13 +195,11 @@ public class RemoteroidService extends Service
 		mTransmitter.setFrameBufferListener(this);
 		mTransmitter.setAddOptionListener(this);
 		
+		
 		mInputHandler = new InputHandler(this);
 		frameHandler = new FrameHandler(getApplicationContext());
 		
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(Intent.ACTION_SCREEN_OFF);
-		filter.addAction(Intent.ACTION_SCREEN_ON);
-		registerReceiver(ScreenStateReceiver, filter);
+		handler = new Handler();
 	}
 	
 	private PhoneStateListener mPhoneListener = new PhoneStateListener(){
@@ -432,6 +434,11 @@ public class RemoteroidService extends Service
 		
 		sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTED).putExtra("ip", ipAddress));
 		
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(Intent.ACTION_SCREEN_OFF);
+		filter.addAction(Intent.ACTION_SCREEN_ON);
+		registerReceiver(ScreenStateReceiver, filter);
+		
 		showConnectionNotification(ipAddress);
 		mState = ServiceState.CONNECTED;
 	}
@@ -508,4 +515,12 @@ public class RemoteroidService extends Service
 		}
 	};
 
+	@Override
+	public void setClipBoard(final String message) {
+		// TODO Auto-generated method stub
+
+		HongUtil.setClipBoard(getApplicationContext(), message,handler);
+
+	}
+	
 }
