@@ -227,7 +227,7 @@ public class RemoteroidService extends Service
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		if(intent.getExtras()!=null && intent.getParcelableArrayListExtra(SmsReceiver.EXTRA_MSGS)!=null){
+		if(intent != null &&intent.getExtras()!=null && intent.getParcelableArrayListExtra(SmsReceiver.EXTRA_MSGS)!=null){
 			ArrayList<RDSmsMessage> list = intent.getParcelableArrayListExtra(SmsReceiver.EXTRA_MSGS);
 			for(RDSmsMessage msg : list){
 				System.out.println(msg.toString());
@@ -487,7 +487,7 @@ public class RemoteroidService extends Service
 	public void onSendKakaotalkMessage(String msg) {
 		try {
 			
-			HongUtil.UseKakaoLink.sendLinkMessage(getApplicationContext(), "Remoteroid", msg);
+			HongUtil.UseKakaoLink.sendLinkMessage(getApplicationContext(), "", msg);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}

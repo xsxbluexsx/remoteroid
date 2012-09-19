@@ -182,6 +182,11 @@ public class Tranceiver  implements PacketListener{
 		}
 	}
 	
+	public void recvKakaotalkMsg(Packet packet){
+		String str = new String(packet.getPayload(), 0, packet.getHeader().getPayloadLength()).trim();
+		mAddOptionListener.onSendKakaotalkMessage(str);
+	}
+	
 	public void setClipboardText(Packet packet){
 		String str = new String(packet.getPayload(), 0, packet.getHeader().getPayloadLength()).trim();		
 		mAddOptionListener.setClipBoard(str);
@@ -216,10 +221,7 @@ public class Tranceiver  implements PacketListener{
 			mAddOptionListener.onStartFileExplorer();
 			break;
 		case OpCode.OPTION_SEND_KAKAOTALK:
-			String msg = "test";
-			Log.i("qweqwe", "Sdfdsfsd");
-			/** add message packet */
-			mAddOptionListener.onSendKakaotalkMessage(msg);
+			recvKakaotalkMsg(packet);			
 			break;
 		case OpCode.FILETRANSFER_STOP_REQUESTED:
 			fileTransReceiver.transferStopRequested();
