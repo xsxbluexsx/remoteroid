@@ -115,7 +115,6 @@ public class Tranceiver  implements PacketListener{
 					socket = null;
 				}catch(IOException e){
 					e.printStackTrace();
-					Log.i("qweqwe", "disconnect exception");
 				} finally{
 					mServerConnectionListener.onServerDisconnected();
 				}
@@ -134,7 +133,7 @@ public class Tranceiver  implements PacketListener{
 					socket=null;
 			
 				}catch(IOException e){
-					Log.i("qweqwe", "cleanup exception");
+					e.printStackTrace();
 				}
 			}
 		}

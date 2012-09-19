@@ -23,6 +23,7 @@ import org.secmem.remoteroid.R;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -83,10 +84,10 @@ public class ConnectedFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				isDisconnectRequested = true;
+				isDisconnectRequested = false;
 				ivCircuitBoard.setVisibility(View.INVISIBLE);
 				prgDisconnectPrg.setVisibility(View.VISIBLE);
-				tvMessage.setText(R.string.disconnecting);
+//				tvMessage.setText(R.string.disconnecting);
 				mListener.onDisconnectRequested();
 			}
 			
