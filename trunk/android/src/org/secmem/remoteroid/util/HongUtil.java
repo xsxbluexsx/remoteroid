@@ -540,13 +540,13 @@ public class HongUtil {
 	}
 	
 	public static void setClipBoard(Context context, String msg){
-		ClipboardManager clip = (ClipboardManager)context.getSystemService(context.CLIPBOARD_SERVICE);
+		ClipboardManager clip = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
 		ClipData data = ClipData.newPlainText("Remoteroid_Clip", msg);
 		clip.setPrimaryClip(data);
 	}
 	
 	public static String getClipData(Context context){
-		ClipboardManager clip = (ClipboardManager)context.getSystemService(context.CLIPBOARD_SERVICE);
+		ClipboardManager clip = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
 		return clip.getPrimaryClip().getItemAt(0).getText().toString();
 	}
 	
