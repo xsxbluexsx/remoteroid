@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import org.secmem.remoteroid.data.NativeKeyCode;
 import org.secmem.remoteroid.network.PacketHeader.OpCode;
 import org.secmem.remoteroid.service.NotificationReceiverService;
+import org.secmem.remoteroid.util.HongUtil;
 
+import android.content.Context;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -34,8 +36,8 @@ public class Tranceiver  implements PacketListener{
 	private ScreenTransmissionListener mScreenTransListener;
 	private ServerConnectionListener mServerConnectionListener;
 	private AddOptionListener mAddOptionListener;
-
 	
+		
 
 	public Tranceiver(ServerConnectionListener listener){
 		mServerConnectionListener = listener;
@@ -62,6 +64,7 @@ public class Tranceiver  implements PacketListener{
 	public void setAddOptionListener(AddOptionListener listner) {
 		mAddOptionListener = listner;
 	}
+
 	
 	/**
 	 * Connect to specified host.
@@ -178,6 +181,11 @@ public class Tranceiver  implements PacketListener{
 			onInterrupt();
 		}
 	}
+	
+	public void setClipboardText(Packet packet){
+		String str = new String(packet.getPayload(), 0, packet.getHeader().getPayloadLength()).trim();		
+		mAddOptionListener.setClipBoard(str);
+	}
 
 	@Override
 	public void onPacketReceived(Packet packet) {
@@ -222,7 +230,7 @@ public class Tranceiver  implements PacketListener{
 			break;
 			
 		case OpCode.SET_TO_CLIPBOARD:
-			
+			setClipboardText(packet);
 			break;
 		}
 	}

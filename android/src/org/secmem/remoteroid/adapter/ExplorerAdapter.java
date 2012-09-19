@@ -311,7 +311,7 @@ public class ExplorerAdapter extends BaseAdapter{
 					if (dataList.getExpList().get(pos).getType()== ExplorerType.TYPE_FOLDER) {
 						dataList.setPath(dataList.getRealPathName(fileName));
 						ExplorerActivity.fileInfo.clear();
-						LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_wave_scale);
+						LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_wave_not_scale);
 						gridview.setLayoutAnimation(gridAnimation);
 						notifyDataSetChanged();
 						

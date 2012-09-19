@@ -226,6 +226,8 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 						HongUtil.makeToast(ExplorerActivity.this, getString(R.string.is_the_parent_folder));
 					}
 				}
+				LayoutAnimationController gridAnimation2 = AnimationUtils.loadLayoutAnimation(ExplorerActivity.this, R.anim.layout_wave_not_scale);
+				gridview.setLayoutAnimation(gridAnimation2);
 				break;
 			
 			case R.id.explorer_btn_category:	
@@ -456,7 +458,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 			String action = intent.getAction();
 			if(action.equals(RemoteroidIntent.ACTION_FILE_TRANSMISSION_SECCESS))
 			{	
-				LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_wave_scale);
+				LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_wave_not_scale);
 				gridview.setLayoutAnimation(gridAnimation);
 				dataList.setPath(dataList.get_Path());
 				fileInfo.clear();

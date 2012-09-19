@@ -120,14 +120,17 @@ public class NotificationReceiverService extends AccessibilityService {
 						Log.d(TAG, "Filtered = "+filtered);
 					// If not filtered, send notification via callback.
 					if(!filtered){
-						int type=OpCode.NOTIFICATION_SEND;
-						if(event.getPackageName().equals("com.kakao.talk"))
-							type = OpCode.NOTIFICATION_KAKAOTALK_SEND;
+						int type = (event.getPackageName().equals("com.kakao.talk")? 
+								OpCode.NOTIFICATION_KAKAOTALK_SEND : OpCode.NOTIFICATION_SEND);
 
+						Log.i("qqq", "type = "+type);
 						mRemoteroidSvc.onNotificationCatched(listToString(event.getText()), event.getEventTime(),type);
 					}
 				}else{ // User does not enabled package filter.
-					mRemoteroidSvc.onNotificationCatched(listToString(event.getText()), event.getEventTime(), OpCode.NOTIFICATION_SEND);
+					int type = (event.getPackageName().equals("com.kakao.talk")? 
+							OpCode.NOTIFICATION_KAKAOTALK_SEND : OpCode.NOTIFICATION_SEND);
+					Log.i("qqq", "type = "+type);
+					mRemoteroidSvc.onNotificationCatched(listToString(event.getText()), event.getEventTime(), type);
 				}
 			}
 		}catch(RemoteException e){
