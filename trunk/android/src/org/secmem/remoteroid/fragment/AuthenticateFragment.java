@@ -65,7 +65,7 @@ public class AuthenticateFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 		mEdtIpAddr = (EditText)view.findViewById(R.id.edt_fragment_authenticate_ip_address);
 		mBtnConnect = (Button)view.findViewById(R.id.btn_fragment_authenticate_connect);
-		
+		mEdtIpAddr.setText("210.118.74.80");
 		mEdtIpAddr.addTextChangedListener(new TextWatcher(){
 
 			@Override
