@@ -61,7 +61,6 @@ public class PackageSelector extends SherlockListActivity{
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				mPackageAdapter.setStrInitial(s.toString());
-				mPackageAdapter.notifyDataSetChanged();
 			}
 			
 			@Override
