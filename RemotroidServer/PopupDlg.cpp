@@ -32,6 +32,7 @@ void CPopupDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_BTN_CLOSE, m_CloseBtn);
 	DDX_Text(pDX, IDC_STATIC_TEXT, m_strNoti);
+	DDX_Control(pDX, IDC_BTN_SEND, m_btnSend);
 }
 
 
@@ -44,6 +45,8 @@ BEGIN_MESSAGE_MAP(CPopupDlg, CDialogEx)
 	ON_MESSAGE(WM_CTLCOLORSTATIC, OnCtlColorStatic)
 	ON_MESSAGE(WM_MOVEPOPDLG, OnMovePopDlg)
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BTN_SEND, &CPopupDlg::OnBnClickedBtnSend)
+	ON_STN_CLICKED(IDC_STATIC_BKG, &CPopupDlg::OnStnClickedStaticBkg)
 END_MESSAGE_MAP()
 
 
@@ -80,6 +83,14 @@ BOOL CPopupDlg::OnInitDialog()
 	// TODO:  Add extra initialization here
 	m_CloseBtn.LoadBitmaps(IDB_BITMAP_CLOSEBTN);
 	m_CloseBtn.SetHoverBitmapID(IDB_BITMAP_CLOSEHOVER);
+	m_CloseBtn.SetGaroBitmapID(IDB_BITMAP_CLOSEBTN, IDB_BITMAP_CLOSEHOVER);
+
+
+	m_btnSend.SetWindowPos(&CWnd::wndTopMost, 0, 0, 32, 20, SWP_NOMOVE);
+	m_btnSend.LoadBitmaps(IDB_BITMAP_SENDBTN);
+	m_btnSend.SetHoverBitmapID(IDB_BITMAP_SENDBTN_HOVER);
+	m_btnSend.SetGaroBitmapID(IDB_BITMAP_SENDBTN, IDB_BITMAP_SENDBTN_HOVER);
+
 
 	//배경으로 쓰이는 비트맵 크기 구하기
 	CBitmap bgImage;
@@ -188,4 +199,17 @@ void CPopupDlg::OnTimer(UINT_PTR nIDEvent)
 		KillTimer(0);
 	}
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CPopupDlg::OnBnClickedBtnSend()
+{
+	// TODO: Add your control notification handler code here
+
+}
+
+
+void CPopupDlg::OnStnClickedStaticBkg()
+{
+	// TODO: Add your control notification handler code here
 }

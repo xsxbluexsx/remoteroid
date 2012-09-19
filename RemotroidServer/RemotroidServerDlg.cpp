@@ -1064,7 +1064,7 @@ LRESULT CRemotroidServerDlg::OnCreatePopupDlg(WPARAM wParam, LPARAM lParam)
 
 	pDlg->Create(IDD_POPUPDLG, this);
 	pDlg->ShowWindow(SW_HIDE);		
-	pDlg->SetLayeredWindowAttributes(0, 200, LWA_ALPHA);
+	pDlg->SetLayeredWindowAttributes(0, 220, LWA_ALPHA);
 	pDlg->AnimateWindow(300, AW_SLIDE | AW_VER_NEGATIVE);		
 	
 	return LRESULT();
@@ -1535,8 +1535,16 @@ UINT CRemotroidServerDlg::StartingWaitingAni(LPVOID pParam)
 void CRemotroidServerDlg::OnBnClickedBtnConnect()
 {
 	// TODO: Add your control notification handler code here
+
+	/*
 	UpdateData(TRUE);
 	pConnectThread = AfxBeginThread(StartingWaitingAni, this);
+	*/
+
+	CKakaoPopupDlg *pDlg = new CKakaoPopupDlg(GetDesktopWindow());
+	pDlg->m_strRecvEdit = _T("안녕ㅁㄴㄻㄴㄻㄶㄹㄴ먼ㅁ와ㅓㄹㄴ머라미너라ㅣㅁ너라ㅣㅁ너ㅏㅣㅁㄴㄹ");
+	pDlg->Create(IDD_KAKAODLG, GetDesktopWindow());
+	pDlg->ShowWindow(SW_SHOW);
 }
 
 
