@@ -9,6 +9,7 @@ import org.secmem.remoteroid.util.PackageSoundSearcher;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,8 @@ public class PackageAdapter extends BaseAdapter{
 	
 	private String strInitial="";
 	private String afterStr="";
+	
+	private boolean isSync = false;
 
 	public PackageAdapter(Context context){
 		mContext = context;
@@ -53,12 +56,7 @@ public class PackageAdapter extends BaseAdapter{
 			return mPackageList.size();
 		}
 		else{
-			if(strInitial.equals(afterStr)){
-				return sPackageList.size();
-			}
-			else{
-				return searchSoundInitial(this.strInitial);
-			}
+			return sPackageList.size();
 		}
 	}
 
@@ -118,6 +116,27 @@ public class PackageAdapter extends BaseAdapter{
 	}
 	public void setStrInitial(String strInitial) {
 		this.strInitial = strInitial;
+		
+		if(!isSync){
+			new AsyncTask<String, Void, Integer>(){
+	
+				@Override
+				protected Integer doInBackground(String... params) {
+					searchSoundInitial(params[0]);
+					return 0;
+				}
+				
+				@Override
+				protected void onPostExecute(Integer result) {
+					// TODO Auto-generated method stub
+					super.onPostExecute(result);
+					if(!isSync)
+						notifyDataSetChanged();
+				}
+				
+			}.execute(strInitial);
+		}
+		
 	}
 	public String getAfterStr() {
 		return afterStr;
@@ -126,20 +145,25 @@ public class PackageAdapter extends BaseAdapter{
 		this.afterStr = afterStr;
 	}
 	
-	public int searchSoundInitial(String msg){
-		int count = 0 ;
+	public synchronized void searchSoundInitial(String msg){
+		
+		ArrayList<PackageInfo> info = new ArrayList<PackageInfo>();
+		
+		isSync = true;
 		setAfterStr(msg);
-		sPackageList.clear();
 		for(int i = 0 ; i < mPackageList.size() ; i++){
-			
+			if(!msg.equals(this.strInitial)){
+				searchSoundInitial(this.strInitial);
+				return;
+			}
 			if(PackageSoundSearcher.matchString((mPackageList.get(i).applicationInfo.loadLabel(mPkgManager)).toString(), msg)){
-				sPackageList.add(mPackageList.get(i));
-				count++;
+				info.add(mPackageList.get(i));
 			}
 			else{
 			}
 		}
-		return count;
+		sPackageList = info;
+		isSync = false;
 	}
 
 }
