@@ -19,8 +19,7 @@
 
 #include "include/DisplayInfo.h"
 
-DisplayInfo::DisplayInfo(){
-	initialized = false;
+DisplayInfo::DisplayInfo() : initialized(true){
 
 }
 

@@ -12,7 +12,8 @@ extern "C" {
  * Method:    getFrameBuffer
  * Signature: ([BI)I
  */
-JNIEXPORT jint JNICALL Java_org_secmem_remoteroid_natives_FrameHandler_getFrameBuffer  (JNIEnv *, jobject, jbyteArray, jint);
+JNIEXPORT jint JNICALL Java_org_secmem_remoteroid_natives_FrameHandler_getFrameBuffer
+  (JNIEnv *, jobject, jbyteArray, jint);
 
 #ifdef __cplusplus
 }
