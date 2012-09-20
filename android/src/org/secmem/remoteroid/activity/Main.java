@@ -132,7 +132,7 @@ public class Main extends SherlockFragmentActivity implements
 		.hide(mAuthFragment)
 		.hide(mConnectingFragment)
 		.hide(mConnectedFragment)
-		.hide(mDriverFragment).commit();
+		.hide(mDriverFragment).commitAllowingStateLoss();
     }
 	    
    public void showFragment(Fragment fragment){
@@ -143,7 +143,7 @@ public class Main extends SherlockFragmentActivity implements
     			.show(mAuthFragment)
     			.hide(mConnectingFragment)
     			.hide(mConnectedFragment)
-    			.hide(mDriverFragment).commit();
+    			.hide(mDriverFragment).commitAllowingStateLoss();
     		
     	}else if(mConnectingFragment.equals(fragment)){
     		lastFrag = CONNECTING_FRAG;
@@ -151,7 +151,7 @@ public class Main extends SherlockFragmentActivity implements
 				.hide(mAuthFragment)
 				.show(mConnectingFragment)
 				.hide(mConnectedFragment)
-				.hide(mDriverFragment).commit();
+				.hide(mDriverFragment).commitAllowingStateLoss();
     		
     	}else if(mConnectedFragment.equals(fragment)){
     		lastFrag = CONNECTED_FRAG;
@@ -159,7 +159,7 @@ public class Main extends SherlockFragmentActivity implements
 				.hide(mAuthFragment)
 				.hide(mConnectingFragment)
 				.show(mConnectedFragment)
-				.hide(mDriverFragment).commit();
+				.hide(mDriverFragment).commitAllowingStateLoss();
     		 
     	}else{
     		lastFrag = DRIVER_FRAG;
@@ -167,7 +167,7 @@ public class Main extends SherlockFragmentActivity implements
 				.hide(mAuthFragment)
 				.hide(mConnectingFragment)
 				.hide(mConnectedFragment)
-				.show(mDriverFragment).commit();
+				.show(mDriverFragment).commitAllowingStateLoss();
     		
     	}
     }
