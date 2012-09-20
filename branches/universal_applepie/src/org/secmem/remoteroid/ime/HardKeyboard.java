@@ -25,8 +25,10 @@ import java.util.Locale;
 
 import org.secmem.remoteroid.R;
 
+import android.annotation.SuppressLint;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
+import android.os.Build;
 import android.text.method.MetaKeyKeyListener;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
@@ -106,7 +108,7 @@ public class HardKeyboard extends InputMethodService {
         
         // Clear current composing text and candidates.
         mComposing.setLength(0);
-        
+        mHangulAutomata.reset();
     }
     
     /**
@@ -169,7 +171,8 @@ public class HardKeyboard extends InputMethodService {
      * We get first crack at them, and can either resume them or let them
      * continue to the app.
      */
-    @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+    @SuppressLint("NewApi")
+	@Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
             	if(this.isInputViewShown()){
@@ -179,8 +182,26 @@ public class HardKeyboard extends InputMethodService {
                 break;
                 
             case KeyEvent.KEYCODE_CAPS_LOCK:
-            	isCapsLockEnabled = event.isCapsLockOn();
+            	if(Build.VERSION.SDK_INT <=9){
+            		if((event.getMetaState()&KeyEvent.META_CAPS_LOCK_ON)!=0){
+            			isCapsLockEnabled = true;
+            		}else{
+            			isCapsLockEnabled = false;
+            		}
+            	}else{
+            		isCapsLockEnabled = event.isCapsLockOn();
+            	}
             	break;
+            	
+            case KeyEvent.KEYCODE_DPAD_CENTER:
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+            case KeyEvent.KEYCODE_DPAD_UP:
+            	if(isHangulMode){
+            		getCurrentInputConnection().finishComposingText();
+            	}
+            	return false;
                 
             case KeyEvent.KEYCODE_DEL:
                 // Special handling of the delete key: if we currently are
