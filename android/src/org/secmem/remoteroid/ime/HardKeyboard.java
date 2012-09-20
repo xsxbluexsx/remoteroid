@@ -26,6 +26,8 @@ import java.util.Locale;
 import org.secmem.remoteroid.R;
 
 import android.annotation.SuppressLint;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.os.Build;
@@ -128,6 +130,9 @@ public class HardKeyboard extends InputMethodService {
             InputConnection ic = getCurrentInputConnection();
             if (ic != null) {
                 ic.finishComposingText();
+                if(isHangulMode){
+                	mHangulAutomata.reset();
+                }
             }
         }
     }
@@ -171,7 +176,8 @@ public class HardKeyboard extends InputMethodService {
      * We get first crack at them, and can either resume them or let them
      * continue to the app.
      */
-    @SuppressLint("NewApi")
+    @SuppressWarnings("deprecation")
+	@SuppressLint("NewApi")
 	@Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
@@ -183,7 +189,7 @@ public class HardKeyboard extends InputMethodService {
                 
             case KeyEvent.KEYCODE_CAPS_LOCK:
             	if(Build.VERSION.SDK_INT <=9){
-            		if((event.getMetaState()&KeyEvent.META_CAPS_LOCK_ON)!=0){
+            		if((event.getMetaState()&KeyEvent.META_CAPS_LOCK_ON)==KeyEvent.META_CAPS_LOCK_ON){
             			isCapsLockEnabled = true;
             		}else{
             			isCapsLockEnabled = false;
@@ -229,6 +235,24 @@ public class HardKeyboard extends InputMethodService {
                         switchLanguage();
                         return true; // Consume this event
                     }
+                    
+                    if(keyCode==KeyEvent.KEYCODE_V &&
+                    		((event.getMetaState()&KeyEvent.META_CTRL_LEFT_ON)==KeyEvent.META_CTRL_LEFT_ON)){
+                    	if(Build.VERSION.SDK_INT>=11){
+	                    	ClipboardManager manager = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
+	                    	
+	                    	if(manager.getPrimaryClip().getItemCount()>0){
+	                    		onText(manager.getPrimaryClip().getItemAt(0).getText());
+	                    	}
+                    	}else{
+							android.text.ClipboardManager manager = (android.text.ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
+                    		if(manager.hasText()){
+                    			onText(manager.getText());
+                    		}
+                    	}
+                    	return true;
+                    }
+                    		
                     
                     if (translateKeyDown(keyCode, event)) {
                         return true;
