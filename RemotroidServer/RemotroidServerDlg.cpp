@@ -62,6 +62,8 @@ CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
 	, m_GaroSeroState(0)
 	, pConnectThread(NULL)
 	, m_fileTranceiverState(NORMAL)
+	, m_isKakaoTalk(FALSE)
+	, m_isScreenOn(FALSE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -527,9 +529,16 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 				//디바이스 정보를 수신하면 화면 전송을 요청한다
 				pClient->SendPacket(OP_REQSENDSCREEN, NULL, 0);
 				break;
+			case OP_KAKAOTALKMSG:
 			case OP_SENDNOTIFICATION:
 				if(iPacketSize == HEADERSIZE)
 					break;
+
+				if(iOPCode == OP_KAKAOTALKMSG)
+					pDlg->m_isKakaoTalk = TRUE;
+				else
+					pDlg->m_isKakaoTalk = FALSE;
+
 				pDlg->SendMessage(WM_CREATEPOPUPDLG, iPacketSize, (LPARAM)data);
 				break;
 			case OP_COMPLETEFILETRANSFER:
@@ -806,6 +815,7 @@ BOOL CRemotroidServerDlg::PreTranslateMessage(MSG* pMsg)
            {
               // Paste 함수 구현
 			   SendClipboardText();
+			   Sleep(100);
            }           
 		}
 		
@@ -821,7 +831,7 @@ void CRemotroidServerDlg::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	// TODO: Add your message handler code here and/or call default
 	CString str = _T("");
 	str.Format(_T("%c"), nChar);
-	MessageBox(str);
+	//MessageBox(str);
  	CDialogEx::OnChar(nChar, nRepCnt, nFlags);
 }
 
@@ -1052,8 +1062,10 @@ LRESULT CRemotroidServerDlg::OnCreatePopupDlg(WPARAM wParam, LPARAM lParam)
 	memset(notiText, 0, payloadSize*2);
 	CUtil::UtfToUni(notiText, data);
 
-	CPopupDlg* pDlg = new CPopupDlg;
+	CPopupDlg* pDlg = new CPopupDlg(this);
 	pDlg->m_strNoti.Format(_T("%s"), notiText);
+	pDlg->pClient = m_pClient;
+	pDlg->m_isKakao = m_isKakaoTalk;
 	
 	delete [] notiText;
 	CPopupDlg::numOfDlg++;	
@@ -1062,8 +1074,10 @@ LRESULT CRemotroidServerDlg::OnCreatePopupDlg(WPARAM wParam, LPARAM lParam)
 	//알림 소리 재생
 	PlaySound((LPCTSTR)MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_ASYNC|SND_RESOURCE);
 
+
+	
 	pDlg->Create(IDD_POPUPDLG, this);
-	pDlg->ShowWindow(SW_HIDE);		
+	pDlg->ShowWindow(SW_HIDE);
 	pDlg->SetLayeredWindowAttributes(0, 220, LWA_ALPHA);
 	pDlg->AnimateWindow(300, AW_SLIDE | AW_VER_NEGATIVE);		
 	
@@ -1498,6 +1512,7 @@ UINT CRemotroidServerDlg::RequireConnectClient(LPVOID pParam)
 
 	delete pResponse;
 
+	TRACE(pDlg->m_strMyIp);
 	pResponse = CWeb::RequestConnection(pDeviceInfo, pAccount, pDlg->m_strMyIp);
 	
 	if(!CWeb::GetErrorMsg(pResponse))
@@ -1536,15 +1551,9 @@ void CRemotroidServerDlg::OnBnClickedBtnConnect()
 {
 	// TODO: Add your control notification handler code here
 
-	/*
+	
 	UpdateData(TRUE);
-	pConnectThread = AfxBeginThread(StartingWaitingAni, this);
-	*/
-
-	CKakaoPopupDlg *pDlg = new CKakaoPopupDlg(GetDesktopWindow());
-	pDlg->m_strRecvEdit = _T("안녕ㅁㄴㄻㄴㄻㄶㄹㄴ먼ㅁ와ㅓㄹㄴ머라미너라ㅣㅁ너라ㅣㅁ너ㅏㅣㅁㄴㄹ");
-	pDlg->Create(IDD_KAKAODLG, GetDesktopWindow());
-	pDlg->ShowWindow(SW_SHOW);
+	pConnectThread = AfxBeginThread(StartingWaitingAni, this);	
 }
 
 
@@ -1688,4 +1697,17 @@ void CRemotroidServerDlg::SendClipboardText(void)
 
 	m_pClient->SendPacket(OP_SENDCLIPBOARDTEXT, clipboardText, len);
 	delete clipboardText;
+}
+
+
+void CRemotroidServerDlg::SetScreenState(BOOL isScreenOn)
+{	
+	if(isScreenOn)
+	{
+		if(m_isScreenOn)
+			return;
+	}
+	else
+	{
+	}
 }
