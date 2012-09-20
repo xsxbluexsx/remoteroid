@@ -264,5 +264,10 @@ public:
 	HCURSOR fileTransferCursor;
 	
 	void SendClipboardText(void);
+private:
+	BOOL m_isKakaoTalk;
+	BOOL m_isScreenOn;
+public:
+	void SetScreenState(BOOL isScreenOn);
 };
 

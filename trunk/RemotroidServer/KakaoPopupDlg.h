@@ -55,4 +55,5 @@ public:
 
 	LRESULT OnInputEdit(WPARAM wParam, LPARAM lParam);
 	CMyClient *pClient;
+	
 };

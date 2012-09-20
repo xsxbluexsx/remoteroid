@@ -19,6 +19,8 @@ CPopupDlg::CPopupDlg(CWnd* pParent /*=NULL*/)
 	, m_strNoti(_T(""))	
 	, m_dlgHeight(0)
 	, m_bFlagAllDestroy(FALSE)
+	, m_isKakao(FALSE)
+	, pClient(NULL)
 {
 
 }
@@ -46,7 +48,7 @@ BEGIN_MESSAGE_MAP(CPopupDlg, CDialogEx)
 	ON_MESSAGE(WM_MOVEPOPDLG, OnMovePopDlg)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BTN_SEND, &CPopupDlg::OnBnClickedBtnSend)
-	ON_STN_CLICKED(IDC_STATIC_BKG, &CPopupDlg::OnStnClickedStaticBkg)
+	
 END_MESSAGE_MAP()
 
 
@@ -90,6 +92,10 @@ BOOL CPopupDlg::OnInitDialog()
 	m_btnSend.LoadBitmaps(IDB_BITMAP_SENDBTN);
 	m_btnSend.SetHoverBitmapID(IDB_BITMAP_SENDBTN_HOVER);
 	m_btnSend.SetGaroBitmapID(IDB_BITMAP_SENDBTN, IDB_BITMAP_SENDBTN_HOVER);
+
+	//카카오톡 메시지만 답장 버튼 사용
+	if(!m_isKakao)
+		m_btnSend.ShowWindow(SW_HIDE);
 
 
 	//배경으로 쓰이는 비트맵 크기 구하기
@@ -201,15 +207,23 @@ void CPopupDlg::OnTimer(UINT_PTR nIDEvent)
 	CDialogEx::OnTimer(nIDEvent);
 }
 
-
+#include "KakaoPopupDlg.h"
 void CPopupDlg::OnBnClickedBtnSend()
 {
 	// TODO: Add your control notification handler code here
+	CKakaoPopupDlg *pDlg = new CKakaoPopupDlg(GetParent());
+	pDlg->m_strRecvEdit = m_strNoti;
+	pDlg->pClient = pClient;
+	pDlg->Create(IDD_KAKAODLG, GetParent());
+	pDlg->ShowWindow(SW_SHOW);
 
+	DestroyWindow();
 }
 
 
-void CPopupDlg::OnStnClickedStaticBkg()
+
+
+void CPopupDlg::SendBtnEnable(BOOL bCond)
 {
-	// TODO: Add your control notification handler code here
+	m_btnSend.EnableWindow(bCond);
 }

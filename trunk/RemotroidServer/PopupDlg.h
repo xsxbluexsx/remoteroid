@@ -2,6 +2,7 @@
 #include "afxwin.h"
 #include "MyBitmapBtn.h"
 #include "resource.h"
+#include "MyClient.h"
 
 // CPopupDlg dialog
 
@@ -50,6 +51,9 @@ public:
 	BOOL m_bFlagAllDestroy;
 	afx_msg void OnBnClickedBtnSend();
 	CMyBitmapBtn m_btnSend;
-	afx_msg void OnStnClickedStaticBkg();
+	
+	void SendBtnEnable(BOOL bCond);
+	BOOL m_isKakao;
+	CMyClient *pClient;
 };
 

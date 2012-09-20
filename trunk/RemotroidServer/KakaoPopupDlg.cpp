@@ -16,6 +16,7 @@ CKakaoPopupDlg::CKakaoPopupDlg(CWnd* pParent /*=NULL*/)
 	, pStream(NULL)
 	, pImagePNG(NULL)
 	, pClient(NULL)
+	
 {
 	m_TextBoxSize.cx = 0;
 	m_TextBoxSize.cy = 0;
@@ -99,11 +100,17 @@ void CKakaoPopupDlg::PostNcDestroy()
 void CKakaoPopupDlg::OnBnClickedButton1()
 {
 	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+	char *utf = CUtil::UniToUtfEx(m_strSendText);
+
 	if (pClient != NULL)
 	{
-		
+		pClient->SendPacket(OP_KAKAOTALKREPLY, utf, strlen(utf)); 
 	}
+	delete utf;
 
+	GetParent()->PostMessage(WM_MYDBLCLKTRAY, 0, 0);
+	DestroyWindow();
 }
 
 
