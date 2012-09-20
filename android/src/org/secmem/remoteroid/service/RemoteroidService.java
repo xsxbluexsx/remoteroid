@@ -142,6 +142,7 @@ public class RemoteroidService extends Service
 
 		@Override
 		public void disconnect() throws RemoteException {
+			
 			TelephonyManager telManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 			telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_NONE);
 			dismissNotification();
@@ -153,7 +154,7 @@ public class RemoteroidService extends Service
 			new AsyncTask<Void, Void, Void>(){
 
 				@Override
-				protected Void doInBackground(Void... params) {
+				protected Void doInBackground(Void... params) {					
 					mInputHandler.close();
 					mTransmitter.disconnect();
 					Log.i(DEBUG_STATE,"disconnect()");
@@ -470,6 +471,15 @@ public class RemoteroidService extends Service
 		//onScreenTransferStopRequested();
 		sendBroadcast(new Intent(RemoteroidIntent.ACTION_INTERRUPTED));
 		dismissNotification();
+		
+		new AsyncTask<Void, Void, Void>(){
+			@Override
+			protected Void doInBackground(Void... params) {				
+				mInputHandler.close();				
+				return null;
+			}
+
+		}.execute();
 	}
 
 	@Override
@@ -517,12 +527,11 @@ public class RemoteroidService extends Service
 		
 			if(intent.getAction().equals(SCREEN_ON)){
 				Log.i(DEBUG_SCREEN, "SCREEN_ON");
-//				if(!isTransmission)
-//					onScreenTransferRequested();
+				mTransmitter.sendScreenOnOffState(true);
 			}
 			else if(intent.getAction().equals(SCREEN_OFF)){
 				Log.i(DEBUG_SCREEN, "SCREEN_OFF");
-//				onScreenTransferStopRequested();
+				mTransmitter.sendScreenOnOffState(false);
 			}
 			
 		}
