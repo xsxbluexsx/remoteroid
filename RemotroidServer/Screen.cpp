@@ -22,6 +22,7 @@ CScreen::CScreen()
 , m_strMyIp(_T(""))
 , m_isConnect(FALSE)
 , m_rotationState(0)
+, m_isScreenON(FALSE)
 {
 	m_bkgImg.LoadFromResource(AfxGetInstanceHandle(), IDB_BITMAP_WAITING);		
 	ZeroMemory(&lf, sizeof(lf));
@@ -31,10 +32,13 @@ CScreen::CScreen()
 	wsprintf(lf.lfFaceName, _T("HY견고딕"));
 	
 	newFont.CreateFontIndirect(&lf);
+
+	m_BlackBrush.CreateStockObject(BLACK_BRUSH);
 }
 
 CScreen::~CScreen()
 {	
+	m_BlackBrush.DeleteObject();
 	newFont.DeleteObject();	
 }
 
@@ -127,6 +131,10 @@ LRESULT CScreen::OnRecvJpgData(WPARAM wParam, LPARAM lParam)
 
 void CScreen::RecvJpgData(char * data, int iPacketSize)
 {
+	//화면이 꺼져 있다면 jpg 수신하지 않는다
+	if(m_isScreenON == FALSE)
+		return;
+
 	drawJpg.RecvJpgData(data, iPacketSize);
 }
 
@@ -284,37 +292,43 @@ void CScreen::OnPaint()
 	CPaintDC dc(this); // device context for painting
 	// TODO: Add your message handler code here
 	// Do not call CStatic::OnPaint() for painting messages
-	
-	
-	
-	if(m_isConnect)
-		return;
-	/*
-	CDC *imagePDC = CDC::FromHandle(m_bkgImg.GetDC());
 		
-	CFont *pOldFont = imagePDC->SelectObject(&newFont);
+					//접속중인데 화면이 꺼져있다면
+	if(m_isConnect && !m_isScreenON)
+	{
+			CRect rect;
+			GetClientRect(&rect);
+			dc.FillRect(&rect, &m_BlackBrush);
+	}
+	else if(!m_isConnect)			//접속 대기상태라면
+	{
+		/*
+		CDC *imagePDC = CDC::FromHandle(m_bkgImg.GetDC());
 
-	imagePDC->SetTextColor(RGB(255,255,255));
-	imagePDC->SetBkMode(TRANSPARENT);
-	imagePDC->TextOut(40,250, m_strMyIp);
+		CFont *pOldFont = imagePDC->SelectObject(&newFont);
 
-	imagePDC->SelectObject(pOldFont);
-	
-	//m_bkgImg.ReleaseDC();
+		imagePDC->SetTextColor(RGB(255,255,255));
+		imagePDC->SetBkMode(TRANSPARENT);
+		imagePDC->TextOut(40,250, m_strMyIp);
 
-	*/
-	CRect rt;
-	GetClientRect(&rt);
-		
-	dc.SetStretchBltMode(HALFTONE);
+		imagePDC->SelectObject(pOldFont);
 
-	ExcludePaintControl(dc);
+		//m_bkgImg.ReleaseDC();
 
-	m_bkgImg.StretchBlt(dc.m_hDC, rt);
+		*/
+		CRect rt;
+		GetClientRect(&rt);
+
+		dc.SetStretchBltMode(HALFTONE);
+
+		ExcludePaintControl(dc);
+
+		m_bkgImg.StretchBlt(dc.m_hDC, rt);
 
 
-	//ReleaseDC(imagePDC);
-	//m_bkgImg.ReleaseDC();	
+		//ReleaseDC(imagePDC);
+		//m_bkgImg.ReleaseDC();	
+	}
 }
 
 
@@ -349,7 +363,7 @@ void CScreen::EnableAnimation(BOOL cond)
 
 void CScreen::SetDisconnect()
 {
-	m_isConnect = FALSE;	
+	m_isConnect = FALSE;		
 	RedrawWindow();
 }
 
@@ -419,4 +433,11 @@ void CScreen::TurnGaroSero(int rotation)
 {
 	drawJpg.m_rotationState = rotation;	
 	m_rotationState = rotation;
+}
+
+
+void CScreen::SetScreenState(BOOL isScreenOn)
+{
+	m_isScreenON = isScreenOn;
+	RedrawWindow();
 }

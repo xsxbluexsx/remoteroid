@@ -87,6 +87,9 @@ public:
 	void EnableAnimation(BOOL cond);
 	void TurnGaroSero(int garosero);
 	int m_rotationState;
+	BOOL m_isScreenON;
+	void SetScreenState(BOOL isScreenOn);
+	CBrush m_BlackBrush;
 };
 
 
