@@ -318,25 +318,6 @@ public class Main extends SherlockFragmentActivity implements
 		onConnectRequested(serverIp);
 	}
 
-	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-		System.out.println("onNewIntent()");
-		// Typically this method is called when remote-connect message has arrived
-		// while user already started Remoteroid application.
-		// Turn screen on
-		Window window = this.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-        window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-		
-        // Remote connected requested?
-    
-		String serverIp = intent.getStringExtra(RemoteroidIntent.EXTRA_IP_ADDESS);
-		
-		System.out.println("server="+serverIp);
-    	
-    
-	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
