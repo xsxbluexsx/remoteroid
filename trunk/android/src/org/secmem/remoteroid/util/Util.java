@@ -114,6 +114,8 @@ public class Util {
 		private static final String KEY_DEVICE_NAME = "device_nickname";
 		
 		private static final String KEY_SERVER_TYPE = "server_type";
+		public static final String SERVER_WINDOWS = "windows";
+		public static final String SERVER_UNIVERSAL = "universal";
 		
 		public static void setUserAccountEnabled(Context context, boolean enabled){
 			SharedPreferences.Editor editor = getPrefEditor(context);
