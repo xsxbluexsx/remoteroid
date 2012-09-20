@@ -54,6 +54,8 @@ import com.actionbarsherlock.view.MenuItem;
 
 public class Main extends SherlockFragmentActivity implements
 		ConnectionStateListener {
+	
+	private static final String TAG = "Main";
 
 	// Fragments should be in static
 	private static Fragment mAuthFragment;
@@ -314,8 +316,15 @@ public class Main extends SherlockFragmentActivity implements
         // Remote connected requested?
     
 		String serverIp = intent.getStringExtra(RemoteroidIntent.EXTRA_IP_ADDESS);
-		
-		onConnectRequested(serverIp);
+		try{
+			if(mRemoteroidSvc!=null && mRemoteroidSvc.getConnectionStatus().equals(ServiceState.IDLE)){
+				onConnectRequested(serverIp);
+			}else{
+				Log.e(TAG, "Client already connected to server!");
+			}
+		}catch(RemoteException e){
+			e.printStackTrace();
+		}
 	}
 
 
