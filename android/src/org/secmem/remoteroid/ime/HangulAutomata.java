@@ -3,8 +3,7 @@
  * Original release of SoftKeyboard including 
  * Hangul automata can be found in here : http://www.androidpub.com/14256
  * 
- * Applied bugfix by Taeho Kim :
- * - 'ï¿½ï¿½ï¿½ï¿½è«?¿½ë¬?¿½?°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿??¾ë?ï¿?ï¿½ï¿½ï¿?
+ * Applied bugfix by Taeho Kim
  */
 
 package org.secmem.remoteroid.ime;

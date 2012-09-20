@@ -191,6 +191,13 @@ public class Main extends SherlockFragmentActivity implements
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
+		// Typically this method is called when remote-connect message has arrived
+		// while user already started Remoteroid application.
+		// Turn screen on
+		Window window = this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+        window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
@@ -300,9 +307,15 @@ public class Main extends SherlockFragmentActivity implements
 	}
 	
 	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		outState.putInt("lastFrag", lastFrag);
-//		super.onSaveInstanceState(outState);
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+
+		
+        // Remote connected requested?
+    
+		String serverIp = intent.getStringExtra(RemoteroidIntent.EXTRA_IP_ADDESS);
+		
+		onConnectRequested(serverIp);
 	}
 
 	@Override
