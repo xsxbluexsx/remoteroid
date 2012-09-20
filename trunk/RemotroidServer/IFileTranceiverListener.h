@@ -5,7 +5,7 @@
 //파일 송수신 상태
 typedef enum FILETRANCEIVERSTATE
 {
-	NORMAL, SENDING, RECEIVEING
+	NORMAL, SENDING, RECEIVEING, READYRECV
 };
 
 interface IFileTranceiverListener

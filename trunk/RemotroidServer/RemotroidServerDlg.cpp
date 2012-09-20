@@ -64,6 +64,7 @@ CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
 	, m_fileTranceiverState(NORMAL)
 	, m_isKakaoTalk(FALSE)
 	, m_lastScreenState(FALSE)
+	, m_isLbuttonDown(FALSE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -204,6 +205,10 @@ BOOL CRemotroidServerDlg::OnInitDialog()
 		
 	//버튼 및 스크린 위치 세팅
 	SetControlPos();
+
+
+	//이메일 에디트 히스토리 세팅
+	InitEditHistory();
 
 /*
 	m_UDPServerSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -889,9 +894,14 @@ ENDSEARCH:
 //안드로이드에서 부터 파일 수신 받을 준비
 LRESULT CRemotroidServerDlg::OnReadyRecvFile(WPARAM wParam, LPARAM lParam)
 {
+	//안드로이드에서 롱클릭 했을 경우 방지
+	if(screen.m_isLbuttonDown == FALSE)
+		return 0;
+
 	//파일이 송수신 중일 경우에 막음
 	if(m_fileTranceiverState != NORMAL)
 		return 0;
+
 
 	m_fileTranceiverState = RECEIVEING;
 	
@@ -970,11 +980,13 @@ ExitDrag:
 void CRemotroidServerDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
+	m_isLbuttonDown = FALSE;
 	
 
 	//수신 받을 파일을 드래그 한 후 드롭일 경우에 저장할
-	if(m_fileTranceiverState == RECEIVEING)
+	if(m_fileTranceiverState == RECEIVEING && !m_bResizing)
 	{
+		
 		GetStoreFilePath();
 //		SystemParametersInfo(SPI_SETCURSORS, 0, NULL, 0);
 		ReleaseCapture();		
@@ -1260,7 +1272,7 @@ void CRemotroidServerDlg::OnMoving(UINT fwSide, LPRECT pRect)
 
 void CRemotroidServerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	// TODO: Add your message handler code here and/or call default
+	// TODO: Add your message handler code here and/or call default	
 	
 	
 	//모서리를 마우스가 클릭 했을경우 크기 변경 테두리 다이얼로그 초기화
@@ -1552,7 +1564,9 @@ UINT CRemotroidServerDlg::StartingWaitingAni(LPVOID pParam)
 	WaitForSingleObject(pRequireConnectionThread->m_hThread, INFINITE);		
 
 	if(pDlg->bLoginOK == FALSE)
+	{
 		pDlg->EnableLoginWnd(FAIL);
+	}
 
 	return 0;
 }
@@ -1566,6 +1580,8 @@ void CRemotroidServerDlg::OnBnClickedBtnConnect()
 	
 	UpdateData(TRUE);
 	pConnectThread = AfxBeginThread(StartingWaitingAni, this);	
+	m_ctrlEmail.AddString(m_strEmail);
+	m_IniMgr.WriteString(m_strEmail);
 }
 
 
@@ -1728,4 +1744,16 @@ void CRemotroidServerDlg::SetScreenState(BOOL isScreenOn)
 	screen.SetScreenState(isScreenOn);
 
 	m_lastScreenState = isScreenOn;
+}
+
+
+void CRemotroidServerDlg::InitEditHistory(void)
+{
+	m_IniMgr.InitialINIFile();
+	int count = m_IniMgr.GetCount();
+
+	for(int i=0; i<count; i++)
+	{
+		m_ctrlEmail.AddString(m_IniMgr.GetHistoryString(i));
+	}
 }

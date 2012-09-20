@@ -180,10 +180,12 @@
     <ClInclude Include="CMyMemDC.h" />
     <ClInclude Include="DeviceInfo.h" />
     <ClInclude Include="DrawJpg.h" />
+    <ClInclude Include="EditHistory.h" />
     <ClInclude Include="EditTrans.h" />
     <ClInclude Include="FileSender.h" />
     <ClInclude Include="IFileTranceiverListener.h" />
     <ClInclude Include="ImageDlg.h" />
+    <ClInclude Include="INIMgr.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="KakaoPopupDlg.h" />
     <ClInclude Include="KeyCodeGen.h" />
@@ -218,9 +220,11 @@
     <ClCompile Include="AniStatic.cpp" />
     <ClCompile Include="DeviceInfo.cpp" />
     <ClCompile Include="DrawJpg.cpp" />
+    <ClCompile Include="EditHistory.cpp" />
     <ClCompile Include="EditTrans.cpp" />
     <ClCompile Include="FileSender.cpp" />
     <ClCompile Include="ImageDlg.cpp" />
+    <ClCompile Include="INIMgr.cpp" />
     <ClCompile Include="KakaoPopupDlg.cpp" />
     <ClCompile Include="KeyCodeGen.cpp" />
     <ClCompile Include="MyBitmapBtn.cpp" />

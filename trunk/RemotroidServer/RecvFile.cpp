@@ -74,14 +74,14 @@ HANDLE CRecvFile::RecvFileInfo(char * data)
 		FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if(m_hRecvFile == INVALID_HANDLE_VALUE)
-	{
+	{		
 		AfxMessageBox(_T("현재 위치에 파일을 저장할 수 없습니다"));
 	}
-
-	
-	pProgressBar->SetPos(0);
-	m_Listener->StartFileTranceiver(TRUE);
-	
+	else
+	{
+		pProgressBar->SetPos(0);
+		m_Listener->StartFileTranceiver(TRUE);
+	}
 
 	m_iRecvFileSize = 0;
 	//현재 받은 파일 크기
