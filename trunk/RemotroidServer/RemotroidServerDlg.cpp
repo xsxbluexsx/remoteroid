@@ -63,7 +63,7 @@ CRemotroidServerDlg::CRemotroidServerDlg(CWnd* pParent /*=NULL*/)
 	, pConnectThread(NULL)
 	, m_fileTranceiverState(NORMAL)
 	, m_isKakaoTalk(FALSE)
-	, m_isScreenOn(FALSE)
+	, m_lastScreenState(FALSE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -515,7 +515,7 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 				pDlg->screen.SetJpgInfo(data+1);
 				break;
 			case OP_SENDJPGDATA:
-				//pDlg->screen.SendMessage(WM_RECVJPGDATA, iPacketSize, (LPARAM)data);
+				//pDlg->screen.SendMessage(WM_RECVJPGDATA, iPacketSize, (LPARAM)data);				
 				pDlg->screen.RecvJpgData(data, iPacketSize);
 				break;
 			case OP_REQFILEDATA:
@@ -546,6 +546,12 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 				recvFileClass.CloseFileHandle();
 				pDlg->m_fileTranceiverState = NORMAL;				
 				break;
+			case OP_SCREENSTATEON:
+				pDlg->SetScreenState(TRUE);
+				break;
+			case OP_SCREENSTATEOFF:
+				pDlg->SetScreenState(FALSE);
+				break;
 			}
 		}
 	}
@@ -555,6 +561,8 @@ UINT CRemotroidServerDlg::RecvFunc(LPVOID pParam)
 	pDlg->fileSender.DeleteFileList();
 	pDlg->m_fileTranceiverState = NORMAL;
 	pDlg->screen.SetDisconnect();
+	pDlg->m_lastScreenState = FALSE;
+	
 
 	delete pClient;	
 
@@ -574,6 +582,8 @@ void CRemotroidServerDlg::SetClientSocket(CMyClient * pClient)
 	m_fileTranceiverState = NORMAL;
 	screen.InitDrawJpg();
 	screen.SetClient(pClient);
+	screen.m_isScreenON = TRUE;
+	m_lastScreenState = TRUE;
 }
 
 CMyClient * CRemotroidServerDlg::GetClientSocket(void)
@@ -1114,7 +1124,8 @@ LRESULT CRemotroidServerDlg::OnMyDblClkTray(WPARAM wParam, LPARAM lParam)
 
 	isTray = FALSE;
 
-	if(m_pClient != NULL)
+	//화면이 꺼져 있는 상태면 중지 요청 필요 없음
+	if(m_pClient != NULL && m_lastScreenState == TRUE)
 		m_pClient->SendPacket(OP_REQSENDSCREEN, NULL, 0);
 	
 	CUtil::AniMaximiseFromTray(AfxGetMainWnd()->GetSafeHwnd());
@@ -1137,7 +1148,8 @@ void CRemotroidServerDlg::OnBnClickedBtnTray()
 	isTray = TRUE;
 
 	//트레이로 가면 화면전송을 중지한다
-	if(m_pClient != NULL)
+	//화면이 켜져 있는 상태일 때만 
+	if(m_pClient != NULL && m_lastScreenState == TRUE)
 		m_pClient->SendPacket(OP_REQSTOPSCREEN, NULL, 0);
 	CUtil::AniMinimizeToTray(GetSafeHwnd());	
 	ShowWindow(SW_HIDE);	
@@ -1702,12 +1714,18 @@ void CRemotroidServerDlg::SendClipboardText(void)
 
 void CRemotroidServerDlg::SetScreenState(BOOL isScreenOn)
 {	
-	if(isScreenOn)
+	if(isScreenOn == TRUE && m_lastScreenState == FALSE)
 	{
-		if(m_isScreenOn)
-			return;
+		//트레이 상태가 아닐 경우에만 스크린이 켜지면 화면 전송 요청한다.
+		if(!isTray)
+			m_pClient->SendPacket(OP_REQSENDSCREEN, NULL, 0);		
 	}
-	else
+	else if(isScreenOn == FALSE && m_lastScreenState == TRUE)
 	{
+		if(!isTray)
+			m_pClient->SendPacket(OP_REQSTOPSCREEN, NULL, 0);
 	}
+	screen.SetScreenState(isScreenOn);
+
+	m_lastScreenState = isScreenOn;
 }

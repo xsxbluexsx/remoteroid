@@ -266,7 +266,7 @@ public:
 	void SendClipboardText(void);
 private:
 	BOOL m_isKakaoTalk;
-	BOOL m_isScreenOn;
+	BOOL m_lastScreenState;
 public:
 	void SetScreenState(BOOL isScreenOn);
 };
