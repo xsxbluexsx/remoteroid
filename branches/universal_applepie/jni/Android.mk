@@ -13,11 +13,24 @@ include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := fbuffer
-LOCAL_SRC_FILES :=  FrameHandler.cpp \
-					Frame.cpp \
-					DisplayInfo.cpp 
+# Temporarly commenting out until cpp version of libfbuffer issue has fixed
+# 
+# LOCAL_MODULE := fbuffer
+# LOCAL_SRC_FILES :=  FrameHandler.cpp \
+# 					DisplayInfo.cpp 
 					
-LOCAL_CFLAGS := -DCONFIG_EMBEDDED\ -DUSE_IND_THREAD\
+# LOCAL_LDLIBS := -llog		
+# LOCAL_CFLAGS := -DCONFIG_EMBEDDED\ -DUSE_IND_THREAD\
 
-include $(BUILD_SHARED_LIBRARY)
+# include $(BUILD_SHARED_LIBRARY)
+
+# include $(CLEAR_VARS)
+
+# LOCAL_MODULE := fbufferu
+# LOCAL_SRC_FILES := FrameHandlerU.cpp \
+				   DisplayInfo.cpp
+
+# LOCAL_LDLIBS := -llog
+# LOCAL_CFLAGS := -DCONFIG_EMBEDDED\ -DUSE_IND_THREAD\
+				
+# include $(BUILD_SHARED_LIBRARY)

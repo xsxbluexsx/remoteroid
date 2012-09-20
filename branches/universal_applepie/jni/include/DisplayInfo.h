@@ -20,8 +20,6 @@
 #ifndef DISPLAYINFO_H_
 #define DISPLAYINFO_H_
 
-
-
 #include <stdint.h>
 
 class DisplayInfo{

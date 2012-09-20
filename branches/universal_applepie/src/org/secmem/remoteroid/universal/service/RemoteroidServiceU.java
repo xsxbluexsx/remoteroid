@@ -1,6 +1,8 @@
 package org.secmem.remoteroid.universal.service;
 
-import java.io.IOException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
@@ -15,6 +17,7 @@ import org.secmem.remoteroid.lib.net.ScreenPacket;
 import org.secmem.remoteroid.natives.InputHandler;
 import org.secmem.remoteroid.universal.activity.MainU;
 import org.secmem.remoteroid.universal.natives.FrameHandlerU;
+import org.secmem.remoteroid.util.CommandLine;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -22,7 +25,11 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Bitmap.CompressFormat;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -32,6 +39,7 @@ public class RemoteroidServiceU extends Service {
 	
 	private ConnectionManager connManager;
 	private FrameHandlerU frameHandler;
+	//private FrameHandler frameHandler;
 	private InputHandler inputHandler;
 	private ScreenSenderThread screenSenderThread;
 	
@@ -78,13 +86,17 @@ public class RemoteroidServiceU extends Service {
 
 		@Override
 		public void connectScreen(final String ipAddress) throws RemoteException {
-			frameHandler.acquireFrameBufferPermission();
+			//frameHandler.acquireFrameBufferPermission();
+			CommandLine.execAsRoot("chmod 664 /dev/graphics/fb0");
+			CommandLine.execAsRoot("chmod 664 /dev/graphics/fb1");
 			connManager.connectScreen();
 		}
 		
 		@Override
 		public void disconnectScreen() throws RemoteException {
-			frameHandler.revertFrameBufferPermission();
+			//frameHandler.revertFrameBufferPermission();
+			CommandLine.execAsRoot("chmod 660 /dev/graphics/fb0");
+			CommandLine.execAsRoot("chmod 660 /dev/graphics/fb1");
 			connManager.disconnectScreen();
 		}
 
@@ -161,9 +173,10 @@ public class RemoteroidServiceU extends Service {
 		
 		@Override
 		public void onScreenConnected(String ipAddress) {
-			frameHandler.acquireFrameBufferPermission();
+			// FIXME Do nothing until framebuffer issue is fixed
+			/*
 			screenSenderThread = new ScreenSenderThread();
-			screenSenderThread.start();
+			screenSenderThread.start();*/
 		}
 
 		@Override
@@ -190,13 +203,11 @@ public class RemoteroidServiceU extends Service {
 
 		@Override
 		public void onCommand(CommandPacket command) {
-			System.out.println(command);
 			switch(command.getCommand()){
 			case Command.SCREEN_SERVER_READY:
 				// Server established screen socket.
 				// Now, client should send screen data to the server.
 				connManager.connectScreen();
-				
 				break;
 			
 			case Command.REQUEST_DEVICE_INFO:
@@ -234,6 +245,7 @@ public class RemoteroidServiceU extends Service {
 		@Override
 		public void onDisconnected() {
 			dismissNotification();
+			connManager.disconnect();
 			sendBroadcast(new Intent(RemoteroidIntent.ACTION_DISCONNECTED));
 		}
 		
@@ -242,24 +254,42 @@ public class RemoteroidServiceU extends Service {
 	private class ScreenSenderThread extends Thread{
 		
 		public ScreenSenderThread(){
-			setDaemon(true);
+			//setDaemon(true);
 		}
 		
 		@Override
 		public void run(){
 			
+			frameHandler.acquireFrameBufferPermission();
+			
 			while(true){
 				ScreenPacket packet = new ScreenPacket();
+				//byte[] screen = frameHandler.getFrameStream().toByteArray();
 				byte[] screen = frameHandler.readScreenBuffer();
-				packet.setImageBytes(screen);
+				Bitmap bitmap = BitmapFactory.decodeByteArray(screen, 0, screen.length);
+				FileOutputStream out;
+				try {
+					out = new FileOutputStream(new File(Environment.getExternalStorageDirectory(), "test.jpg"));
+					bitmap.compress(CompressFormat.JPEG, 100, out);
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				break;
+				
+				//Log.d(TAG, "size="+screen.length);
+				/*packet.setImageBytes(screen);
 				try{
 					connManager.sendScreen(packet);
 				}catch(IOException e){
 					e.printStackTrace();
 					connListener.onScreenDisconnected();
 					break;
-				}
+				}*/
 			}
+			
+			frameHandler.revertFrameBufferPermission();
 		}
 	}
 	

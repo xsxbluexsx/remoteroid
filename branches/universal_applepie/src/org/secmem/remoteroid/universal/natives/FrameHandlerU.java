@@ -1,15 +1,17 @@
 package org.secmem.remoteroid.universal.natives;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.util.CommandLine;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.graphics.BitmapFactory;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
@@ -27,14 +29,20 @@ public class FrameHandlerU {
 	private Bitmap bitmap;
 	private ByteArrayOutputStream bitmapOutStream;
 	
+	private InputStream fb0;
+	private InputStream fb1;
+	
+	
+	/* For Test */
 	private Bitmap dev1;
 	private Bitmap dev2;
 	private byte[] dev1Byte;
 	private byte[] dev2Byte;
 	
+	/*
 	static{
-		System.loadLibrary("fbuffer");
-	}
+		System.loadLibrary("fbufferu");
+	}*/
 	
 	/**
 	 * Read frame buffer from device.
@@ -47,6 +55,7 @@ public class FrameHandlerU {
 	private Context context;
 	
 	public FrameHandlerU(Context context){
+	
 		this.context = context;
 		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 		width = metrics.widthPixels;
@@ -60,7 +69,7 @@ public class FrameHandlerU {
 		bitmapOutStream = new ByteArrayOutputStream();
 		
 		// TEST
-		dev1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.dev1);
+		/*dev1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.dev1);
 		dev2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.dev2);
 		
 		ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
@@ -69,40 +78,57 @@ public class FrameHandlerU {
 		
 		ByteArrayOutputStream stream2 = new ByteArrayOutputStream();
 		dev2.compress(CompressFormat.JPEG, 100, stream2);
-		dev2Byte = stream2.toByteArray();
+		dev2Byte = stream2.toByteArray();*/
 	}
-	
-	public synchronized byte[] readScreenBuffer(){
-		// FIXME simple test code for screen xmission
-		
+
+	@Deprecated
+	public byte[] readScreenBuffer(){
+		try{
+			fb0.read(frameByteArray);
+		}catch(IOException e){
+			e.printStackTrace();
+		}
 		//getFrameBuffer(frameByteArray, pixelFormat);
 		
-		/*frameBuffer.put(frameByteArray, 0, screenDataSizeInBytes);
+		frameBuffer.put(frameByteArray, 0, screenDataSizeInBytes);
 		frameBuffer.rewind();
 		bitmap.copyPixelsFromBuffer(frameBuffer);
 		
-		frameBuffer.reset();
-		bitmap.compress(CompressFormat.JPEG, 100, bitmapOutStream);*/
-		toggle = !toggle;
+		bitmapOutStream.reset();
+		bitmap.compress(CompressFormat.JPEG, 100, bitmapOutStream);
+		/*toggle = !toggle;
 		if(toggle){
 			return dev1Byte;
 		}else{
 			return dev2Byte;
-		}
+		}*/
 		
 		//bitmap.compress(CompressFormat.JPEG, 100, bitmapOutStream);
-		//return bitmapOutStream.toByteArray();
-		
+		return bitmapOutStream.toByteArray();
+		//compressor.setSourceImage(frameByteArray, width, height, height, TJ.PF_ARGB);
+		//return compressor.compress(0);
 	}
 	
 	public void acquireFrameBufferPermission(){
 		CommandLine.execAsRoot("chmod 664 /dev/graphics/fb0");
 		CommandLine.execAsRoot("chmod 664 /dev/graphics/fb1");
+		try{
+			fb0 = new FileInputStream("/dev/graphics/fb0");
+			fb1 = new FileInputStream("/dev/graphics/fb1");
+		}catch(FileNotFoundException e){
+			e.printStackTrace();
+		}
 	}
 	
 	public void revertFrameBufferPermission(){
 		CommandLine.execAsRoot("chmod 660 /dev/graphics/fb0");
 		CommandLine.execAsRoot("chmod 660 /dev/graphics/fb1");
+		try{
+			fb0.close();
+			fb1.close();
+		}catch(IOException e){
+			e.printStackTrace();
+		}
 	}
 	
 	public int getWidth(){
