@@ -158,6 +158,9 @@ public class FileTranceiver extends PacketSender{
 		}
 	}
 	
+	class FileTransmitStopException extends Exception{
+		
+	}
 	
 	/**
 	 * FileSender send file information(file name, size) and file data to host
@@ -169,7 +172,7 @@ public class FileTranceiver extends PacketSender{
 		private FileInputStream	in 						= null;
 		private ArrayList<File>	fileList				= null;	
 		private FileTransmissionListener mListener;
-		private boolean isTransfer 						= true;
+		private boolean isTransfer 						= false;
 		
 		public FileSender(FileTransmissionListener listener){		
 			mListener = listener;
@@ -181,9 +184,16 @@ public class FileTranceiver extends PacketSender{
 		 * @param fileList
 		 */
 		public void setFilesToSend(ArrayList<File> fileList) throws IOException{
+			if(isTransfer)
+				return;
+			
 			this.fileList = fileList;
-			send(new Packet(OpCode.READY_TO_SEND, null, 0));
-			mListener.onReadyToSend(fileList);
+			
+			if(!fileList.isEmpty()){
+			
+				send(new Packet(OpCode.READY_TO_SEND, null, 0));
+				mListener.onReadyToSend(fileList);
+			}
 		}
 		
 		/**
@@ -194,6 +204,7 @@ public class FileTranceiver extends PacketSender{
 			if(fileList.isEmpty()){
 				try {
 					send(new Packet(OpCode.FILETRANSFER_COMPLETE, null, 0));
+					isTransfer = false;
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -234,8 +245,8 @@ public class FileTranceiver extends PacketSender{
 					
 					while(fileSize > sentFileSize){					
 						if(isTransfer == false){
-							send(new Packet(OpCode.FILETRANSFER_COMPLETE, null, 0));							
-							return;							
+							send(new Packet(OpCode.FILETRANSFER_COMPLETE, null, 0));
+							throw new FileTransmitStopException();												
 						}							
 						
 						int iCurrentSendSize =
@@ -249,6 +260,8 @@ public class FileTranceiver extends PacketSender{
 					mListener.onFileSent(file);
 					
 					SendFileInfo();
+				}catch(FileTransmitStopException e){			
+			
 				}catch(FileNotFoundException e){
 					e.printStackTrace();
 					mListener.onFileTransferInterrupted();
@@ -256,10 +269,13 @@ public class FileTranceiver extends PacketSender{
 					e.printStackTrace();
 					mListener.onFileTransferInterrupted();
 				}finally{
-					try{
-						in.close();				
-					}catch(IOException e){};
-					in = null;
+					if(in != null)
+					{
+						try{
+							in.close();				
+						}catch(IOException e){};
+						in = null;
+					}
 				}		
 			}
 		}
