@@ -447,7 +447,7 @@ public class HongUtil {
 			String strAppId = "org.secmem.remoteroid";
 			String strAppVer = "2.0";
 //			 String strAppName = "Remoteroid";
-			String strAppName = "";
+			String strAppName = ".";
 			link = new KakaoLink(context, title, strAppId, strAppVer, msg, strAppName, "UTF-8");
 			if(link.isAvailable()){
 				link.getIntent().setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -546,12 +546,12 @@ public class HongUtil {
 		
 		Runnable updater = new Runnable() {
 	         public void run() {
-	        	 Log.i("qq","Set ClipBoard");
-	        	 ClipboardManager clip = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
-	     		ClipData data = ClipData.newPlainText("Remoteroid_Clip", msg);
-	     		clip.setPrimaryClip(data);
-	         }
-	             
+	        	
+	        	ClipboardManager clip = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
+		     	ClipData data = ClipData.newPlainText("Remoteroid_Clip", msg);
+		     	clip.setPrimaryClip(data);					
+				 		     		
+	         }             
 	     };
 	     handler.post(updater);
 		
@@ -561,6 +561,7 @@ public class HongUtil {
 		ClipboardManager clip = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
 		return clip.getPrimaryClip().getItemAt(0).getText().toString();
 	}
+	
 
 	
 }
