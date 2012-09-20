@@ -83,7 +83,7 @@ public class Main extends SherlockFragmentActivity implements
 		        		// Connect to server when client is not connected to server
 		        		if(status.equals(ServiceState.IDLE)){
 		        			System.out.println("Remote-connect to "+serverIp);
-		        			// TODO onConnectRequested(serverIp);
+		        			onConnectRequested(serverIp);
 		        		}else{
 		        			// TODO handle when client is already connected to server
 		        			
