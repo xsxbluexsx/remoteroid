@@ -43,6 +43,8 @@ public class PacketHeader{
 		public static final int FILETRANSFER_STOP_REQUESTED = 17;
 		public static final int FILEDATA_CANCEL = 18;
 		public static final int SET_TO_CLIPBOARD = 19;
+		public static final int SCREEN_ON_STATE_INFO = 20;
+		public static final int SCREEN_OFF_STATE_INFO = 21;
 		
 		
 	}

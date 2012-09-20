@@ -37,6 +37,8 @@ public class Tranceiver  implements PacketListener{
 	private ServerConnectionListener mServerConnectionListener;
 	private AddOptionListener mAddOptionListener;
 	
+	private PacketSender packetSender;
+	
 		
 
 	public Tranceiver(ServerConnectionListener listener){
@@ -84,6 +86,8 @@ public class Tranceiver  implements PacketListener{
 			recvStream = socket.getInputStream();		
 			
 			fileTransReceiver = new FileTranceiver(sendStream, mFileTransListener);
+			
+			packetSender = new PacketSender(sendStream);
 			
 			//Connect udp socket
 			screenSender = new ScreenSender(sendStream);
@@ -151,8 +155,21 @@ public class Tranceiver  implements PacketListener{
 	//Send notification to Host
 	public void sendNotification(String str,int opcode){
 		try{
-			fileTransReceiver.send(
+			packetSender.send(
 					new Packet(opcode, str.getBytes(), str.getBytes().length));
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+	
+	//Send screen state(On or Off)
+	public void sendScreenOnOffState(boolean state){
+		try{
+			if(state){				
+				packetSender.send(new Packet(OpCode.SCREEN_ON_STATE_INFO, null, 0));
+			}else{
+				packetSender.send(new Packet(OpCode.SCREEN_OFF_STATE_INFO, null, 0));
+			}
 		}catch(IOException e){
 			e.printStackTrace();
 		}
