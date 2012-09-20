@@ -192,14 +192,14 @@ public class HardKeyboard extends InputMethodService {
             		isCapsLockEnabled = event.isCapsLockOn();
             	}
             	break;
-            	
+       
             case KeyEvent.KEYCODE_DPAD_CENTER:
             case KeyEvent.KEYCODE_DPAD_DOWN:
             case KeyEvent.KEYCODE_DPAD_LEFT:
             case KeyEvent.KEYCODE_DPAD_RIGHT:
             case KeyEvent.KEYCODE_DPAD_UP:
             	if(isHangulMode){
-            		getCurrentInputConnection().finishComposingText();
+            		mHangulAutomata.reset();
             	}
             	return false;
                 

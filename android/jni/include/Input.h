@@ -20,16 +20,12 @@
 #ifndef INPUT_H_
 #define INPUT_H_
 
-#include <android/log.h>
+#include "include/LogHelper.h"
 #include <linux/input.h>
 #include "include/suinput.h"
 
 #define BUS_VIRTUAL 0x06
 #define LOGTAG "RemoteroidInput"
-
-#define LOGD(tag, message) __android_log_print(ANDROID_LOG_DEBUG, tag, message);
-#define LOGW(tag, message) __android_log_print(ANDROID_LOG_WARN, tag, message);
-#define LOGI(tag, message) __android_log_print(ANDROID_LOG_INFO, tag, message);
 
 /**
  * Open input device using suinput.
