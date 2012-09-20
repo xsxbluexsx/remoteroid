@@ -23,6 +23,7 @@ CScreen::CScreen()
 , m_isConnect(FALSE)
 , m_rotationState(0)
 , m_isScreenON(FALSE)
+, m_isLbuttonDown(FALSE)
 {
 	m_bkgImg.LoadFromResource(AfxGetInstanceHandle(), IDB_BITMAP_WAITING);		
 	ZeroMemory(&lf, sizeof(lf));
@@ -165,9 +166,10 @@ inline void CScreen::CoordinateTransform(CPoint& point)
 void CScreen::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
+	m_isLbuttonDown = TRUE;
+
 	if(pClient == NULL)
 		return;
-
 	
 	CoordinateTransform(point);
 	CVitualEventPacket event(TOUCHDOWN, point.x, point.y);
@@ -182,6 +184,7 @@ void CScreen::OnLButtonDown(UINT nFlags, CPoint point)
 void CScreen::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
+	m_isLbuttonDown = FALSE;
 	
 	if(pClient == NULL)
 		return;

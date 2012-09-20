@@ -341,6 +341,12 @@
     <ClInclude Include="MyEdit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EditHistory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INIMgr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RemotroidServer.cpp">
@@ -434,6 +440,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MyEdit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EditHistory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="INIMgr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

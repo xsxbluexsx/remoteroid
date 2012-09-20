@@ -23,6 +23,8 @@
 #include "ResizeControlMgr.h"
 #include "IFileTranceiverListener.h"
 #include "KakaoPopupDlg.h"
+#include "EditHistory.h"
+#include "INIMgr.h"
 
 
 #define DLGHEIGHT		781
@@ -79,7 +81,7 @@ class CRemotroidServerDlg : public CDialogEx, public IFileTranceiverListener
 // Construction
 public:
 	CRemotroidServerDlg(CWnd* pParent = NULL);	// standard constructor
-	~CRemotroidServerDlg();
+	virtual ~CRemotroidServerDlg();
 
 // Dialog Data
 	enum { IDD = IDD_REMOTROIDSERVER_DIALOG };
@@ -236,7 +238,7 @@ public:
 	static UINT CRemotroidServerDlg::RequireConnectClient(LPVOID parma);
 	CString m_strEmail;
 	CString m_strPasswd;
-	CEdit m_ctrlEmail;
+	CEditHistory m_ctrlEmail;
 	CEdit m_ctrlPasswd;
 	afx_msg void OnBnClickedBtnConnect();
 	CMyBitmapBtn m_btnConnect;
@@ -269,5 +271,10 @@ private:
 	BOOL m_lastScreenState;
 public:
 	void SetScreenState(BOOL isScreenOn);
+private:
+	BOOL m_isLbuttonDown;
+	CINIMgr m_IniMgr;
+protected:
+	void InitEditHistory(void);
 };
 

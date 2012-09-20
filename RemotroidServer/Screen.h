@@ -90,6 +90,7 @@ public:
 	BOOL m_isScreenON;
 	void SetScreenState(BOOL isScreenOn);
 	CBrush m_BlackBrush;
+	BOOL m_isLbuttonDown;
 };
 
 
