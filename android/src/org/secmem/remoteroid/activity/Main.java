@@ -289,7 +289,6 @@ public class Main extends SherlockFragmentActivity implements
 			ServiceState state = ServiceState.valueOf(mRemoteroidSvc.getConnectionStatus());
 			switch(state){
 			case IDLE:
-				Log.i("qq","IDLE");
 				ActivityManager am = (ActivityManager)getSystemService(ACTIVITY_SERVICE);
 				am.killBackgroundProcesses(getPackageName());
 				break;
