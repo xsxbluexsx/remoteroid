@@ -241,10 +241,30 @@ public class Tranceiver  implements PacketListener{
 		
 		//If server was closed, throw an IOException	
 		//If file is open, Shoud be closed
-		fileTransReceiver.closeFile();	
+		
+		fileTransReceiver.closeFile();
 		fileTransReceiver.cancelFile();
-		cleanup();
-		mServerConnectionListener.onServerConnectionInterrupted();
+		
+		synchronized(this){
+			if(socket!=null){
+				try{					
+					recvStream.close();
+					sendStream.close();
+					packetReceiver = null;
+					socket.close();
+					socket=null;
+								
+				}catch(IOException e){
+					e.printStackTrace();
+				}finally{
+					mServerConnectionListener.onServerConnectionInterrupted();				
+				}
+			}
+		}
+//		fileTransReceiver.closeFile();	
+//		fileTransReceiver.cancelFile();
+//		cleanup();
+//		mServerConnectionListener.onServerConnectionInterrupted();
 	}
 	
 	private void parseVirtualEventPacket(Packet packet){

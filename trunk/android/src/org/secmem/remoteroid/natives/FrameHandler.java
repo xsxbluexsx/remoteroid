@@ -51,6 +51,8 @@ public class FrameHandler {
 	private int orientation;
 	private int pixelFormat;
 	
+	private boolean isBuffered = false;
+	
 	/**
 	 * Read frame buffer from device.
 	 * @param buff Byte buffer where frame buffer's data will be stored
@@ -190,6 +192,12 @@ public class FrameHandler {
 	}
 	public void setOrientation(int orientation) {
 		this.orientation = orientation;
+	}
+	public boolean isBuffered() {
+		return isBuffered;
+	}
+	public void setBuffered(boolean isBuffered) {
+		this.isBuffered = isBuffered;
 	}
 
 }

@@ -145,7 +145,7 @@ public class RemoteroidService extends Service
 			TelephonyManager telManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 			telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_NONE);
 			dismissNotification();
-			onScreenTransferStopRequested();
+			//onScreenTransferStopRequested();
 			if(ScreenStateReceiver.isOrderedBroadcast()){
 				unregisterReceiver(ScreenStateReceiver);
 			}
@@ -388,6 +388,7 @@ public class RemoteroidService extends Service
 	
 	private boolean isTransmission = false; // Taeho : What is this variable means for?
 
+	private Object synchronizedScreenTrans = new Object();
 	@Override
 	public void onScreenTransferRequested() {
 		Log.i(DEBUG_STATE,"onScreenTransferRequested()");
@@ -397,16 +398,22 @@ public class RemoteroidService extends Service
 			return;
 		
 		isTransmission = true;
-		CommandLine.execAsRoot("chmod 664 /dev/graphics/fb0");
-		CommandLine.execAsRoot("chmod 664 /dev/graphics/fb1");
+		
+		synchronized(synchronizedScreenTrans){
+			CommandLine.execAsRoot("chmod 664 /dev/graphics/fb0");
+			CommandLine.execAsRoot("chmod 664 /dev/graphics/fb1");
+		}
 		
 		
 		Thread mThread = new Thread(){
 			@Override
 			public void run() {
 				
-				while(isTransmission){					
-					ByteArrayOutputStream frameStream = frameHandler.getFrameStream();
+				while(isTransmission){		
+					ByteArrayOutputStream frameStream;
+					synchronized(synchronizedScreenTrans){
+						frameStream = frameHandler.getFrameStream();
+					}
 					int rotation = HongUtil.getRotation(getApplicationContext());				
 					
 					mTransmitter.screenTransmission(frameStream.toByteArray(), rotation);
@@ -420,9 +427,15 @@ public class RemoteroidService extends Service
 	@Override
 	public void onScreenTransferStopRequested() {
 		Log.i(DEBUG_STATE,"onScreenTransferStopRequested()");
-		isTransmission = false;		
-		CommandLine.execAsRoot("chmod 660 /dev/graphics/fb0");
-		CommandLine.execAsRoot("chmod 660 /dev/graphics/fb1");
+		
+		if(!isTransmission)
+			return;
+		
+		isTransmission = false;
+		synchronized(synchronizedScreenTrans){
+			CommandLine.execAsRoot("chmod 660 /dev/graphics/fb0");
+			CommandLine.execAsRoot("chmod 660 /dev/graphics/fb1");
+		}
 	}
 	
 
@@ -454,7 +467,7 @@ public class RemoteroidService extends Service
 	public void onServerConnectionInterrupted() {
 		Log.i(DEBUG_STATE,"onServerConnectionInterrupted()");
 		mState = ServiceState.IDLE;
-		onScreenTransferStopRequested();
+		//onScreenTransferStopRequested();
 		sendBroadcast(new Intent(RemoteroidIntent.ACTION_INTERRUPTED));
 		dismissNotification();
 	}
@@ -470,8 +483,8 @@ public class RemoteroidService extends Service
 
 	@Override
 	public void onScreenTransferInterrupted() {
-		Log.i(DEBUG_STATE,"onScreenTransferInterrupted()");
-		
+		Log.i(DEBUG_STATE,"onScreenTransferInterrupted()");		
+		onScreenTransferStopRequested();
 	}
 
 	@Override
@@ -487,7 +500,7 @@ public class RemoteroidService extends Service
 	public void onSendKakaotalkMessage(String msg) {
 		try {
 			
-			HongUtil.UseKakaoLink.sendLinkMessage(getApplicationContext(), "", msg);
+			HongUtil.UseKakaoLink.sendLinkMessage(getApplicationContext(), ".", msg);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
