@@ -311,10 +311,6 @@ public class ExplorerAdapter extends BaseAdapter{
 					if (dataList.getExpList().get(pos).getType()== ExplorerType.TYPE_FOLDER) {
 						dataList.setPath(dataList.getRealPathName(fileName));
 						ExplorerActivity.fileInfo.clear();
-						LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_wave_not_scale);
-						gridview.setLayoutAnimation(gridAnimation);
-						notifyDataSetChanged();
-						
 					} 
 					else {
 						if (dataList.getOnFileSelected() != null){ 
@@ -349,16 +345,13 @@ public class ExplorerAdapter extends BaseAdapter{
 						holder.titleHolder.setTextColor(Color.GREEN);
 					}
 				}
-				printFileInfo();
+				LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_wave_not_scale);
+				gridview.setLayoutAnimation(gridAnimation);
+				notifyDataSetChanged();
 			}
 		});
 		
 		return viewItem;
-	}
-	
-	private void printFileInfo() {
-		for (int i = 0; i < ExplorerActivity.fileInfo.size(); i++) {
-		}
 	}
 	
 	private class ThumbAsync extends AsyncTask<String, Void, Integer>{
@@ -377,7 +370,12 @@ public class ExplorerAdapter extends BaseAdapter{
 			if(result==1){
 				notifyDataSetChanged();
 			}
-			threadCount--;
+			if(--threadCount==0)
+			{
+				LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_wave_not_scale);
+				gridview.setLayoutAnimation(gridAnimation);
+			}
+			
 		}
 	}
 	
