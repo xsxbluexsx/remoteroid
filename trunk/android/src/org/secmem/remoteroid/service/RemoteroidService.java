@@ -243,9 +243,7 @@ public class RemoteroidService extends Service
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		Log.i("qq","onDestroy()");
 		if(ScreenStateReceiver.isOrderedBroadcast()){
-			Log.i("qq","isOrderedBroadcast()");
 			unregisterReceiver(ScreenStateReceiver);
 		}
 	}

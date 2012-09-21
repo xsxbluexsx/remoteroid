@@ -282,7 +282,14 @@ public class HardKeyboard extends InputMethodService {
         return super.onKeyUp(keyCode, event);
     }
 
-    /**
+    @Override
+	public void onFinishInputView(boolean finishingInput) {
+		super.onFinishInputView(finishingInput);
+		mHangulAutomata.reset();
+	}
+
+
+	/**
      * Helper function to commit any text being composed in to the editor.
      */
     private void commitTyped(InputConnection inputConnection) {
