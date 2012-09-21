@@ -60,6 +60,7 @@ using namespace Gdiplus;
 
 //컨트롤 다시 그릴때 깜빡임 방지 BeginDeferWindowPos이용
 extern HDWP hdwp;
+extern CCriticalSection g_CS;
 
 #ifdef _UNICODE
 #if defined _M_IX86

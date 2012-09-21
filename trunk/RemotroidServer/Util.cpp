@@ -106,6 +106,12 @@ char * CUtil::GetClipboardText(HWND hwnd)
 		strcpy(temp, pGlobal);
 		GlobalUnlock(hGlobal);
 	}
+	else
+	{
+		CloseClipboard();
+		return NULL;
+	}
+
 	CloseClipboard();
 	char * utf = AnsiToUtf(temp);
 	delete [] temp;

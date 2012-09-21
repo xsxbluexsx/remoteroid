@@ -69,7 +69,9 @@ int CMyClient::SendPacket(int iOPCode, const char * data, int iDataLen)
 	if(data != NULL)
 		memcpy(packet+HEADERSIZE, data, iDataLen);	
 		
+	g_CS.Lock();
 	int iResult = send(m_ClientSocket, packet, iPacketSize, NULL);
+	g_CS.Unlock();
 	
 	return iResult;
 }
