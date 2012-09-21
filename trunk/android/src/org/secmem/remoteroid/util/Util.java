@@ -20,6 +20,7 @@
 package org.secmem.remoteroid.util;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.secmem.remoteroid.lib.data.Account;
 import org.secmem.remoteroid.service.RemoteroidService;
@@ -201,6 +202,17 @@ public class Util {
 		}
 		
 		
+	}
+	
+	public static class InputMethod{
+		private static final String KEY_LOCALE = "last_ime_locale";
+		public static void setLastLocale(Context context, Locale locale){
+			getPrefEditor(context).putString(KEY_LOCALE, locale.toString()).commit();
+		}
+		
+		public static Locale getLastLocale(Context context){
+			return new Locale(getPref(context).getString(KEY_LOCALE, Locale.ENGLISH.toString()));
+		}
 	}
 	
 	private static SharedPreferences getPref(Context context){

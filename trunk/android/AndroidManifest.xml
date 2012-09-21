@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="org.secmem.remoteroid"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.secmem.remoteroid"
     android:versionCode="2"
-    android:versionName="1.5" xmlns:android="http://schemas.android.com/apk/res/android">
+    android:versionName="1.5" >
 
     <uses-sdk android:minSdkVersion="9" />
 
@@ -26,8 +27,8 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <!-- Keeps the processor from sleeping when a message is received. -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
-    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"/>
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
 
     <application
         uiOptions="splitActionBarWhenNarrow"
@@ -169,10 +170,19 @@
             android:name=".activity.RemoteConnectRedirector"
             android:noHistory="true" >
         </activity>
-        <activity android:name=".universal.activity.MainU" android:label="Remoteroid(Universal)" android:configChanges="touchscreen|keyboard|keyboardHidden|navigation|orientation">
+        <activity
+            android:name=".universal.activity.MainU"
+            android:configChanges="touchscreen|keyboard|keyboardHidden|navigation|orientation"
+            android:label="Remoteroid(Universal)" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="org.secmem.remoteroid.intent.action.REMOTE_CONNECT" />
+
+                <category android:name="org.secmem.remoteroid.intent.category.UNIVERSAL" />
             </intent-filter>
         </activity>
     </application>
