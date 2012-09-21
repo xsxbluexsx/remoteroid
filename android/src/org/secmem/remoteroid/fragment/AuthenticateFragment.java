@@ -94,8 +94,6 @@ public class AuthenticateFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				
-				Util.Connection.saveAuthData(getActivity(), mEdtIpAddr.getText().toString(), null);
 				mListener.onConnectRequested(mEdtIpAddr.getText().toString());
 				
 			}

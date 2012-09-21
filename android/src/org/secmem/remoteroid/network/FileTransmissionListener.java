@@ -10,4 +10,5 @@ public interface FileTransmissionListener{
 	public void onFileSent(File file);
 	public void onFileTransferInterrupted();
 	public void onFileTransferSucceeded();
+	public void onAllFileTransferSucceeded();
 }

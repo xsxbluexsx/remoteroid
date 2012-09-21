@@ -1045,6 +1045,7 @@ containing a value of this type.
         public static final int authentication_title=0x7f0d0046;
         public static final int auto_connect=0x7f0d001d;
         public static final int back_finished=0x7f0d0040;
+        public static final int cannot_register_device=0x7f0d005d;
         public static final int category_dialog_title=0x7f0d0026;
         public static final int connect=0x7f0d001b;
         public static final int connected=0x7f0d0035;
@@ -1052,6 +1053,7 @@ containing a value of this type.
         public static final int connecting=0x7f0d001e;
         public static final int connection_cancelled=0x7f0d0034;
         public static final int connection_with_server_has_interrupted=0x7f0d003e;
+        public static final int device_registered=0x7f0d005c;
         public static final int dialog_category_title=0x7f0d0045;
         public static final int dialog_input_toast=0x7f0d0025;
         public static final int dialog_sign_up_input_email=0x7f0d0043;
@@ -1102,6 +1104,7 @@ containing a value of this type.
         public static final int proceed_logout=0x7f0d0056;
         public static final int register=0x7f0d004c;
         public static final int register_device=0x7f0d005a;
+        public static final int registering_device=0x7f0d005b;
         public static final int remoteroid_driver_description=0x7f0d003a;
         public static final int retry=0x7f0d002e;
         public static final int searching=0x7f0d0029;

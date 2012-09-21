@@ -203,8 +203,10 @@ public class FileTranceiver extends PacketSender{
 		public void SendFileInfo(){		
 			if(fileList.isEmpty()){
 				try {
+					Log.i("qq","FILETRANSFER_COMPLETE");
 					send(new Packet(OpCode.FILETRANSFER_COMPLETE, null, 0));
 					isTransfer = false;
+					mListener.onAllFileTransferSucceeded();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -245,7 +247,9 @@ public class FileTranceiver extends PacketSender{
 					
 					while(fileSize > sentFileSize){					
 						if(isTransfer == false){
+							Log.i("qq","CANCEL FILETRANSFER_COMPLETE");
 							send(new Packet(OpCode.FILETRANSFER_COMPLETE, null, 0));
+							mListener.onAllFileTransferSucceeded();
 							throw new FileTransmitStopException();												
 						}							
 						

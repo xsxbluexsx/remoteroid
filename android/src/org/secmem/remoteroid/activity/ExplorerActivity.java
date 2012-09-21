@@ -27,6 +27,8 @@ import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.adapter.DataList;
 import org.secmem.remoteroid.adapter.ExplorerAdapter;
 import org.secmem.remoteroid.data.CategoryList;
+import org.secmem.remoteroid.data.ExplorerType;
+import org.secmem.remoteroid.data.FileList;
 import org.secmem.remoteroid.dialog.DialogListener;
 import org.secmem.remoteroid.dialog.DialogMenu;
 import org.secmem.remoteroid.expinterface.OnFileLongClickListener;
@@ -50,6 +52,7 @@ import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
@@ -162,6 +165,7 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		
 		adapterFilter = new IntentFilter();
 		adapterFilter.addAction(RemoteroidIntent.ACTION_FILE_TRANSMISSION_SECCESS);
+		adapterFilter.addAction(RemoteroidIntent.ACTION_ALL_FILE_TRANSMISSION_SECCESS);
 		
 //		Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
 //		i = new Intent(ExplorerActivity.this, FrameBufferService.class);
@@ -456,14 +460,28 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
+			
 			if(action.equals(RemoteroidIntent.ACTION_FILE_TRANSMISSION_SECCESS))
 			{	
-				LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_wave_not_scale);
-				gridview.setLayoutAnimation(gridAnimation);
 				dataList.setPath(dataList.get_Path());
-				fileInfo.clear();
-				adapter.notifyDataSetChanged();
+				
 			}
+			else if(action.equals(RemoteroidIntent.ACTION_ALL_FILE_TRANSMISSION_SECCESS)){
+				for(int i = 0 ; i < dataList.getExpList().size() ; i++){
+					if(dataList.getExpList().get(i).getType() == ExplorerType.TYPE_FILE){
+						FileList f = (FileList)dataList.getExpList().get(i);
+						if(f.isFileSelected()){
+							f.setFileSelected(false);
+						}
+						
+					}
+				}
+			}
+			LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_wave_not_scale);
+			gridview.setLayoutAnimation(gridAnimation);
+			fileInfo.clear();
+			adapter.notifyDataSetChanged();
+			
 		}
 	};
 

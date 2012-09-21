@@ -294,7 +294,19 @@ public class ExplorerAdapter extends BaseAdapter{
 			
 			@Override
 			public boolean onLongClick(View v) {
-					
+				if(ExplorerActivity.fileInfo.size()==0){
+					if(type==ExplorerActivity.ADAPTER_TYPE_CATEGORY){
+						CategoryList category = categoryList.get(pos);
+						File f = new File(category.getFile().getParent()+"/"+category.getFile().getName());
+						ExplorerActivity.fileInfo.add(f.getAbsolutePath());
+					}
+					else if(type == ExplorerActivity.ADAPTER_TYPE_EXPLORER && dataList.getExpList().get(pos).getType()== ExplorerType.TYPE_FILE){
+						String fileName = ((ExplorerType)getItem(pos)).getName();
+						FileList fl = (FileList)dataList.getExpList().get(pos);
+						File f = new File(dataList.getPath()+fileName);
+						ExplorerActivity.fileInfo.add(f.getAbsolutePath());
+					}
+				}
 				onFileLongClick.onLongclick();
 				
 				return true;
