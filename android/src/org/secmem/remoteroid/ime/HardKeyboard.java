@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.util.Util;
 
 import android.annotation.SuppressLint;
 import android.content.ClipboardManager;
@@ -79,9 +80,10 @@ public class HardKeyboard extends InputMethodService {
      */
     @Override public void onStartInput(EditorInfo attribute, boolean restarting) {
         super.onStartInput(attribute, restarting);
+        mHangulAutomata.reset();
         
         // Detect current locale and set default input language
-        Locale loc = Locale.getDefault();
+        Locale loc = Util.InputMethod.getLastLocale(getApplicationContext());
         if(loc.equals(Locale.KOREA) || loc.equals(Locale.KOREAN))
         	isHangulMode = true;
         else
@@ -431,8 +433,11 @@ public class HardKeyboard extends InputMethodService {
     
     private void switchLanguage(){
     	mHangulAutomata.reset();
+    	// Switch language
     	isHangulMode = !isHangulMode;
-
+    	
+    	// Save switched language
+    	Util.InputMethod.setLastLocale(getApplicationContext(), isHangulMode ? Locale.KOREAN : Locale.ENGLISH);
     	Toast.makeText(getApplicationContext(), isHangulMode? R.string.ime_mode_kor : R.string.ime_mode_eng, Toast.LENGTH_SHORT).show();
     	showStatusIcon(isHangulMode? R.drawable.ico_hangul : R.drawable.ico_english);
     }
