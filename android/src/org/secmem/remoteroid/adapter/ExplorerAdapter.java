@@ -55,11 +55,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ExplorerAdapter extends BaseAdapter{
+
+	private static final String CATEGORY_TYPE_IMAGE="0";
+	private static final String CATEGORY_TYPE_VIDEO="1";
+	private static final String CATEGORY_TYPE_MUSIC="2";
+	private static final String CATEGORY_TYPE_CUSTOM="3";
 	
 	private static int threadCount=0;
 	private static final BitmapFactory.Options sBitmapOptionsCache = new BitmapFactory.Options();
     private static final Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
-	
+    
 	private Context context;
 	private int layout;
 	private int type;
@@ -161,7 +166,8 @@ public class ExplorerAdapter extends BaseAdapter{
 							if(threadCount<15){
 								f.setBitmapChecked(true);
 								threadCount++;
-								new ThumbAsync().execute(path, fileName, String.valueOf(pos), categoryType, String.valueOf(this.type));
+								categoryType = CATEGORY_TYPE_IMAGE;
+								new ThumbAsync().execute(path, fileName, String.valueOf(pos), CATEGORY_TYPE_IMAGE, String.valueOf(this.type));
 							}
 						}
 					}
@@ -229,7 +235,8 @@ public class ExplorerAdapter extends BaseAdapter{
 						if(threadCount<15){
 							item.setBitmapChecked(true);
 							threadCount++;
-							new ThumbAsync().execute(item.getFile().getParent()+"/",item.getFile().getName(), String.valueOf(pos), categoryType, String.valueOf(this.type) );
+							categoryType = CATEGORY_TYPE_IMAGE;
+							new ThumbAsync().execute(item.getFile().getParent()+"/",item.getFile().getName(), String.valueOf(pos), CATEGORY_TYPE_IMAGE, String.valueOf(this.type) );
 						}
 					}
 				}
@@ -252,6 +259,7 @@ public class ExplorerAdapter extends BaseAdapter{
 						if(threadCount<15){
 							item.setBitmapChecked(true);
 							threadCount++;
+							categoryType = CATEGORY_TYPE_VIDEO;
 							new VideoThumbAsync().execute(String.valueOf(item.getId()), categoryType, String.valueOf(pos));
 						}
 					}
@@ -274,6 +282,7 @@ public class ExplorerAdapter extends BaseAdapter{
 						if(threadCount<15){
 							item.setBitmapChecked(true);
 							threadCount++;
+							categoryType = CATEGORY_TYPE_MUSIC;
 							new MusicThumbAsync().execute(String.valueOf(item.getAlbumId()), categoryType, String.valueOf(pos));
 						}
 					}
@@ -463,6 +472,10 @@ public class ExplorerAdapter extends BaseAdapter{
 		
 		BitmapFactory.Options option = new BitmapFactory.Options();
 		int pos = Integer.parseInt(position);
+		if(categoryList.size()==0)
+			return 0;
+		CategoryList list = categoryList.get(pos);
+		
 		if (new File(path+file).length() > 200000)
 			option.inSampleSize = 7;
 		else
@@ -498,7 +511,7 @@ public class ExplorerAdapter extends BaseAdapter{
 			if(BitmapFactory.decodeFile(path+file, option)==null){
 				Bitmap bitmap = BitmapFactory.decodeFile(path+file, option);
 				if(type==ExplorerActivity.ADAPTER_TYPE_CATEGORY && categoryType.equals(cType) && !ExplorerActivity.isSearched){
-					categoryList.get(pos).setBitmap(bitmap);
+					list.setBitmap(bitmap);
 				}
 				else{
 					result=0;
@@ -507,7 +520,7 @@ public class ExplorerAdapter extends BaseAdapter{
 			else{
 				Bitmap tmp = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(path+file, option), 72, 72, true);
 				if(type==ExplorerActivity.ADAPTER_TYPE_CATEGORY && categoryType.equals(cType)&& !ExplorerActivity.isSearched){
-					categoryList.get(pos).setBitmap(tmp);
+					list.setBitmap(tmp);
 				}
 				else{
 					result=0;

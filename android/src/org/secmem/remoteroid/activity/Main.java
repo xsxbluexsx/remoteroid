@@ -19,6 +19,8 @@
 
 package org.secmem.remoteroid.activity;
 
+import java.util.List;
+
 import org.secmem.remoteroid.IRemoteroid;
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.fragment.AuthenticateFragment;
@@ -38,6 +40,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.inputmethodservice.InputMethodService;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -45,6 +48,8 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -214,8 +219,6 @@ public class Main extends SherlockFragmentActivity implements
         // FIXME
         isDriverInstalled = true;
         //isDriverInstalled = CommandLine.isDriverExists(getApplicationContext());     
-        
-
         
     }
     

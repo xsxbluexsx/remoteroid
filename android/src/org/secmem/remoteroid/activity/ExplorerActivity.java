@@ -57,6 +57,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.Button;
@@ -166,10 +167,9 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 		adapterFilter = new IntentFilter();
 		adapterFilter.addAction(RemoteroidIntent.ACTION_FILE_TRANSMISSION_SECCESS);
 		adapterFilter.addAction(RemoteroidIntent.ACTION_ALL_FILE_TRANSMISSION_SECCESS);
+	
 		
-//		Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
-//		i = new Intent(ExplorerActivity.this, FrameBufferService.class);
-//		startService(i);
+		
 		
 	}
 	
