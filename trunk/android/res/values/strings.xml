@@ -118,4 +118,7 @@
             <string name="set_user_account_summary">Manage user\'s Remoteroid account and device.</string>
             <string name="please_wait">Please wait…</string>
             <string name="register_device">Register device</string>
+            <string name="registering_device">Registering device...</string>
+            <string name="device_registered">Device registered.</string>
+            <string name="cannot_register_device">Cannot register device.</string>
 </resources>

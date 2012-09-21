@@ -190,7 +190,7 @@ public class RemoteroidServiceU extends Service {
 
 		@Override
 		public void onCommand(CommandPacket command) {
-			System.out.println(command);
+
 			switch(command.getCommand()){
 			case Command.SCREEN_SERVER_READY:
 				// Server established screen socket.
@@ -207,7 +207,11 @@ public class RemoteroidServiceU extends Service {
 				break;
 				
 			case Command.TOUCH_DOWN:
+				inputHandler.touchDown();
+				break;
 				
+			case Command.TOUCH_SETPTR:
+				inputHandler.touchSetPtr(command.getIntExtra(Extra.KEY_TOUCH_X), command.getIntExtra(Extra.KEY_TOUCH_Y));
 				break;
 				
 			case Command.TOUCH_UP:
