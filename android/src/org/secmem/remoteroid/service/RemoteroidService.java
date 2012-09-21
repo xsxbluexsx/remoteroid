@@ -116,23 +116,20 @@ public class RemoteroidService extends Service
 
 				@Override
 				protected Void doInBackground(Void... params) {
-						mState = ServiceState.CONNECTING;
+						
 						
 						// Open input device
 						mInputHandler.open();
 						
-						// Handle for Windows server
-						if(Util.Connection.getServerType(RemoteroidService.this).equals("windows")){
-							// Start connection and receive events from server
-							mTransmitter.connect(ipAddress);
-							//Send devices resolution to host for coordinate transformation;
-							if(mTransmitter!=null && mTransmitter.isConnected())
-								mTransmitter.sendDeviceInfo(getApplicationContext().getResources().getDisplayMetrics());
 						
-						}else{
-							// For Universal server
-							
+						// Start connection and receive events from server
+						mTransmitter.connect(ipAddress);
+						//Send devices resolution to host for coordinate transformation;
+						if(mTransmitter!=null && mTransmitter.isConnected()){
+							mState = ServiceState.CONNECTING;
+							mTransmitter.sendDeviceInfo(getApplicationContext().getResources().getDisplayMetrics());
 						}
+						
 						return null;	
 				}
 				
@@ -158,6 +155,7 @@ public class RemoteroidService extends Service
 					mInputHandler.close();
 					mTransmitter.disconnect();
 					Log.i(DEBUG_STATE,"disconnect()");
+					mState = ServiceState.IDLE;
 					return null;
 				}
 
