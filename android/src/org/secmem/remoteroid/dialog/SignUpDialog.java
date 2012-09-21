@@ -143,7 +143,6 @@ public class SignUpDialog {
 			String pwd = Pref.getMyPreferences(Pref.Account.SECURITY_PASSWORD, context);
 			String reg = Pref.getMyPreferences(Pref.GCM.KEY_GCM_REGISTRATION, context);
 			String uuid = HongUtil.getDeviceId(this.context);
-			Log.i("qq","uuid = "+uuid);
 
 			try {
 				response = RemoteroidWeb.addDevice(Build.MODEL, email, pwd, reg, uuid).sendRequest();

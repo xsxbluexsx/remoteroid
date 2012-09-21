@@ -122,14 +122,11 @@ public class NotificationReceiverService extends AccessibilityService {
 					if(!filtered){
 						int type = (event.getPackageName().equals("com.kakao.talk")? 
 								OpCode.NOTIFICATION_KAKAOTALK_SEND : OpCode.NOTIFICATION_SEND);
-
-						Log.i("qqq", "type = "+type);
 						mRemoteroidSvc.onNotificationCatched(listToString(event.getText()), event.getEventTime(),type);
 					}
 				}else{ // User does not enabled package filter.
 					int type = (event.getPackageName().equals("com.kakao.talk")? 
 							OpCode.NOTIFICATION_KAKAOTALK_SEND : OpCode.NOTIFICATION_SEND);
-					Log.i("qqq", "type = "+type);
 					mRemoteroidSvc.onNotificationCatched(listToString(event.getText()), event.getEventTime(), type);
 				}
 			}

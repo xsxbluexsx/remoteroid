@@ -286,7 +286,7 @@ public class Tranceiver  implements PacketListener{
 	
 	private void parseVirtualEventPacket(Packet packet){
 		EventPacket eventPacket = EventPacket.parse(packet);
-		Log.i("qq","eventPacket.GetEventCode() = "+ eventPacket.GetEventCode());
+
 		switch(eventPacket.GetEventCode()){
 		case EventPacket.SETCOORDINATES:
 			mVirtEventListener.onSetCoordinates(eventPacket.GetXPosition(), eventPacket.GetYPosition());
