@@ -1719,6 +1719,9 @@ void CRemotroidServerDlg::SendClipboardText(void)
 
 	char *clipboardText = CUtil::GetClipboardText(GetSafeHwnd());
 
+	if(clipboardText == NULL)
+		return;
+
 	int len = strlen(clipboardText);
 
 	len = len > 4096-HEADERSIZE ? 4096-HEADERSIZE : len;
