@@ -91,5 +91,6 @@ public final class RemoteroidIntent {
 	 * @see RemoteroidIntent#ACTION_FILE_TRANSMISSION_SECCESS
 	 */
 	public static final String ACTION_FILE_TRANSMISSION_SECCESS = "org.secmem.remoteroid.intent.action.FILE_TRANSMISSION_SUCCESS";
+	public static final String ACTION_ALL_FILE_TRANSMISSION_SECCESS = "org.secmem.remoteroid.intent.action.ALL_FILE_TRANSMISSION_SUCCESS";
 	
 }

@@ -366,6 +366,10 @@ public class RemoteroidService extends Service
 	public void onFileTransferInterrupted() {
 		
 	}
+	@Override
+	public void onAllFileTransferSucceeded() {
+		sendBroadcast(new Intent(RemoteroidIntent.ACTION_ALL_FILE_TRANSMISSION_SECCESS));
+	}
 	
 	@Override
 	public void onFileTransferSucceeded() {
@@ -506,7 +510,7 @@ public class RemoteroidService extends Service
 	public void onSendKakaotalkMessage(String msg) {
 		try {
 			
-			HongUtil.UseKakaoLink.sendLinkMessage(getApplicationContext(), ".", msg);
+			HongUtil.UseKakaoLink.sendLinkMessage(getApplicationContext(), "　", msg);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -540,5 +544,7 @@ public class RemoteroidService extends Service
 		HongUtil.setClipBoard(getApplicationContext(), message,handler);
 
 	}
+
+	
 	
 }

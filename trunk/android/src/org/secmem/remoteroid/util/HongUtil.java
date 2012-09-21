@@ -446,8 +446,7 @@ public class HongUtil {
 			KakaoLink link;
 			String strAppId = "org.secmem.remoteroid";
 			String strAppVer = "2.0";
-//			 String strAppName = "Remoteroid";
-			String strAppName = ".";
+			 String strAppName = "Remoteroid";
 			link = new KakaoLink(context, title, strAppId, strAppVer, msg, strAppName, "UTF-8");
 			if(link.isAvailable()){
 				link.getIntent().setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
