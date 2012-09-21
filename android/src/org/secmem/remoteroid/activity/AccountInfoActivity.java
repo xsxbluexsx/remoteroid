@@ -8,31 +8,55 @@ import org.secmem.remoteroid.lib.data.Device;
 import org.secmem.remoteroid.lib.request.Request;
 import org.secmem.remoteroid.lib.request.Response;
 import org.secmem.remoteroid.lib.util.DeviceUUIDGenerator;
+import org.secmem.remoteroid.service.GCMIntentService;
 import org.secmem.remoteroid.util.DeviceUUIDGeneratorImpl;
 import org.secmem.remoteroid.util.DialogAsyncTask;
+import org.secmem.remoteroid.util.RegisterDeviceToRemoteroidTask;
 import org.secmem.remoteroid.util.Util;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.google.android.gcm.GCMRegistrar;
 
 public class AccountInfoActivity extends SherlockActivity {
-
+	
+	private static final String TAG = "AccountInfoActivity";
+	
 	private Button btnLogout;
 	private TextView tvUserAccount;
 	private TextView tvDeviceRegistrationStatus;
 	private Button btnRegisterDevice;
 	private Button btnChangeDeviceNickname;
 	
+	private BroadcastReceiver deviceRegistrationReceiver = new BroadcastReceiver(){
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if(intent.getAction().equals(RemoteroidIntent.ACTION_DEVICE_REGISTRATION_COMPLETE)){
+				new GetDeviceInfoTask(AccountInfoActivity.this).setFinishOnCancel(true).execute();
+			}else{
+				// Registration failed
+				btnRegisterDevice.setEnabled(true);
+				Toast.makeText(getApplicationContext(), "Device registration failed.", Toast.LENGTH_SHORT).show();
+			}
+		}
+		
+	};
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -58,8 +82,18 @@ public class AccountInfoActivity extends SherlockActivity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
+				btnRegisterDevice.setEnabled(false);
+				GCMRegistrar.checkDevice(AccountInfoActivity.this);
+			    GCMRegistrar.checkManifest(AccountInfoActivity.this);
+			    final String regId = GCMRegistrar.getRegistrationId(AccountInfoActivity.this);
+			    
+			    if(regId.equals("")){
+			    	GCMRegistrar.register(AccountInfoActivity.this, GCMIntentService.SENDER_ID);
+			    }else{
+			    	Log.i(TAG, "Device already has been registered to GCM server.");
+			    	Log.i(TAG, "Now registering device to Remoteroid server.");
+			    	new RegisterDeviceToRemoteroidTask(getApplicationContext(), regId).execute();
+			    }
 			}
 	    	
 	    });
@@ -103,6 +137,21 @@ public class AccountInfoActivity extends SherlockActivity {
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(RemoteroidIntent.ACTION_DEVICE_REGISTRATION_COMPLETE);
+		filter.addAction(RemoteroidIntent.ACTION_DEVICE_REGISTRATION_FAILED);
+		registerReceiver(deviceRegistrationReceiver, filter);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		unregisterReceiver(deviceRegistrationReceiver);
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
 		case android.R.id.home:
@@ -136,7 +185,9 @@ public class AccountInfoActivity extends SherlockActivity {
 		protected void onPostExecute(Response result) {
 			super.onPostExecute(result);
 			if(result.isSucceed()){
+				Device device = result.getPayloadAsDevice();
 				btnChangeDeviceNickname.setVisibility(View.VISIBLE);
+				btnChangeDeviceNickname.setText(device.getNickname());
 				btnRegisterDevice.setVisibility(View.GONE);
 				tvDeviceRegistrationStatus.setText("Device name");
 				tvDeviceRegistrationStatus.setVisibility(View.VISIBLE);
