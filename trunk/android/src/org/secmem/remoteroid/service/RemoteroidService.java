@@ -42,7 +42,6 @@ import org.secmem.remoteroid.network.VirtualEventListener;
 import org.secmem.remoteroid.receiver.SmsReceiver;
 import org.secmem.remoteroid.util.CommandLine;
 import org.secmem.remoteroid.util.HongUtil;
-import org.secmem.remoteroid.util.Util;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -58,8 +57,6 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
 import android.os.RemoteException;
 import android.telephony.PhoneStateListener;
 import android.telephony.SmsManager;
@@ -173,6 +170,20 @@ public class RemoteroidService extends Service
 		@Override
 		public boolean isConnected() throws RemoteException {
 			return (mTransmitter!=null && mTransmitter.isConnected()) ? true : false;
+		}
+
+		@Override
+		public void requestFragmentBeShown() throws RemoteException {
+			if(!CommandLine.isDriverExists(getApplicationContext())){
+				sendBroadcast(new Intent(RemoteroidIntent.ACTION_SHOW_DRIVER_INSTALLATION_FRAGMENT));
+				return;
+			}
+			
+			if(mTransmitter.isConnected()){
+				sendBroadcast(new Intent(RemoteroidIntent.ACTION_SHOW_CONNECTED_FRAGMENT));
+			}else{
+				sendBroadcast(new Intent(RemoteroidIntent.ACTION_SHOW_CONNECT_FRAGMENT));
+			}
 		}
 	};
 
@@ -323,8 +334,9 @@ public class RemoteroidService extends Service
 
 	@Override
 	public void onKeyUp(int keyCode) {
-		if(mInputHandler.isDeviceOpened())
+		if(mInputHandler.isDeviceOpened()){
 			mInputHandler.keyUp(keyCode);
+		}
 	}
 	
 	@Override
@@ -446,7 +458,7 @@ public class RemoteroidService extends Service
 		TelephonyManager telManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 		telManager.listen(mPhoneListener, PhoneStateListener.LISTEN_CALL_STATE);
 		
-		sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTED).putExtra("ip", ipAddress));
+		sendBroadcast(new Intent(RemoteroidIntent.ACTION_SHOW_CONNECTED_FRAGMENT));
 		
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Intent.ACTION_SCREEN_OFF);
@@ -462,6 +474,17 @@ public class RemoteroidService extends Service
 		Log.i(DEBUG_STATE,"onServerConnectionFailed()");
 		mState = ServiceState.IDLE;
 		sendBroadcast(new Intent(RemoteroidIntent.ACTION_CONNECTION_FAILED));
+		
+		dismissNotification();
+		
+		new AsyncTask<Void, Void, Void>(){
+			@Override
+			protected Void doInBackground(Void... params) {				
+				mInputHandler.close();				
+				return null;
+			}
+
+		}.execute();
 	}
 
 	@Override
@@ -487,7 +510,7 @@ public class RemoteroidService extends Service
 		Log.i(DEBUG_STATE,"onServerDisconnected()");
 		mState = ServiceState.IDLE;		
 		// Sending broadcast for disconnection..
-		sendBroadcast(new Intent(RemoteroidIntent.ACTION_DISCONNECTED));
+		sendBroadcast(new Intent(RemoteroidIntent.ACTION_SHOW_CONNECT_FRAGMENT));
 		dismissNotification();
 	}
 

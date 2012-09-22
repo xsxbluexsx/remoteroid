@@ -22,10 +22,11 @@ package org.secmem.remoteroid.fragment;
 import java.util.regex.Pattern;
 
 import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.universal.fragment.InterfaceFragment;
 import org.secmem.remoteroid.util.Util;
+import org.secmem.remoteroid.util.Util.Connection;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -35,22 +36,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class AuthenticateFragment extends Fragment {
+public class AuthenticateFragment extends InterfaceFragment<FragmentActionListener> {
 	
 	private EditText mEdtIpAddr;
 	private Button mBtnConnect;
 
 	private boolean isIpValid=false;
 	
-	private ConnectionStateListener mListener;
-
-	
 	public AuthenticateFragment(){
 		
-	}
-	
-	public AuthenticateFragment(ConnectionStateListener listener){
-		this.mListener = listener;
 	}
 
 	@Override
@@ -65,7 +59,7 @@ public class AuthenticateFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 		mEdtIpAddr = (EditText)view.findViewById(R.id.edt_fragment_authenticate_ip_address);
 		mBtnConnect = (Button)view.findViewById(R.id.btn_fragment_authenticate_connect);
-		mEdtIpAddr.setText("210.118.74.80");
+		
 		mEdtIpAddr.addTextChangedListener(new TextWatcher(){
 
 			@Override
@@ -89,13 +83,17 @@ public class AuthenticateFragment extends Fragment {
 			
 		});
 		
+		// Load last server ip address from preferences
+		mEdtIpAddr.setText(Connection.getLastServerIpAddress(getActivity()));
 		
 		mBtnConnect.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
-				mListener.onConnectRequested(mEdtIpAddr.getText().toString());
-				
+				Util.Connection.setLastServerIpAddress(getActivity(), mEdtIpAddr.getText().toString());
+				getListener().onConnectRequested(mEdtIpAddr.getText().toString());
+				mBtnConnect.setEnabled(false);
+				mBtnConnect.setText(R.string.connecting);
 			}
 		});
 

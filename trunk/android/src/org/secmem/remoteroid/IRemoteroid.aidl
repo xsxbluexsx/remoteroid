@@ -9,4 +9,5 @@ interface IRemoteroid{
 	void onNotificationCatched(String notificationText, long when,int type);
 	void onSendFile(in List<String> pathlist);
 	
+	void requestFragmentBeShown();
 }

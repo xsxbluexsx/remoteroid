@@ -226,6 +226,7 @@ public class HardKeyboard extends InputMethodService {
             		mHangulAutomata.reset();
                 // Let the underlying text editor always handle these.
                 return false;
+ 
                 
             default:
                 // For all other keys, if we want to do transformations on

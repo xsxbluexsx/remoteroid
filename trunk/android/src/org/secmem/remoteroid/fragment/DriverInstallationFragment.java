@@ -3,11 +3,11 @@ package org.secmem.remoteroid.fragment;
 import java.io.IOException;
 
 import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.universal.fragment.InterfaceFragment;
 import org.secmem.remoteroid.util.CommandLine;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,23 +15,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class DriverInstallationFragment extends Fragment {
+public class DriverInstallationFragment extends InterfaceFragment<FragmentActionListener> {
 
 	private TextView tvMsg;
 	private ProgressBar prgProgress;
 	private Button btnConfirm;
 	private boolean installCompleted = false;
 	
-	private ConnectionStateListener mListener;
-	
 	public DriverInstallationFragment(){
 		
-	}
-	
-	public DriverInstallationFragment(ConnectionStateListener listener){
-		mListener = listener;
 	}
 	
 	@Override
@@ -56,7 +49,7 @@ public class DriverInstallationFragment extends Fragment {
 					// Install Driver
 					new InstallDriverTask().execute();
 				}else{
-					mListener.onDriverInstalled();
+					getListener().onDriverInstalled();
 				}
 				
 			}
