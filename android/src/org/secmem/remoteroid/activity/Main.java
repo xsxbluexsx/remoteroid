@@ -19,20 +19,16 @@
 
 package org.secmem.remoteroid.activity;
 
-import java.util.List;
-
 import org.secmem.remoteroid.IRemoteroid;
 import org.secmem.remoteroid.R;
 import org.secmem.remoteroid.fragment.AuthenticateFragment;
 import org.secmem.remoteroid.fragment.ConnectedFragment;
-import org.secmem.remoteroid.fragment.ConnectingFragment;
-import org.secmem.remoteroid.fragment.ConnectionStateListener;
 import org.secmem.remoteroid.fragment.DriverInstallationFragment;
+import org.secmem.remoteroid.fragment.FragmentActionListener;
 import org.secmem.remoteroid.intent.RemoteroidIntent;
 import org.secmem.remoteroid.service.RemoteroidService;
 import org.secmem.remoteroid.service.RemoteroidService.ServiceState;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -40,16 +36,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.inputmethodservice.InputMethodService;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -58,17 +50,9 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
 public class Main extends SherlockFragmentActivity implements
-		ConnectionStateListener {
+		FragmentActionListener {
 	
 	private static final String TAG = "Main";
-
-	// Fragments should be in static
-	private static Fragment mAuthFragment;
-	private static Fragment mConnectingFragment;
-	private static Fragment mConnectedFragment;
-	private static Fragment mDriverFragment;
-	
-	private String remoteIp=null;
 	
 	private IRemoteroid mRemoteroidSvc;
 	private ServiceConnection conn = new ServiceConnection() {
@@ -78,8 +62,7 @@ public class Main extends SherlockFragmentActivity implements
 			mRemoteroidSvc = IRemoteroid.Stub.asInterface(service);
 			
 			try {
-				ServiceState status = ServiceState.valueOf(mRemoteroidSvc
-						.getConnectionStatus());
+				mRemoteroidSvc.requestFragmentBeShown();
 				
 		        // Remote connected requested?
 		        if(getIntent()!=null){
@@ -88,34 +71,19 @@ public class Main extends SherlockFragmentActivity implements
 		        		String serverIp = getIntent().getStringExtra(RemoteroidIntent.EXTRA_IP_ADDESS);
 		        		
 		        		// Connect to server when client is not connected to server
-		        		if(status.equals(ServiceState.IDLE)){
-		        			System.out.println("Remote-connect to "+serverIp);
+		        		if(!mRemoteroidSvc.isConnected()){
+		        			Log.i(TAG, "Remote-connect requested to "+serverIp);
 		        			onConnectRequested(serverIp);
 		        		}else{
-		        			// TODO handle when client is already connected to server
-		        			
+		        			Log.e(TAG, "Client already connected to server!");
 		        		}
 		        	}
 		        }
 		        
-				switch (status) {
-				case IDLE:
-					showFragment(mAuthFragment);
-					break;
-
-				case CONNECTING:
-					showFragment(mConnectingFragment);
-					break;
-
-				case CONNECTED:
-					showFragment(mConnectedFragment);
-					break;
-				}
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
-			if(remoteIp !=null)
-				onConnectRequested(remoteIp);
+			
 		}
 
 		@Override
@@ -125,77 +93,6 @@ public class Main extends SherlockFragmentActivity implements
 
 	};
 
-	private static final int AUTH_FRAG = 0;
-	private static final int CONNECTING_FRAG = 1;
-	private static final int CONNECTED_FRAG = 2;
-	private static final int DRIVER_FRAG = 3;
-
-	private int lastFrag;
-
-	private boolean isDriverInstalled = false;
-	
-	public void hideAllFragment(){
-    	getSupportFragmentManager().beginTransaction()
-		.hide(mAuthFragment)
-		.hide(mConnectingFragment)
-		.hide(mConnectedFragment)
-		.hide(mDriverFragment).commitAllowingStateLoss();
-    }
-	    
-   public void showFragment(Fragment fragment){
-
-    	if(mAuthFragment.equals(fragment)){
-    		lastFrag = AUTH_FRAG;
-    		getSupportFragmentManager().beginTransaction()
-    			.show(mAuthFragment)
-    			.hide(mConnectingFragment)
-    			.hide(mConnectedFragment)
-    			.hide(mDriverFragment).commitAllowingStateLoss();
-    		
-    	}else if(mConnectingFragment.equals(fragment)){
-    		lastFrag = CONNECTING_FRAG;
-    		getSupportFragmentManager().beginTransaction()
-				.hide(mAuthFragment)
-				.show(mConnectingFragment)
-				.hide(mConnectedFragment)
-				.hide(mDriverFragment).commitAllowingStateLoss();
-    		
-    	}else if(mConnectedFragment.equals(fragment)){
-    		lastFrag = CONNECTED_FRAG;
-    		getSupportFragmentManager().beginTransaction()
-				.hide(mAuthFragment)
-				.hide(mConnectingFragment)
-				.show(mConnectedFragment)
-				.hide(mDriverFragment).commitAllowingStateLoss();
-    		 
-    	}else{
-    		lastFrag = DRIVER_FRAG;
-    		getSupportFragmentManager().beginTransaction()
-				.hide(mAuthFragment)
-				.hide(mConnectingFragment)
-				.hide(mConnectedFragment)
-				.show(mDriverFragment).commitAllowingStateLoss();
-    		
-    	}
-    }
-   
-   public void showLastFragment(){
-	   switch(lastFrag){
-		case AUTH_FRAG:
-			showFragment(mAuthFragment);
-			break;
-		case CONNECTING_FRAG:
-			showFragment(mConnectingFragment);
-			break;
-		case CONNECTED_FRAG:
-			showFragment(mConnectedFragment);
-			break;
-		case DRIVER_FRAG:
-			showFragment(mDriverFragment);
-			break;
-		}
-   }
-	
     @Override
     public void onCreate(Bundle savedInstanceState) {
 		// Typically this method is called when remote-connect message has arrived
@@ -205,61 +102,17 @@ public class Main extends SherlockFragmentActivity implements
         window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().setBackgroundDrawable(this.getResources().getDrawable(R.drawable.bg_red));
         
-        // instantiate fragments on first run
-        if(savedInstanceState==null){
-        	mAuthFragment = new AuthenticateFragment(this);
-        	mConnectingFragment = new ConnectingFragment(this);
-        	mConnectedFragment = new ConnectedFragment(this);
-        	mDriverFragment = new DriverInstallationFragment(this);
-        }
-        // FIXME
-        isDriverInstalled = true;
-        //isDriverInstalled = CommandLine.isDriverExists(getApplicationContext());     
-        
     }
-    
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		lastFrag = savedInstanceState.getInt("lastFrag");
-		
-		hideAllFragment();
-		switch(lastFrag){
-		case AUTH_FRAG:
-			showFragment(mAuthFragment);
-			break;
-		case CONNECTING_FRAG:
-			showFragment(mConnectingFragment);
-			break;
-		case CONNECTED_FRAG:
-			showFragment(mConnectedFragment);
-			break;
-		case DRIVER_FRAG:
-			showFragment(mDriverFragment);
-			break;
-		}
-		
-	}
 
     
     public void onStart(){
     	super.onStart();
-        getSupportFragmentManager().beginTransaction()
-		.add(R.id.container, mAuthFragment)
-		.add(R.id.container, mConnectingFragment)
-		.add(R.id.container, mConnectedFragment)
-		.add(R.id.container, mDriverFragment).commit();
-    
-    	//Check driver existence
-        if(!isDriverInstalled){
-            showFragment(mDriverFragment);
-        }else{
-        	bindService(new Intent(this, RemoteroidService.class), conn, Context.BIND_AUTO_CREATE);
-       	}
-        
+        bindService(new Intent(this, RemoteroidService.class), conn, Context.BIND_AUTO_CREATE);
     }
 
 	@Override
@@ -267,17 +120,16 @@ public class Main extends SherlockFragmentActivity implements
 		super.onResume();
 		// Register receiver to get broadcast from service
 		IntentFilter filter = new IntentFilter();
+	    filter.addAction(RemoteroidIntent.ACTION_SHOW_CONNECT_FRAGMENT);
+	    filter.addAction(RemoteroidIntent.ACTION_SHOW_CONNECTED_FRAGMENT);
+	    filter.addAction(RemoteroidIntent.ACTION_SHOW_DRIVER_INSTALLATION_FRAGMENT);
 	    filter.addAction(RemoteroidIntent.ACTION_CONNECTED);
-	    filter.addAction(RemoteroidIntent.ACTION_CONNECTION_FAILED);
 	    filter.addAction(RemoteroidIntent.ACTION_DEVICE_OPEN_FAILED);
-	    filter.addAction(RemoteroidIntent.ACTION_INTERRUPTED);
+	    filter.addAction(RemoteroidIntent.ACTION_CONNECTION_FAILED);
 	    filter.addAction(RemoteroidIntent.ACTION_DISCONNECTED);
+	    filter.addAction(RemoteroidIntent.ACTION_INTERRUPTED);
+	    
 	    registerReceiver(serviceConnReceiver, filter);
-
-	    if(!isDriverInstalled)
-	    	showLastFragment();
-	    
-	    
 	}
 	
 	@Override
@@ -314,13 +166,11 @@ public class Main extends SherlockFragmentActivity implements
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-
-		
         // Remote connected requested?
-    
 		String serverIp = intent.getStringExtra(RemoteroidIntent.EXTRA_IP_ADDESS);
 		try{
-			if(mRemoteroidSvc!=null && mRemoteroidSvc.getConnectionStatus().equals(ServiceState.IDLE)){
+			if(mRemoteroidSvc!=null && !mRemoteroidSvc.isConnected()){
+				Log.i(TAG, "Remote-connection requested to "+serverIp);
 				onConnectRequested(serverIp);
 			}else{
 				Log.e(TAG, "Client already connected to server!");
@@ -348,98 +198,74 @@ public class Main extends SherlockFragmentActivity implements
 		return super.onOptionsItemSelected(item);
 	}
 	
-	@Override 
-	public void onActivityResult(int requestCode, int resultCode, Intent data) { 
-		if(resultCode==Activity.RESULT_OK && requestCode==0){
-			boolean restart = data.getBooleanExtra("restart", false);
-			if(restart){
-				finish();
-			}
-		}
-	}
-
-	
-	
 	private BroadcastReceiver serviceConnReceiver = new BroadcastReceiver(){
 
         @Override
         public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
+			setSupportProgressBarIndeterminateVisibility(false);
 			
-			if(RemoteroidIntent.ACTION_CONNECTED.equals(action))
-				onConnected(intent.getStringExtra("ip"));
-			else if(RemoteroidIntent.ACTION_DEVICE_OPEN_FAILED.equals(action) || RemoteroidIntent.ACTION_CONNECTION_FAILED.equals(action))
-				onConnectionFailed();
-			else if(RemoteroidIntent.ACTION_DISCONNECTED.equals(action))
-				onDisconnected();
-			else if(RemoteroidIntent.ACTION_INTERRUPTED.equals(action))
-				onConnectionInterrupted();
+			if(RemoteroidIntent.ACTION_CONNECTED.equals(action)
+					|| RemoteroidIntent.ACTION_SHOW_CONNECTED_FRAGMENT.equals(action)){
+				// Show connected fragment
+				getSupportFragmentManager().beginTransaction()
+				.replace(R.id.container, 
+						new ConnectedFragment().setListener(Main.this)).commitAllowingStateLoss();
+				
+			}else if(RemoteroidIntent.ACTION_DEVICE_OPEN_FAILED.equals(action) 
+					|| RemoteroidIntent.ACTION_DISCONNECTED.equals(action)
+					|| RemoteroidIntent.ACTION_INTERRUPTED.equals(action)
+					|| RemoteroidIntent.ACTION_SHOW_CONNECT_FRAGMENT.equals(action)){
+				// Show connect fragment
+				getSupportFragmentManager().beginTransaction()
+				.replace(R.id.container, 
+						new AuthenticateFragment().setListener(Main.this)).commitAllowingStateLoss();
+			}else if(RemoteroidIntent.ACTION_CONNECTION_FAILED.equals(action)){
+				Toast.makeText(getApplicationContext(), R.string.connection_with_server_has_interrupted, Toast.LENGTH_SHORT).show();
+				// Show connect fragment
+				getSupportFragmentManager().beginTransaction()
+				.replace(R.id.container, 
+						new AuthenticateFragment().setListener(Main.this)).commitAllowingStateLoss();
+			}else if(RemoteroidIntent.ACTION_SHOW_DRIVER_INSTALLATION_FRAGMENT.equals(action)){
+				// Show driver installation fragment
+				getSupportFragmentManager().beginTransaction()
+				.replace(R.id.container, 
+						new DriverInstallationFragment().setListener(Main.this)).commitAllowingStateLoss();
+			}
         }
         
 	};
 
 	@Override
 	public void onConnectRequested(String ipAddress) {
-		showFragment(mConnectingFragment);
-
 		try {
+			setSupportProgressBarIndeterminateVisibility(true);
 			mRemoteroidSvc.connect(ipAddress);
 		} catch (RemoteException e) {
 			e.printStackTrace();
-
-			showFragment(mAuthFragment);
 		}
 
 	}
 	
-	@Override
-	public void onConnectionCanceled() {
-		Toast.makeText(getApplicationContext(), R.string.connection_cancelled,
-				Toast.LENGTH_SHORT).show();
-		showFragment(mAuthFragment);
-	}
-
-	@Override
-	public void onConnectionFailed() {
-		Toast.makeText(getApplicationContext(), "Failed to connect server.",
-				Toast.LENGTH_SHORT).show();
-		// Failed to connect. return to AuthenticateFragment.
-		showFragment(mAuthFragment);
-	}
-	
-	@Override
-	public void onConnected(String ipAddress) {
-		showFragment(mConnectedFragment);
-	}
-
-	@Override
-	public void onConnectionInterrupted() {
-		Toast.makeText(getApplicationContext(), R.string.connection_with_server_has_interrupted, Toast.LENGTH_SHORT).show();
-		showFragment(mAuthFragment);
-	}
 	
 	@Override
 	public void onDisconnectRequested() {
 		try {
+			setSupportProgressBarIndeterminateVisibility(true);
 			mRemoteroidSvc.disconnect();
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 	}
-
-	@Override
-	public void onDisconnected() {
-		Toast.makeText(getApplicationContext(), R.string.disconnected_from_server, Toast.LENGTH_SHORT).show();
-		showFragment(mAuthFragment);
-	}
 	
 	@Override
 	public void onDriverInstalled() {
 		// Proceed to authenticate fragment
-		showFragment(mAuthFragment);
+		// Show connect fragment
+		getSupportFragmentManager().beginTransaction()
+		.replace(R.id.container, 
+				new AuthenticateFragment().setListener(Main.this)).commitAllowingStateLoss();
 		
-		// Bind to remoteroid service
-		bindService(new Intent(this, RemoteroidService.class), conn, Context.BIND_AUTO_CREATE);
 	}
 
 

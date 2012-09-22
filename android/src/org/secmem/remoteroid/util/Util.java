@@ -113,6 +113,7 @@ public class Util {
 		private static final String KEY_USER_EMAIL="user_email";
 		private static final String KEY_PASSWORD = "password";
 		private static final String KEY_DEVICE_NAME = "device_nickname";
+		private static final String KEY_LAST_SERVER_ADDRESS = "last_server_address";
 		
 		private static final String KEY_SERVER_TYPE = "server_type";
 		public static final String SERVER_WINDOWS = "windows";
@@ -138,6 +139,14 @@ public class Util {
 			SharedPreferences.Editor editor = getPrefEditor(context);
 			editor.putString(KEY_DEVICE_NAME, nickname);
 			editor.commit();
+		}
+		
+		public static void setLastServerIpAddress(Context context, String ipAddress){
+			getPrefEditor(context).putString(KEY_LAST_SERVER_ADDRESS, ipAddress).commit();
+		}
+		
+		public static String getLastServerIpAddress(Context context){
+			return getPref(context).getString(KEY_LAST_SERVER_ADDRESS, null);
 		}
 		
 		public static String getDeviceNickname(Context context){

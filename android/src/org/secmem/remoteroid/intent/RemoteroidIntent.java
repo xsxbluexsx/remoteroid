@@ -93,4 +93,8 @@ public final class RemoteroidIntent {
 	public static final String ACTION_FILE_TRANSMISSION_SECCESS = "org.secmem.remoteroid.intent.action.FILE_TRANSMISSION_SUCCESS";
 	public static final String ACTION_ALL_FILE_TRANSMISSION_SECCESS = "org.secmem.remoteroid.intent.action.ALL_FILE_TRANSMISSION_SUCCESS";
 	
+	
+	public static final String ACTION_SHOW_DRIVER_INSTALLATION_FRAGMENT = "org.secmem.remoteroid.intent.action.SHOW_DRIVER_FRAGMENT";
+	public static final String ACTION_SHOW_CONNECT_FRAGMENT = "org.secmem.remoteroid.intent.action.SHOW_CONNECT_FRAGMENT";
+	public static final String ACTION_SHOW_CONNECTED_FRAGMENT = "org.secmem.remoteroid.intent.action.SHOW_CONNECTED_FRAGMENT";
 }

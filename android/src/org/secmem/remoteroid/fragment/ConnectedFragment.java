@@ -20,10 +20,9 @@
 package org.secmem.remoteroid.fragment;
 
 import org.secmem.remoteroid.R;
+import org.secmem.remoteroid.universal.fragment.InterfaceFragment;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,23 +33,17 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class ConnectedFragment extends Fragment {
+public class ConnectedFragment extends InterfaceFragment<FragmentActionListener> {
 	
 	private TextView tvMessage;
 	private ProgressBar prgDisconnectPrg;
 	private Button btnDisconnect;
 	private ImageView ivCircuitBoard;
 	
-	
 	private boolean isDisconnectRequested = false;
-	private ConnectionStateListener mListener;
-	
+
 	public ConnectedFragment(){
 		
-	}
-	
-	public ConnectedFragment(ConnectionStateListener listener){
-		mListener = listener;
 	}
 	
 	@Override
@@ -87,17 +80,11 @@ public class ConnectedFragment extends Fragment {
 				isDisconnectRequested = false;
 				ivCircuitBoard.setVisibility(View.INVISIBLE);
 				prgDisconnectPrg.setVisibility(View.VISIBLE);
-//				tvMessage.setText(R.string.disconnecting);
-				mListener.onDisconnectRequested();
+				tvMessage.setText(R.string.disconnecting);
+				getListener().onDisconnectRequested();
 			}
 			
 		});
 	}
 
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putBoolean("disconnect_requested", isDisconnectRequested);
-	}
-	
 }
