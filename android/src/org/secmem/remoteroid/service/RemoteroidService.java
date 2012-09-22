@@ -425,7 +425,9 @@ public class RemoteroidService extends Service
 				while(isTransmission){		
 					ByteArrayOutputStream frameStream;
 					synchronized(synchronizedScreenTrans){
+						
 						frameStream = frameHandler.getFrameStream();
+						
 					}
 					int rotation = HongUtil.getRotation(getApplicationContext());				
 					

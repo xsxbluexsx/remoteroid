@@ -96,6 +96,13 @@ this.onSendFile(_arg0);
 reply.writeNoException();
 return true;
 }
+case TRANSACTION_requestFragmentBeShown:
+{
+data.enforceInterface(DESCRIPTOR);
+this.requestFragmentBeShown();
+reply.writeNoException();
+return true;
+}
 }
 return super.onTransact(code, data, reply, flags);
 }
@@ -209,6 +216,20 @@ _reply.recycle();
 _data.recycle();
 }
 }
+public void requestFragmentBeShown() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_requestFragmentBeShown, _data, _reply, 0);
+_reply.readException();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
 }
 static final int TRANSACTION_getConnectionStatus = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
 static final int TRANSACTION_isConnected = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
@@ -216,6 +237,7 @@ static final int TRANSACTION_connect = (android.os.IBinder.FIRST_CALL_TRANSACTIO
 static final int TRANSACTION_disconnect = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
 static final int TRANSACTION_onNotificationCatched = (android.os.IBinder.FIRST_CALL_TRANSACTION + 4);
 static final int TRANSACTION_onSendFile = (android.os.IBinder.FIRST_CALL_TRANSACTION + 5);
+static final int TRANSACTION_requestFragmentBeShown = (android.os.IBinder.FIRST_CALL_TRANSACTION + 6);
 }
 public java.lang.String getConnectionStatus() throws android.os.RemoteException;
 public boolean isConnected() throws android.os.RemoteException;
@@ -223,4 +245,5 @@ public void connect(java.lang.String ipAddress) throws android.os.RemoteExceptio
 public void disconnect() throws android.os.RemoteException;
 public void onNotificationCatched(java.lang.String notificationText, long when, int type) throws android.os.RemoteException;
 public void onSendFile(java.util.List<java.lang.String> pathlist) throws android.os.RemoteException;
+public void requestFragmentBeShown() throws android.os.RemoteException;
 }

@@ -46,9 +46,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
-import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -153,13 +153,14 @@ public class ExplorerAdapter extends BaseAdapter{
 				String type = HongUtil.getMimeType(file);
 				if(type.equals(HongUtil.TYPE_PICTURE)){						// ������ъ��대㈃ �ъ� �몃���異��
 					if(!(ExplorerActivity.SCROLL_STATE)){
-						
 						if(f.isBitmapChecked()){
 							holder.imgHolder.setBackgroundResource(0x00000000);
-							if(f.getBitmap()!=null)
+							if(f.getBitmap()!=null){
 								holder.imgHolder.setImageBitmap(f.getBitmap());
-							else
+							}
+							else{
 								holder.imgHolder.setBackgroundResource(R.drawable.photo_camera);
+							}
 						}
 						else{
 							holder.imgHolder.setBackgroundResource(R.drawable.photo_camera);
@@ -433,7 +434,10 @@ public class ExplorerAdapter extends BaseAdapter{
 			if(result==1){
 				notifyDataSetChanged();
 			}
-			threadCount--;
+			if(--threadCount==0){
+				LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_wave_not_scale);
+				gridview.setLayoutAnimation(gridAnimation);
+			}
 		}
 	}
 	
@@ -460,7 +464,10 @@ public class ExplorerAdapter extends BaseAdapter{
 			if(result==1){
 				notifyDataSetChanged();
 			}
-			threadCount--;
+			if(--threadCount==0){
+				LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_wave_not_scale);
+				gridview.setLayoutAnimation(gridAnimation);
+			}
 		}
 	}
 	
@@ -472,9 +479,12 @@ public class ExplorerAdapter extends BaseAdapter{
 		
 		BitmapFactory.Options option = new BitmapFactory.Options();
 		int pos = Integer.parseInt(position);
-		if(categoryList.size()==0)
-			return 0;
-		CategoryList list = categoryList.get(pos);
+		CategoryList list = null;
+		if(type == ExplorerActivity.ADAPTER_TYPE_CATEGORY){
+			if(categoryList.size()==0)
+				return 0;
+			list = categoryList.get(pos);
+		}
 		
 		if (new File(path+file).length() > 200000)
 			option.inSampleSize = 7;
@@ -555,6 +565,8 @@ public class ExplorerAdapter extends BaseAdapter{
 			super.onPostExecute(result);
 			if(result==1)
 				notifyDataSetChanged();
+			LayoutAnimationController gridAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_wave_not_scale);
+			gridview.setLayoutAnimation(gridAnimation);
 		}
 	}
 	

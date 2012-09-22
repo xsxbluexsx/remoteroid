@@ -42,6 +42,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -113,6 +114,7 @@ public class Main extends SherlockFragmentActivity implements
     public void onStart(){
     	super.onStart();
         bindService(new Intent(this, RemoteroidService.class), conn, Context.BIND_AUTO_CREATE);
+        
     }
 
 	@Override
