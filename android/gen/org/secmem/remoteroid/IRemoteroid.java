@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: C:\\AndroidProject\\Remoteroid\\src\\org\\secmem\\remoteroid\\IRemoteroid.aidl
+ * Original file: C:\\Users\\HwangYongWan\\workspace\\Remoteroid\\src\\org\\secmem\\remoteroid\\IRemoteroid.aidl
  */
 package org.secmem.remoteroid;
 public interface IRemoteroid extends android.os.IInterface

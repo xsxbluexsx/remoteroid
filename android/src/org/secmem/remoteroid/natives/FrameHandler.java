@@ -36,8 +36,8 @@ public class FrameHandler {
 		System.loadLibrary("fbuffer");
 	}
 	
-	private ByteBuffer frameBuffer;
-	private ByteArrayOutputStream frameStream;
+//	private ByteBuffer frameBuffer;
+//	private ByteArrayOutputStream frameStream;
 	
 	private byte[] buffer;
 	private Bitmap bitmap;
@@ -50,6 +50,7 @@ public class FrameHandler {
 	private int pixel;
 	private int orientation;
 	private int pixelFormat;
+	private int jpegSize;
 	
 	private boolean isBuffered = false;
 	
@@ -68,9 +69,9 @@ public class FrameHandler {
 		setDisplayValue();
 		setBitmap(getDisplayBitmap());
 		
-		frameBuffer = ByteBuffer.allocate(displaySize);
-		buffer = new byte[displaySize];
-		frameStream = new ByteArrayOutputStream();				
+//		frameBuffer = ByteBuffer.allocate(displaySize);
+		buffer = new byte[1000000];
+//		frameStream = new ByteArrayOutputStream();				
 	}
 	
 	
@@ -99,23 +100,28 @@ public class FrameHandler {
 	}
 	
 	// Compress JPEG
-	public ByteArrayOutputStream getFrameStream(){
+	public byte[] getFrameStream(){
 //		if(orientation != getDisplayOrientation()){
 //			setDisplayValue();
 //			setBitmap(getDisplayBitmap());
 //		}	
+		Log.i("frame :","start");
+		jpegSize = getFrameBuffer(buffer, pixelFormat);
+		Log.d("frame :","end");
+//		frameBuffer.put(buffer, 0, displaySize);		
+//		frameBuffer.rewind();		
+//		bitmap.copyPixelsFromBuffer(frameBuffer);				
+//		frameStream.reset();		 
+//		bitmap.compress(CompressFormat.JPEG, 100, frameStream);		
 		
-		getFrameBuffer(buffer, pixelFormat);		
-		frameBuffer.put(buffer, 0, displaySize);		
-		frameBuffer.rewind();		
-		bitmap.copyPixelsFromBuffer(frameBuffer);				
-		frameStream.reset();		 
-		bitmap.compress(CompressFormat.JPEG, 100, frameStream);		
-		
-		return frameStream;
+		return buffer;
 	}
 	
+	public int getJpegSize(){
+		return jpegSize;
+	}
 	
+	/*
 	public Bitmap getTestFrameStream(){
 		
 		if(orientation != getDisplayOrientation()){
@@ -132,7 +138,8 @@ public class FrameHandler {
 		
 		return bitmap;
 	}
-	
+	*/
+	/*
 	public ByteBuffer getFrameBuffer() {
 		return frameBuffer;
 	}
@@ -140,7 +147,7 @@ public class FrameHandler {
 	public void setFrameBuffer(ByteBuffer frameBuffer) {
 		this.frameBuffer = frameBuffer;
 	}
-
+*/
 	public byte[] getBuffer() {
 		return buffer;
 	}

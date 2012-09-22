@@ -423,7 +423,7 @@ public class RemoteroidService extends Service
 			public void run() {
 				
 				while(isTransmission){		
-					ByteArrayOutputStream frameStream;
+					byte[] frameStream;
 					synchronized(synchronizedScreenTrans){
 						
 						frameStream = frameHandler.getFrameStream();
@@ -431,7 +431,7 @@ public class RemoteroidService extends Service
 					}
 					int rotation = HongUtil.getRotation(getApplicationContext());				
 					
-					mTransmitter.screenTransmission(frameStream.toByteArray(), rotation);
+					mTransmitter.screenTransmission(frameStream, rotation, frameHandler.getJpegSize());
 				}
 			}
 		};

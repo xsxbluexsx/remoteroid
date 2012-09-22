@@ -177,9 +177,9 @@ public class Tranceiver  implements PacketListener{
 	
 	
 	//Send frameBuffer to host by udp
-	public void screenTransmission(byte[] jpgData, int orientation){
+	public void screenTransmission(byte[] jpgData, int orientation, int jpgSize){
 		try{
-			screenSender.screenTransmission(jpgData, orientation);
+			screenSender.screenTransmission(jpgData, orientation, jpgSize);
 		}catch(IOException e){
 			e.printStackTrace();
 			mScreenTransListener.onScreenTransferInterrupted();

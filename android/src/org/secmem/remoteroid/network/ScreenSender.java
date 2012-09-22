@@ -30,8 +30,8 @@ public class ScreenSender extends PacketSender{
 		super(out);		
 	}
 			
-	public void screenTransmission(byte[] jpgData, int orientation) throws IOException{
-		int jpgTotalSize = jpgData.length;
+	public void screenTransmission(byte[] jpgData, int orientation, int jpgSize) throws IOException{
+		int jpgTotalSize = jpgSize;
 		int transmittedSize = 0;		
 		
 
