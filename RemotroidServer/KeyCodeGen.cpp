@@ -77,4 +77,9 @@ void CKeyCodeGen::InitKeyCodeArray(void)
 	KeyCodeArray[VK_DOWN] = KEY_DOWN;
 	KeyCodeArray[VK_UP] = KEY_UP;	
 	KeyCodeArray[VK_CONTROL] = KEY_LEFTCTRL;	
+	KeyCodeArray[VK_HANGUL] = KEY_HANGEUL;	
+	KeyCodeArray[VK_OEM_3] = KEY_GRAVE;	
+	KeyCodeArray[VK_OEM_7] = KEY_APOSTROPHE;		
+	KeyCodeArray[VK_OEM_1] = KEY_SEMICOLON;		
+
 }

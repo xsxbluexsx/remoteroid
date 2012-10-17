@@ -1619,13 +1619,15 @@ void CRemotroidServerDlg::EnableLoginWnd(CONNECTSTATE state)
 
 		m_ctrlEmail.EnableWindow(FALSE);
 		m_ctrlPasswd.EnableWindow(FALSE);	
-
+		
+		m_btnConnect.
+		m_btnConnect.EnableWindow(FALSE);
 		m_btnConnect.ShowWindow(SW_HIDE);
 		screen.EnableAnimation(TRUE);
 		break;
 	case SUCCESS:	//접속 성공			
 		m_ctrlEmail.SetReadOnly(TRUE);
-		m_ctrlPasswd.SetReadOnly(FALSE);	
+		m_ctrlPasswd.SetReadOnly(TRUE);	
 
 		m_ctrlEmail.EnableWindow(FALSE);
 		m_ctrlPasswd.EnableWindow(FALSE);	
@@ -1633,9 +1635,9 @@ void CRemotroidServerDlg::EnableLoginWnd(CONNECTSTATE state)
 		m_ctrlEmail.ShowWindow(SW_HIDE);
 		m_ctrlPasswd.ShowWindow(SW_HIDE);		
 
-		m_btnConnect.ShowWindow(SW_HIDE);
 		m_btnConnect.EnableWindow(FALSE);
-
+		m_btnConnect.ShowWindow(SW_HIDE);
+		
 		screen.EnableAnimation(FALSE);
 		break;
 	case FAIL:
@@ -1645,7 +1647,9 @@ void CRemotroidServerDlg::EnableLoginWnd(CONNECTSTATE state)
 		m_ctrlEmail.EnableWindow(TRUE);
 		m_ctrlPasswd.EnableWindow(TRUE);	
 
+		
 		m_btnConnect.ShowWindow(SW_SHOW);
+		m_btnConnect.EnableWindow(TRUE);
 		screen.EnableAnimation(FALSE);
 		break;
 	case END:
@@ -1660,6 +1664,7 @@ void CRemotroidServerDlg::EnableLoginWnd(CONNECTSTATE state)
 
 		m_ctrlEmail.EnableWindow(TRUE);
 		m_ctrlPasswd.EnableWindow(TRUE);	
+
 
 		m_btnConnect.ShowWindow(SW_SHOW);
 		m_btnConnect.EnableWindow(TRUE);
