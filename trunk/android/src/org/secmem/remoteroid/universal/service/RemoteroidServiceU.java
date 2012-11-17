@@ -206,16 +206,29 @@ public class RemoteroidServiceU extends Service {
 				
 				break;
 				
+			case Command.INSTRUMENTATION_TEST:
+				// Will test out some input device instrumentation
+				inputHandler.touchDown();
+				// Drag pointer from (300, 0) to (300, 500)
+				for(int i=0; i<500; i+=10){
+					inputHandler.touchSetPtr(300, i);
+				}
+				// Release pointer
+				inputHandler.touchUp();
+				
+				break;
+				
 			case Command.TOUCH_DOWN:
 				inputHandler.touchDown();
 				break;
 				
 			case Command.TOUCH_SETPTR:
+				Log.i(TAG, "Setting touch point, x="+command.getIntExtra(Extra.KEY_TOUCH_X)+", y="+command.getIntExtra(Extra.KEY_TOUCH_Y));
 				inputHandler.touchSetPtr(command.getIntExtra(Extra.KEY_TOUCH_X), command.getIntExtra(Extra.KEY_TOUCH_Y));
 				break;
 				
 			case Command.TOUCH_UP:
-				
+				inputHandler.touchUp();
 				break;
 				
 			case Command.KEY_DOWN:
@@ -232,6 +245,7 @@ public class RemoteroidServiceU extends Service {
 		@Override
 		public void onDisconnected() {
 			dismissNotification();
+			inputHandler.close();
 			sendBroadcast(new Intent(RemoteroidIntent.ACTION_DISCONNECTED));
 		}
 		

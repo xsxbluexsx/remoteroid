@@ -19,12 +19,8 @@
 
 package org.secmem.remoteroid.natives;
 
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
-
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;

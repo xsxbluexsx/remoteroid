@@ -78,6 +78,7 @@ JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_keyStroke
 JNIEXPORT void JNICALL Java_org_secmem_remoteroid_natives_InputHandler_touchDown(JNIEnv *env, jobject thiz){
 	sendNativeEvent(inputFd, EV_KEY, BTN_TOUCH, 1);
 	sendNativeEvent(inputFd, EV_SYN, SYN_REPORT, 0);
+
 }
 
 /*

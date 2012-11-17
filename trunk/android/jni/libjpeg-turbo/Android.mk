@@ -28,10 +28,6 @@ LOCAL_SRC_FILES := fbuffer.c	\
 					turbojpeg.c	\
 					jdatadst-tj.c	\
 
-
-
-
-
 LOCAL_LDLIBS := -llog -ljpeg
 LOCAL_CFLAGS := -DCONFIG_EMBEDDED\ -DUSE_IND_THREAD\
 

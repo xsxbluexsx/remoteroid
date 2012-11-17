@@ -28,7 +28,6 @@ import com.actionbarsherlock.view.MenuItem;
 
 public class NotificationReceiverSettings extends SherlockPreferenceActivity{
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);

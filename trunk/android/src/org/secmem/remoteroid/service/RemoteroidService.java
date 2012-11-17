@@ -19,7 +19,6 @@
 
 package org.secmem.remoteroid.service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -173,12 +172,7 @@ public class RemoteroidService extends Service
 		}
 
 		@Override
-		public void requestFragmentBeShown() throws RemoteException {
-			if(!CommandLine.isDriverExists(getApplicationContext())){
-				sendBroadcast(new Intent(RemoteroidIntent.ACTION_SHOW_DRIVER_INSTALLATION_FRAGMENT));
-				return;
-			}
-			
+		public void requestFragmentBeShown() throws RemoteException {			
 			if(mTransmitter.isConnected()){
 				sendBroadcast(new Intent(RemoteroidIntent.ACTION_SHOW_CONNECTED_FRAGMENT));
 			}else{

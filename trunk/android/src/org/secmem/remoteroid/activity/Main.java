@@ -42,7 +42,6 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -168,6 +167,7 @@ public class Main extends SherlockFragmentActivity implements
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
+		Log.i(TAG, "onNetIntent() at Main()");
         // Remote connected requested?
 		String serverIp = intent.getStringExtra(RemoteroidIntent.EXTRA_IP_ADDESS);
 		try{
