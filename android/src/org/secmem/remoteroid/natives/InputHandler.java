@@ -147,12 +147,12 @@ public class InputHandler {
 	 * This event just represents <b>'touching a screen'</b> event. Setting touch screen's coordinate is processed on touchSetPtr(int, int) method.
 	 * @see #touchSetPtr(int, int)
 	 */
-	public native void touchDown();
+	public synchronized native void touchDown();
 	
 	/**
 	 * Injects touch up (user removed finger from a screen) event.
 	 */
-	public native void touchUp();
+	public synchronized native void touchUp();
 	
 	/**
 	 * Set coordinates where user has touched on the screen.<br/>
@@ -160,7 +160,7 @@ public class InputHandler {
 	 * @param x x coordinate that user has touched
 	 * @param y y coordinate that user has touched
 	 */
-	public native void touchSetPtr(int x, int y);
+	public synchronized native void touchSetPtr(int x, int y);
 	
 	/**
 	 * Injects 'touch once' event, touching specific coordinate once.<br/>

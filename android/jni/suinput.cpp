@@ -156,7 +156,7 @@ int suinput_open(const char* device_name, const struct input_id* id, const int s
 
     return uinput_fd;
 
-    err:
+err:
 
     /*
     At this point, errno is set for some reason. However, cleanup-actions

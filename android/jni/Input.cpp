@@ -41,11 +41,11 @@ bool openInputWithoutPermission(int scrWidth, int scrHeight){
 			1 /* Version id. */
 	};
 
-	if((inputFd = suinput_open("remoteroid", &id, scrWidth, scrHeight)) == -1){
-		LOGD(LOGTAG, "Cannot open device - 'remoteroid'");
+	if((inputFd = suinput_open("qwerty", &id, scrWidth, scrHeight)) == -1){
+		LOGD(LOGTAG, "Cannot open device - 'qwerty'");
 		return false;
 	}
-	LOGI(LOGTAG, "Opened device 'remoteroid'");
+	LOGI(LOGTAG, "Opened device 'qwerty'");
 	return true;
 }
 

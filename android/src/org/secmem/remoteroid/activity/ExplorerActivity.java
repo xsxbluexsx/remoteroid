@@ -52,12 +52,10 @@ import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.Button;
@@ -402,7 +400,6 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 			if(type.equals(TYPE_IMAGE)){
 				String[] projection = { MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA};
 				
-				@SuppressWarnings("deprecation")
 				Cursor imageCursor = managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
 				HongUtil.getPhoto(imageCursor);
 			}
@@ -410,7 +407,6 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 			else if(type.equals(TYPE_VIDEO)){
 				String[] infoVideo = { MediaStore.Video.Media._ID, MediaStore.Video.Media.DATA};
 				
-				@SuppressWarnings("deprecation")
 				Cursor cursor = managedQuery(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, infoVideo, null, null, null);
 				
 				HongUtil.getVideo(cursor);
@@ -419,7 +415,6 @@ public class ExplorerActivity extends SherlockActivity implements OnScrollListen
 			else if(type.equals(TYPE_MUSIC)){
 				String[] mediaData = {MediaStore.Audio.Media.DATA, MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID};
 				
-				@SuppressWarnings("deprecation")
 				Cursor cursor = managedQuery(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, mediaData, null, null, null);
 				
 				HongUtil.getMusic(cursor);
