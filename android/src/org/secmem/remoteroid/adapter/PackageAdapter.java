@@ -23,9 +23,9 @@ import android.widget.TextView;
 
 public class PackageAdapter extends BaseAdapter{
 	private Context mContext;
-	private ArrayList<PackageInfo> mPackageList = new ArrayList<PackageInfo>();
+	private ArrayList<PackageInfo> mAllPackageList = new ArrayList<PackageInfo>();
 	
-	private ArrayList<PackageInfo> sPackageList = new ArrayList<PackageInfo>();
+	private ArrayList<PackageInfo> mSearchResultPackageList = new ArrayList<PackageInfo>();
 	
 	private PackageManager mPkgManager;
 	private FilterUtil mFilterUtil;
@@ -39,7 +39,7 @@ public class PackageAdapter extends BaseAdapter{
 	public PackageAdapter(Context context){
 		mContext = context;
 		mPkgManager = mContext.getPackageManager();
-		mPackageList = (ArrayList<PackageInfo>)mPkgManager.getInstalledPackages(0);
+		mAllPackageList = (ArrayList<PackageInfo>)mPkgManager.getInstalledPackages(0);
 		mFilterUtil = new FilterUtil(mContext);
 		mFilterUtil.open();
 	}
@@ -53,20 +53,20 @@ public class PackageAdapter extends BaseAdapter{
 	@Override
 	public int getCount() {
 		if(strInitial.equals("") || strInitial==null){
-			return mPackageList.size();
+			return mAllPackageList.size();
 		}
 		else{
-			return sPackageList.size();
+			return mSearchResultPackageList.size();
 		}
 	}
 
 	@Override
 	public PackageInfo getItem(int position) {
 		if(strInitial.equals("") || strInitial==null){
-			return mPackageList.get(position);
+			return mAllPackageList.get(position);
 		}
 		else{
-			return sPackageList.get(position);
+			return mSearchResultPackageList.get(position);
 		}
 	}
 
@@ -151,18 +151,18 @@ public class PackageAdapter extends BaseAdapter{
 		
 		isSync = true;
 		setAfterStr(msg);
-		for(int i = 0 ; i < mPackageList.size() ; i++){
+		for(int i = 0 ; i < mAllPackageList.size() ; i++){
 			if(!msg.equals(this.strInitial)){
 				searchSoundInitial(this.strInitial);
 				return;
 			}
-			if(PackageSoundSearcher.matchString((mPackageList.get(i).applicationInfo.loadLabel(mPkgManager)).toString(), msg)){
-				info.add(mPackageList.get(i));
+			if(PackageSoundSearcher.matchString((mAllPackageList.get(i).applicationInfo.loadLabel(mPkgManager)).toString(), msg)){
+				info.add(mAllPackageList.get(i));
 			}
 			else{
 			}
 		}
-		sPackageList = info;
+		mSearchResultPackageList = info;
 		isSync = false;
 	}
 

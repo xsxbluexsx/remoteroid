@@ -26,8 +26,7 @@ public class PackageSoundSearcher {
 	/**
 	 * 해당 문자의 자음을 얻는다.
 	 * 
-	 * @param c
-	 *            검사할 문자
+	 * @param c 검사할 문자
 	 * @return
 	 */
 	private static char getInitialSound(char c) {
@@ -39,8 +38,7 @@ public class PackageSoundSearcher {
 	/**
 	 * 해당 문자가 한글인지 검사
 	 * 
-	 * @param c
-	 *            문자 하나
+	 * @param c 문자 하나
 	 * @return
 	 */
 	private static boolean isHangul(char c) {
@@ -50,8 +48,8 @@ public class PackageSoundSearcher {
 	/**
 	 * * 검색을 한다. 초성 검색 완벽 지원함.
 	 * 
-	 * @param value
-	 *            : 검색 대상 ex> 초성검색합니다 * @param search : 검색어 ex> ㅅ검ㅅ합ㄴ
+	 * @param value 검색 대상 ex> 초성검색합니다 * 
+	 * 	@param search : 검색어 ex> ㅅ검ㅅ합ㄴ
 	 * @return 매칭 되는거 찾으면 true 못찾으면 false.
 	 */
 	public static boolean matchString(String value, String search) {
