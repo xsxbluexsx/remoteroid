@@ -4,7 +4,7 @@ import java.text.*;
 
 /**
  * Represents remoteroid's packet system.</br>
- * A packet consisted of header and payload. 
+ * A packet is consisted of header and payload. 
  * @see PacketHeader
  * @author Taeho Kim
  *
